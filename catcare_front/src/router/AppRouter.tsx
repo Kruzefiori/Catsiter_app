@@ -10,7 +10,6 @@ function AppRouter() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    console.log(appLocation.pathname)
     const isLogged = false // TODO: adicionar verificação de login
     if (!isLogged && appLocation.pathname !== RouterPaths.LOGIN && appLocation.pathname !== RouterPaths.REGISTER)
       navigate(RouterPaths.LOGIN)

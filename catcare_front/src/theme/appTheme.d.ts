@@ -20,23 +20,19 @@ export interface AppTheme {
     neutralL3: string
     neutralL4: string
     neutralL5: string
+    neutralSecondary: string
+
     primary: string
-    primaryD1: string
-    primaryD2: string
-    primaryL1: string
-    primaryL2: string
+
     secondary: string
-    secondaryD1: string
-    secondaryD2: string
-    secondaryD3: string
-    secondaryL1: string
-    secondaryL2: string
-    secondaryL3: string
+
     yellowL0: string
     yellowL1: string
+
     blueL0: string
     blueL1: string
     blueL2: string
+
     notification: string
     error: string
   }
@@ -44,8 +40,6 @@ export interface AppTheme {
     h1: AppThemeFont
     h2: AppThemeFont
     h3: AppThemeFont
-    h4: AppThemeFont
-    h5: AppThemeFont
     infoLG: AppThemeFont
     infoMD: AppThemeFont
     infoSM: AppThemeFont

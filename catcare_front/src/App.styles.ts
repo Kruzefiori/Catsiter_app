@@ -5,5 +5,5 @@ export const AppContainer = styled.div`
   max-width: 430px;
   width: 100%;
 
-  border: 1px solid gray;
+  border: 1px solid ${({ theme }) => theme.colors.neutralL3};
 `
