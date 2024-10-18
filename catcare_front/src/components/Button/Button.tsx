@@ -1,15 +1,16 @@
-import { PropsWithChildren } from 'react'
+import { getStateColor } from '@/utils/getStateColor'
+import { ButtonHTMLAttributes, PropsWithChildren } from 'react'
 import styled from 'styled-components'
 
-interface ButtonProps extends PropsWithChildren {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
   variant: 'filled' | 'outline'
   gap?: number
 }
 
 function Button(props: ButtonProps) {
-  const { children, variant, gap } = props
+  const { children, variant, gap, ...rest } = props
   return (
-    <ButtonContainer variant={variant} gap={gap}>
+    <ButtonContainer variant={variant} gap={gap} {...rest}>
       {children}
     </ButtonContainer>
   )
@@ -33,4 +34,10 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
   align-items: center;
   justify-content: center;
   gap: ${({ gap }) => gap ?? 0}px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme, variant }) =>
+      variant === 'filled' ? getStateColor(theme.colors.secondary, 'hover') : `${theme.colors.secondary}10`};
+  }
 `

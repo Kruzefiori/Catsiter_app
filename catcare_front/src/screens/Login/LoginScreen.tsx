@@ -1,14 +1,41 @@
 import { Button } from '@/components/Button/Button'
-import styled from 'styled-components'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
 import GoogleIcon from '@assets/google.svg?react'
-import { useState } from 'react'
-import { IconButton, InputAdornment, OutlinedInput, TextField } from '@mui/material'
+import { useCallback, useState } from 'react'
+import { IconButton, InputAdornment, TextField } from '@mui/material'
+
+import { LoginContainer, Header, Title, Subtitle, InputWrapper, InfoText, Form } from './LoginScreen.styles'
+import { useForm } from 'react-hook-form'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { LoginSchema, loginSchema } from './validation'
+import { Link, useNavigate } from 'react-router-dom'
+import { RouterPaths } from '@/router/RouterPathsMapper'
+import { saveAuthToken } from '@/services/Authenticator'
 
 function LoginScreen() {
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema)
+  })
+
+  const navigate = useNavigate()
+
   const [showPassword, setShowPassword] = useState(false)
+
+  const handleLogin = useCallback((data: LoginSchema) => {
+    console.log(data)
+    const authToken = 'token_hardcodado' // TODO: substituir pelo retorno da API
+    saveAuthToken(authToken)
+    navigate(RouterPaths.HOME)
+    reset()
+  }, [])
 
   return (
     <LoginContainer>
@@ -16,28 +43,29 @@ function LoginScreen() {
         <Title>Boas vindas ao CatCare!</Title>
         <Subtitle>Entre na sua conta para continuar</Subtitle>
       </Header>
-      <Form method="post">
+      <Form onSubmit={handleSubmit(handleLogin)}>
         <InputWrapper>
           <TextField
+            size="small"
             type="text"
             label="E-mail"
-            size="small"
-            name="email"
             id="email"
             placeholder="exemplo@exemplo.com"
+            error={!!errors.email}
+            helperText={errors.email ? errors.email.message : ''}
+            {...register('email', { required: 'Informe o email' })}
           />
         </InputWrapper>
 
         <InputWrapper>
-          {/* <InputLabel>Senha</InputLabel>
-
-          <Input type={passwordInputType} name="password" id="password" placeholder="**********" />
-           */}
           <TextField
+            size="small"
             id="password"
             type={showPassword ? 'text' : 'password'}
             label="Senha"
-            size="small"
+            error={!!errors.password}
+            helperText={errors.password ? errors.password.message : ''}
+            {...register('password', { required: 'Informe a sua senha' })}
             slotProps={{
               input: {
                 endAdornment: (
@@ -56,82 +84,19 @@ function LoginScreen() {
           </InfoText>
         </InputWrapper>
 
-        <Button variant="filled">Entrar</Button>
+        <Button type="submit" variant="filled">
+          Entrar
+        </Button>
       </Form>
       <InfoText>ou</InfoText>
       <Button variant="outline" gap={10}>
         <GoogleIcon width={16} height={16} /> Entrar com o Google
       </Button>
       <InfoText>
-        Não possui uma conta? <a href="">Criar conta</a>
+        Não possui uma conta? <Link to={RouterPaths.REGISTER}>Criar conta</Link>
       </InfoText>
     </LoginContainer>
   )
 }
 
 export { LoginScreen }
-
-const LoginContainer = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  gap: 24px;
-`
-
-const Header = styled.header`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 8px;
-  text-align: left;
-`
-
-const Title = styled.h1`
-  ${({ theme }) => theme.fonts.h1}
-`
-
-const Subtitle = styled.h2`
-  ${({ theme }) => theme.fonts.titleMD}
-  color: ${({ theme }) => theme.colors.neutralL0};
-`
-
-const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-`
-
-const InputWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`
-
-const InputLabel = styled.label`
-  ${({ theme }) => theme.fonts.textMD}
-  width: 100%;
-`
-
-const Input = styled.input`
-  width: 100%;
-  height: 40px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.colors.neutralL3};
-
-  &:focus {
-    border: 2px solid ${({ theme }) => theme.colors.neutralL1};
-  }
-`
-
-const InfoText = styled.p`
-  ${({ theme }) => theme.fonts.textMD}
-  color: ${({ theme }) => theme.colors.neutralSecondary};
-`
