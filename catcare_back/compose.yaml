@@ -1,0 +1,22 @@
+services:
+  migrations:
+    image: node:20.12-alpine
+    env_file: [.env]
+    restart: on-failure
+    working_dir: /migrate
+    volumes: [./prisma/:/migrate/prisma]
+    command: npx prisma migrate deploy
+    depends_on: [db]
+  pgadmin4:
+    image: elestio/pgadmin:REL-8_12
+    restart: always
+    env_file: [.env]
+    ports: ["${PGADMIN_LISTEN_PORT}:${PGADMIN_LISTEN_PORT}"]
+    volumes: ["./servers.json:/pgadmin4/servers.json"]
+    depends_on: [db]
+  db:
+    image: postgres:16.2
+    restart: always
+    env_file: [.env]
+    ports: ["${PGPORT}:${PGPORT}"]
+    volumes: ["./pgdata:/var/lib/postgresql/data"]
