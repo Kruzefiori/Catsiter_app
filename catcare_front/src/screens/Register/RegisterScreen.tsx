@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { toast } from 'react-toastify'
+import axios from 'axios'
 
 function RegisterScreen() {
   const {
@@ -26,8 +27,19 @@ function RegisterScreen() {
   const [showMainPassword, setShowMainPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const handleRegister = useCallback((data: RegisterSchema) => {
-    console.log(data)
+  const handleRegister = useCallback(async (data: RegisterSchema) => {
+    const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/api/users/register`, {
+      name: data.name,
+      email: data.email,
+      password: data.password
+    })
+
+    if (response.status < 200 || response.status >= 300) {
+      console.log(response.data)
+      toast.error('Ocorreu um erro no nosso sistema. Tente novamente mais tarde')
+      return
+    }
+    console.log(response.data)
     toast.success('Usuário registrado! Entre com a sua nova conta.')
     navigate(RouterPaths.LOGIN)
     reset()
@@ -50,6 +62,18 @@ function RegisterScreen() {
             error={!!errors.email}
             helperText={errors.email ? errors.email.message : ''}
             {...register('email', { required: 'Informe o email' })}
+          />
+        </InputWrapper>
+        <InputWrapper>
+          <TextField
+            size="small"
+            type="text"
+            label="Nome"
+            id="name"
+            placeholder="exemplo@exemplo.com"
+            error={!!errors.name}
+            helperText={errors.name ? errors.name.message : ''}
+            {...register('name', { required: 'Informe o seu nome' })}
           />
         </InputWrapper>
         <InputWrapper>
@@ -97,7 +121,7 @@ function RegisterScreen() {
           />
         </InputWrapper>
         <Button type="submit" variant="filled">
-          Entrar
+          Cadastrar
         </Button>
       </Form>
       <InfoText>

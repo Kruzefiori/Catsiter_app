@@ -5,6 +5,7 @@ export type RegisterSchema = z.infer<typeof registerSchema>
 export const registerSchema = z
   .object({
     email: z.string().email({ message: 'Endereço de email inválido' }),
+    name: z.string(),
     password: z
       .string()
       .min(8, { message: 'A senha deve ter pelo menos 8 caracteres.' }) // Limite mínimo de caracteres

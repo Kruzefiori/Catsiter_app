@@ -45,12 +45,11 @@ function LoginScreen() {
     onSuccess: async (codeResponse) => {
       console.log(codeResponse)
 
-      const response = await axios.post('http://localhost:3000/auth/google', {
+      const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/auth/google`, {
         code: codeResponse.code
       })
 
       console.log(response)
-      // saveAuthToken(response.data)
       navigate(RouterPaths.HOME)
     },
     onError: (errorResponse) => {
