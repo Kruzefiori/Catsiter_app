@@ -12,3 +12,37 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// Core User Table
+model User {
+  id          Int              @id @default(autoincrement())
+  email       String           @unique
+  name        String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  // Relations
+  credentials UserCredentials?
+  providers   UserProvider[]
+}
+
+// Table for storing user/password credentials
+model UserCredentials {
+  userId       Int    @id @map("user_id")
+  passwordHash String
+  salt         String // Salt field for password hashing
+  user         User   @relation(fields: [userId], references: [id])
+}
+
+// Table for storing OAuth/social login provider details
+model UserProvider {
+  id             Int       @id @default(autoincrement())
+  provider       String // e.g., 'google', 'facebook'
+  providerUserId String // Unique identifier for user in the provider's system
+  accessToken    String? // Optional, if tokens are needed
+  refreshToken   String? // Optional, if refresh token is needed
+  expiresAt      DateTime? // Optional: for token expiry time
+  userId         Int
+  user           User      @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerUserId]) // Ensure unique combination of provider and providerUserId
+}
