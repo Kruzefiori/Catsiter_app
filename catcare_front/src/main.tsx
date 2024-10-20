@@ -4,6 +4,7 @@ import isPropValid from '@emotion/is-prop-valid'
 import { StyleSheetManager } from 'styled-components'
 import { ThemeProvider } from './theme/provider.tsx'
 import { GlobalStyle } from './global.styles.ts'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 function shouldForwardProp(propName: string, target: any) {
   if (typeof target === 'string') {
@@ -18,7 +19,9 @@ createRoot(document.getElementById('root') as HTMLElement).render(
   <StyleSheetManager shouldForwardProp={shouldForwardProp}>
     <ThemeProvider theme="light">
       <GlobalStyle />
-      <App />
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <App />
+      </GoogleOAuthProvider>
     </ThemeProvider>
   </StyleSheetManager>
 )
