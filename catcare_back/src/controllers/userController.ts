@@ -12,6 +12,10 @@ class UserController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  async login(req: Request, res: Response) {
+    const{email, password} = req.body;
+  }
 }
 
 export default new UserController();
