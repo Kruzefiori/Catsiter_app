@@ -21,3 +21,24 @@ docker compose up -d migrations
 ```
 
 > Remember: `sudo` may or may not be needed when running those commands.
+
+## Running the Backend Project
+
+To run the backend project, follow these steps:
+
+**Install Node.js:** \
+Ensure you have Node.js installed. You can download it from [Node.js official website](https://nodejs.org/).
+
+**Install Dependencies:** \
+Install project dependencies using npm. You need to be in the path `.../catcare_back`:
+
+```sh
+npm install
+```
+
+**Run the Server:** \
+Start the aplication. You need to be in the path `.../catcare_back/src`:
+
+```sh
+node app.js
+```
