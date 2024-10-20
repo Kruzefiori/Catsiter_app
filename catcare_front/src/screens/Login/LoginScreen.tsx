@@ -14,6 +14,9 @@ import { LoginSchema, loginSchema } from './validation'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { saveAuthToken } from '@/services/Authenticator'
+import axios from 'axios'
+import { useGoogleLogin } from '@react-oauth/google'
+import { toast } from 'react-toastify'
 
 function LoginScreen() {
   const {
@@ -36,6 +39,24 @@ function LoginScreen() {
     navigate(RouterPaths.HOME)
     reset()
   }, [])
+
+  const handleGoogleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+      console.log(codeResponse)
+
+      const response = await axios.post('http://localhost:3000/auth/google', {
+        code: codeResponse.code
+      })
+
+      console.log(response)
+      // saveAuthToken(response.data)
+      navigate(RouterPaths.HOME)
+    },
+    onError: (errorResponse) => {
+      toast.error(`${errorResponse.error}: ${errorResponse.error_description}`)
+    }
+  })
 
   return (
     <LoginContainer>
@@ -89,7 +110,7 @@ function LoginScreen() {
         </Button>
       </Form>
       <InfoText>ou</InfoText>
-      <Button variant="outline" gap={10}>
+      <Button variant="outline" gap={10} onClick={handleGoogleLogin}>
         <GoogleIcon width={16} height={16} /> Entrar com o Google
       </Button>
       <InfoText>
