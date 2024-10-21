@@ -28,21 +28,27 @@ function RegisterScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleRegister = useCallback(async (data: RegisterSchema) => {
-    const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/api/users/register`, {
-      name: data.name,
-      email: data.email,
-      password: data.password
-    })
+    const response = await axios.post(
+      `${import.meta.env.VITE_CATCARE_SERVER_URL}/auth/sign-up`,
+      {
+        name: data.name,
+        email: data.email,
+        password: data.password
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
 
     if (response.status < 200 || response.status >= 300) {
-      console.log(response.data)
       toast.error('Ocorreu um erro no nosso sistema. Tente novamente mais tarde')
       return
     }
-    console.log(response.data)
     toast.success('Usuário registrado! Entre com a sua nova conta.')
-    navigate(RouterPaths.LOGIN)
     reset()
+    navigate(RouterPaths.LOGIN)
   }, [])
 
   return (
@@ -125,7 +131,7 @@ function RegisterScreen() {
         </Button>
       </Form>
       <InfoText>
-        Já possui uma conta? <Link to={RouterPaths.LOGIN}>Criar conta</Link>
+        Já possui uma conta? <Link to={RouterPaths.LOGIN}>Fazer login</Link>
       </InfoText>
     </RegisterContainer>
   )

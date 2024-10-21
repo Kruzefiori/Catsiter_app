@@ -18,6 +18,15 @@ import axios from 'axios'
 import { useGoogleLogin } from '@react-oauth/google'
 import { toast } from 'react-toastify'
 
+type LoginBody = {
+  email: string
+  name: string
+}
+
+type LoginResponse = {
+  token: string
+}
+
 function LoginScreen() {
   const {
     register,
@@ -29,13 +38,22 @@ function LoginScreen() {
   })
 
   const navigate = useNavigate()
-
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleLogin = useCallback((data: LoginSchema) => {
-    console.log(data)
-    const authToken = 'token_hardcodado' // TODO: substituir pelo retorno da API
-    saveAuthToken(authToken)
+  const handleLogin = useCallback(async (data: LoginSchema) => {
+    const response = await axios.post<LoginResponse>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/auth/sign-in`, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (response.status < 200 || response.status >= 300) {
+      toast.error('Não foi possível fazer o login. (MELHORE A MENSAGEM!)') // TODO: Não esquece disso
+      return
+    }
+
+    saveAuthToken(response.data.token)
+    toast.success('Login feito com sucesso!')
     navigate(RouterPaths.HOME)
     reset()
   }, [])
