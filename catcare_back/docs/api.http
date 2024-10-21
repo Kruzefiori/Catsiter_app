@@ -1,18 +1,24 @@
-POST http://localhost:3000/api/users/register HTTP/1.1
+POST http://localhost:3000/api/auth/sign-up HTTP/1.1
 content-type: application/json
 
 {
     "email": "example@example.com",
-    "password": "pass",
-    "name": "example"
+    "password": "examplepass",
+    "name": "Example User"
 }
 
 ###
 
-POST http://localhost:3000/api/users/login HTTP/1.1
+POST http://localhost:3000/api/auth/sign-in HTTP/1.1
 content-type: application/json
 
 {
     "email": "example@example.com",
-    "password": "pass"
+    "password": "examplepass"
 }
+
+###
+
+GET http://localhost:3000/api/profile/me HTTP/1.1
+Authorization: Bearer <token from POST /api/auth/sign-in>
+Content-Type: application/json
