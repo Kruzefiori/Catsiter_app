@@ -13,7 +13,12 @@ function AppRouter() {
   useEffect(() => {
     if (!isLogged() && appLocation.pathname !== RouterPaths.LOGIN && appLocation.pathname !== RouterPaths.REGISTER)
       navigate(RouterPaths.LOGIN)
-    else if (isLogged() && (appLocation.pathname === RouterPaths.LOGIN || appLocation.pathname === '/'))
+    else if (
+      isLogged() &&
+      (appLocation.pathname === RouterPaths.LOGIN ||
+        appLocation.pathname === RouterPaths.REGISTER ||
+        appLocation.pathname === '/')
+    )
       navigate(RouterPaths.HOME)
   }, [appLocation])
 

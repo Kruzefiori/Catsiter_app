@@ -7,7 +7,6 @@ import cors from "cors";
 dotenv.config();
 
 const app = express();
-const port = 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -34,12 +33,12 @@ app.post("/auth/google", async (req, res) => {
 app.get("/", (req, res) => {
 	res.send(`
     <h1>Bem-vindo ao Sistema de Autenticação</h1>
-    <p><a href="/login">Clique aqui para fazer login com Google</a></p>
+    <p><a href="/loginGoogle">Clique aqui para fazer login com Google</a></p>
   `);
 });
 
 // Rota para redirecionar o usuário para o Google para autenticação
-app.get("/login", (req, res) => {
+app.get("/loginGoogle", (req, res) => {
 	const authorizeUrl = client.generateAuthUrl({
 		access_type: "offline",
 		scope: ["https://www.googleapis.com/auth/userinfo.profile"],
@@ -64,7 +63,3 @@ app.get("/auth/callback", async (req, res) => {
 	}
 });
 
-// Inicie o servidor na porta 3000
-app.listen(port, () => {
-	console.log(`Servidor rodando em http://localhost:${port}`);
-});
