@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { LoginSchema, loginSchema } from './validation'
 import { Link, useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { saveAuthToken } from '@/services/Authenticator'
+import { saveAuthToken, setUserData } from '@/services/Authenticator'
 import axios from 'axios'
 import { useGoogleLogin } from '@react-oauth/google'
 import { toast } from 'react-toastify'
@@ -25,6 +25,26 @@ type LoginBody = {
 
 type LoginResponse = {
   token: string
+}
+
+type GoogleResponse = {
+  tokens: {
+    refresh_token?: string | null
+    expiry_date?: number | null
+    access_token?: string | null
+    token_type?: string | null
+    id_token?: string | null
+    scope?: string
+  }
+  userProfile: {
+    email: string
+    family_name: string
+    given_name: string
+    id: string
+    name: string
+    picture: string
+    verified_email: boolean
+  }
 }
 
 function LoginScreen() {
@@ -63,11 +83,18 @@ function LoginScreen() {
     onSuccess: async (codeResponse) => {
       console.log(codeResponse)
 
-      const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/auth/google`, {
+      const response = await axios.post<GoogleResponse>('http://localhost:3000/api/auth/google', {
         code: codeResponse.code
       })
 
       console.log(response)
+      saveAuthToken(response.data.tokens.access_token)
+      setUserData({
+        name: response.data.userProfile.name,
+        email: response.data.userProfile.email,
+        picture: response.data.userProfile.picture
+      })
+      toast.success('Login realizado com sucesso')
       navigate(RouterPaths.HOME)
     },
     onError: (errorResponse) => {
