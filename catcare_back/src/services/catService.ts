@@ -5,7 +5,6 @@ class CatService {
 
     async addCat(body: any) {
         const { name, age, gender, owner, breed, weight } = body;
-        console.log(name, age, gender, owner, breed, weight);   
         try {
             await this.prisma.cat.create({
                 data: {
@@ -24,7 +23,6 @@ class CatService {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
                 throw new Error(err.message);
             }
-            console.log(err);
         }
         return;
     }
