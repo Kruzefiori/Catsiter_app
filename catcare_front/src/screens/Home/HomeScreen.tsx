@@ -54,10 +54,7 @@ function HomeScreen() {
       <h1>Bem vindo à tela inicial do Catcare!</h1>
       <p>email: {user.email}</p>
       <p>name: {user.name}</p>
-      <img
-        src="https://lh3.googleusercontent.com/a/ACg8ocLVlCzOssr2N18cpT7PBJCqYqA6IANfChmOSRVEVUSNyeZomjoFPA=s96-c"
-        alt=""
-      />
+      <img src={user.picture} alt="" />
 
       <Button variant="filled" onClick={handleLogout}>
         SAIR
