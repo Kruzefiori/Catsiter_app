@@ -12,7 +12,6 @@ class catController {
             breed: z.string(),
             weight: z.number(),
         });
-        const {name , age , gender , owner , breed , weight} = req.body;
         try {
             schema.parse(req.body);
             const cat = await catService.addCat(req.body);

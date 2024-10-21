@@ -18,7 +18,6 @@ class CatService {
                     weight
                 }
             });
-            console.log("cat added");
         } catch (err) {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
                 throw new Error(err.message);
