@@ -1,13 +1,13 @@
-import express  from "express";
-import userRoutes from './routes/userRoutes';
-import cors from 'cors';
+import express from "express";
+import userRoutes from "./routes/userRoutes";
+import cors from "cors";
+
 const app = express();
 
-//Liberar rota cors
 app.use(cors());
-
 app.use(express.json());
-app.use('/api/users', userRoutes);
+
+app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
