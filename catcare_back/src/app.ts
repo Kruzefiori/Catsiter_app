@@ -1,6 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/authRoutes";
 import profileRoutes from "./routes/profileRoutes";
+import catRoutes from "./routes/catRoutes";
 import cors from "cors";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/cat", catRoutes);
 
 // ------------- GOOGLE ----------- //
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;

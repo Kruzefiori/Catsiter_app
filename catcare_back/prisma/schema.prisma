@@ -22,6 +22,7 @@ model User {
   updatedAt       DateTime          @updatedAt
   UserCredentials UserCredentials[]
   UserProvider    UserProvider[]
+  cats            Cat[]
 
   @@map("users")
 }
@@ -47,4 +48,17 @@ model UserProvider {
 
   @@unique([provider, providerUserId])
   @@map("user_providers")
+}
+
+model Cat {
+  id      Int    @id @default(autoincrement())
+  name    String
+  age     Int
+  gender  String
+  ownerId Int
+  breed   String
+  weight  Float
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  @@map("cats")
 }
