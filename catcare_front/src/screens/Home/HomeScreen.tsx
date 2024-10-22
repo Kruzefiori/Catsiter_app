@@ -6,11 +6,12 @@ import { resetAuthToken, setUserData } from '@/services/Authenticator'
 import { AuthState } from '@/states/AuthState'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 function HomeScreen() {
   const navigate = useNavigate()
+  const appLocation = useLocation()
 
   const [isFetched, setIsFetched] = useState(false)
   const authState = useBehaviorSubject(AuthState)
@@ -36,12 +37,8 @@ function HomeScreen() {
       }
     }
 
-    if (!isFetched) run()
+    if (!isFetched && !appLocation.state.isGoogleUser) run()
   }, [authState])
-
-  useEffect(() => {
-    console.log(user)
-  }, [user])
 
   const handleLogout = () => {
     toast.info('Saindo da sua conta')
@@ -54,10 +51,7 @@ function HomeScreen() {
       <h1>Bem vindo à tela inicial do Catcare!</h1>
       <p>email: {user.email}</p>
       <p>name: {user.name}</p>
-      <img
-        src="https://lh3.googleusercontent.com/a/ACg8ocLVlCzOssr2N18cpT7PBJCqYqA6IANfChmOSRVEVUSNyeZomjoFPA=s96-c"
-        alt=""
-      />
+      <img src={user.picture} alt="" />
 
       <Button variant="filled" onClick={handleLogout}>
         SAIR
