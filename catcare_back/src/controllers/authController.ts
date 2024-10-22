@@ -14,25 +14,11 @@ type UserProfile = {
 	verified_email: boolean;
 };
 
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
+
 class UserController {
-	private oAuth2Client: OAuth2Client;
-	constructor() {
-		const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-		const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-		const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
-		if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) {
-			throw new Error(
-				"Google Client ID ou Secret ou URI de redirecionamento não estão definidos no .env"
-			);
-		}
-
-		this.oAuth2Client = new OAuth2Client(
-			CLIENT_ID,
-			CLIENT_SECRET,
-			"postmessage"
-		);
-	}
-
 	async signUp(req: Request, res: Response) {
 		const { email, name, password } = req.body;
 
@@ -92,10 +78,20 @@ class UserController {
 
 	async googleLogin(req: Request, res: Response) {
 		const { code } = req.body;
+		if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) {
+			throw new Error(
+				"Google Client ID ou Secret ou URI de redirecionamento não estão definidos no .env"
+			);
+		}
 
+		const oAuth2Client = new OAuth2Client(
+			CLIENT_ID,
+			CLIENT_SECRET,
+			"postmessage"
+		);
 		try {
-			const { tokens } = await this.oAuth2Client.getToken(code);
-			this.oAuth2Client.setCredentials(tokens);
+			const { tokens } = await oAuth2Client.getToken(code);
+			oAuth2Client.setCredentials(tokens);
 
 			const googleUserInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
 			const { data: userProfile } = await axios.get<UserProfile>(
@@ -108,13 +104,17 @@ class UserController {
 			);
 
 			const googleUser = {
+				id: userProfile.id,
 				email: userProfile.email,
 				name: userProfile.name,
+				picture: userProfile.picture,
 			};
 
 			const signUpSchema = z.object({
+				id: z.string(),
 				email: z.string().email(),
 				name: z.string(),
+				picture: z.string(),
 			});
 
 			try {
@@ -125,20 +125,10 @@ class UserController {
 				return;
 			}
 
-			try {
-				// await authService.saveGoogleUser(googleUser.email, googleUser.name);
-				res.status(200).json({
-					message: "google user saved",
-					detail: googleUser,
-				});
-			} catch (error) {
-				if (error instanceof Error)
-					res.status(400).json({ error: error.message });
-			}
-
-			// Retorna o token e os dados do perfil para o frontend
-			res.json({
-				tokens,
+			// await authService.saveGoogleUser(googleUser.email, googleUser.name);
+			res.status(200).json({
+				token: tokens.access_token,
+				user: googleUser,
 			});
 		} catch (error) {
 			console.error("An error occurred on google login:", error);

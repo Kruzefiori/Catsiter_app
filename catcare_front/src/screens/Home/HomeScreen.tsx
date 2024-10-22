@@ -6,11 +6,12 @@ import { resetAuthToken, setUserData } from '@/services/Authenticator'
 import { AuthState } from '@/states/AuthState'
 import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 function HomeScreen() {
   const navigate = useNavigate()
+  const appLocation = useLocation()
 
   const [isFetched, setIsFetched] = useState(false)
   const authState = useBehaviorSubject(AuthState)
@@ -36,12 +37,8 @@ function HomeScreen() {
       }
     }
 
-    if (!isFetched) run()
+    if (!isFetched && !appLocation.state.isGoogleUser) run()
   }, [authState])
-
-  useEffect(() => {
-    console.log(user)
-  }, [user])
 
   const handleLogout = () => {
     toast.info('Saindo da sua conta')
