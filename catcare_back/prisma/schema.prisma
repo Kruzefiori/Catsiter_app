@@ -24,9 +24,9 @@ model User {
   UserProvider    UserProvider[]
   cats            Cat[]
   type            userType          @default(OWNER)
-  catSitter       catSitter[]
+  catSitter       catSitter[]       
   rating          rating[]
-
+  overallRating   Float             @default(0)
   @@map("users")
 }
 
@@ -74,7 +74,7 @@ enum userType {
 
 model catSitter {
   id      Int    @id @default(autoincrement())
-  userId  Int
+  userId  Int    @unique
   user    User   @relation(fields: [userId], references: [id])
   jobDesc String
   price   Float

@@ -50,10 +50,11 @@ class ProfileController {
   }
 
   async getReviews(req: Request, res: Response) {
-    const userId = req.body.userId;
+
+    const userFind = parseInt(req.query.userId as string, 10) || 0;
 
     try {
-      const reviews = await profileService.getReviews(userId);
+      const reviews = await profileService.getReviews(userFind);
 
       res.status(200).json(reviews);
     } catch (error) {
