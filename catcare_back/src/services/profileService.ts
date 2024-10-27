@@ -77,6 +77,14 @@ class ProfileService {
 
     return averageRating._avg.rate;
   }
+
+  async getReviews(userId: number) {
+    const reviews = await this.prisma.rating.findMany({
+      where: { userId: userId },
+    });
+
+    return reviews;
+  }
 }
 
 export default new ProfileService();

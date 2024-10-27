@@ -49,6 +49,19 @@ class ProfileController {
     }
   }
 
+  async getReviews(req: Request, res: Response) {
+    const userId = req.body.userId;
+
+    try {
+      const reviews = await profileService.getReviews(userId);
+
+      res.status(200).json(reviews);
+    } catch (error) {
+      if (error instanceof Error)
+        res.status(400).json({ error: error.message });
+    }
+  }
+
 }
 
 export default new ProfileController();
