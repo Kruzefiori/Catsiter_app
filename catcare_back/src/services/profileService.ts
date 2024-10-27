@@ -6,12 +6,6 @@ interface onboardingProfile {
   price: number;
 }
 
-interface rating {
-  userId: number;
-  rate: number;
-  review: string;
-}
-
 class ProfileService {
   prisma = new PrismaClient();
 
@@ -33,6 +27,13 @@ class ProfileService {
 
   async onboardingProfile_catsitter(body: onboardingProfile) {
     const { userId, jobDesc, price } = body;
+    //Verifica se o usuário já realizou o onboarding
+    const userType = await this.prisma.user.findFirst({
+      where: { id: body.userId , type: "SITTER" },
+    });
+    if(userType){
+      throw new Error("User already onboarded");
+    }
     const onboarding = await this.prisma.catSitter.create({
       data: {
         userId,     
@@ -51,40 +52,6 @@ class ProfileService {
     return onboarding && userUpdate;
   }
 
-  async addReview(body: rating) {
-    const { userId, rate , review} = body;
-    const ratingData = await this.prisma.rating.create({
-      data: {
-        userId,
-        rate,
-        review ,
-      },
-    });
-
-    const averageRating = await this.prisma.rating.aggregate({
-      where: { userId: userId },
-      _avg: {
-        rate: true,
-      },
-    });
-
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        overallRating: averageRating._avg.rate ?? 0,
-      },
-    });
-
-    return averageRating._avg.rate;
-  }
-
-  async getReviews(userId: number) {
-    const reviews = await this.prisma.rating.findMany({
-      where: { userId: userId },
-    });
-
-    return reviews;
-  }
 }
 
 export default new ProfileService();

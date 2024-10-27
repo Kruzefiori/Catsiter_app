@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.get("/me", auth, profileController.getProfile);
 router.post("/onboarding", profileController.onboarding);
-router.post("/review", profileController.addReview);
-router.get("/review", auth, profileController.getReviews);
+
 
 export default router;
