@@ -25,6 +25,7 @@ model User {
   cats            Cat[]
   type            userType          @default(OWNER)
   catSitter       catSitter[]
+  rating          rating[]
 
   @@map("users")
 }
@@ -47,6 +48,7 @@ model UserProvider {
   expiresAt      DateTime?
   userId         Int
   user           User      @relation(fields: [userId], references: [id])
+  overallRating  Float     @default(0)
 
   @@unique([provider, providerUserId])
   @@map("user_providers")
@@ -71,11 +73,23 @@ enum userType {
 }
 
 model catSitter {
-  id     Int  @id @default(autoincrement())
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id])
   jobDesc String
-  rating  Float 
   price   Float
+
   @@map("cat_sitters")
+}
+
+model rating {
+  id        Int      @id @default(autoincrement())
+  rate      Float
+  userId    Int
+  catSitter User     @relation(fields: [userId], references: [id])
+  review    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ratings")
 }

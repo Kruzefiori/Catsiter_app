@@ -3,8 +3,13 @@ import { PrismaClient } from "@prisma/client";
 interface onboardingProfile {
   userId: number;
   jobDesc: string;
-  rating: number;
   price: number;
+}
+
+interface rating {
+  userId: number;
+  rate: number;
+  review: string;
 }
 
 class ProfileService {
@@ -27,12 +32,11 @@ class ProfileService {
   }
 
   async onboardingProfile_catsitter(body: onboardingProfile) {
-    const { userId, jobDesc, rating, price } = body;
+    const { userId, jobDesc, price } = body;
     const onboarding = await this.prisma.catSitter.create({
       data: {
         userId,     
         jobDesc, 
-        rating,   
         price,
       },
     });
@@ -45,6 +49,33 @@ class ProfileService {
     });
 
     return onboarding && userUpdate;
+  }
+
+  async addRating(body: rating) {
+    const { userId, rate , review} = body;
+    const ratingData = await this.prisma.rating.create({
+      data: {
+        userId,
+        rate,
+        review ,
+      },
+    });
+
+    const averageRating = await this.prisma.rating.aggregate({
+      where: { userId: userId },
+      _avg: {
+        rate: true,
+      },
+    });
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        overallRating: averageRating._avg.rate ?? 0,
+      },
+    });
+
+    return averageRating._avg.rate;
   }
 }
 
