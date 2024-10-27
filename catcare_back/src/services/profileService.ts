@@ -51,7 +51,7 @@ class ProfileService {
     return onboarding && userUpdate;
   }
 
-  async addRating(body: rating) {
+  async addReview(body: rating) {
     const { userId, rate , review} = body;
     const ratingData = await this.prisma.rating.create({
       data: {

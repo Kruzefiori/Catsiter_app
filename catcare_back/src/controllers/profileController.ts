@@ -33,7 +33,7 @@ class ProfileController {
     }
   }
 
-  async catsitterRating(req: Request, res: Response) {
+  async addReview(req: Request, res: Response) {
     const schema = z.object({
       userId: z.number(),
       rate: z.number(),
@@ -41,7 +41,7 @@ class ProfileController {
     });
     try {
       schema.parse(req.body);
-      const rating = await profileService.addRating(req.body);
+      const rating = await profileService.addReview(req.body);
       res.status(200).json(rating);
     } catch (error) {
       if (error instanceof Error)
