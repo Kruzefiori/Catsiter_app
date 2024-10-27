@@ -23,6 +23,8 @@ model User {
   UserCredentials UserCredentials[]
   UserProvider    UserProvider[]
   cats            Cat[]
+  type            userType          @default(OWNER)
+  catSitter       catSitter[]
 
   @@map("users")
 }
@@ -61,4 +63,19 @@ model Cat {
   owner   User   @relation(fields: [ownerId], references: [id])
 
   @@map("cats")
+}
+
+enum userType {
+  OWNER
+  SITTER
+}
+
+model catSitter {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+  jobDesc String
+  rating  Float 
+  price   Float
+  @@map("cat_sitters")
 }

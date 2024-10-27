@@ -1,9 +1,18 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 
+interface catAdd {
+    name: string;
+    age: number;
+    gender: string;
+    owner: number;
+    breed: string;
+    weight: number;
+}
+
 class CatService {
     prisma = new PrismaClient();
 
-    async addCat(body: any) {
+    async addCat(body: catAdd) {
         const { name, age, gender, owner, breed, weight } = body;
         try {
             await this.prisma.cat.create({
@@ -11,8 +20,8 @@ class CatService {
                     name,
                     age,
                     gender,
-                    owner :{
-                        connect: {id: owner}
+                    owner: {
+                        connect: { id: owner }
                     },
                     breed,
                     weight
