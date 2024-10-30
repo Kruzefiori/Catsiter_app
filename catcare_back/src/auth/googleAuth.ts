@@ -26,7 +26,6 @@ const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 app.post("/auth/google", async (req, res) => {
 	const { tokens } = await client.getToken(req.body.code); // exchange code for tokens
-	console.log(tokens);
 	res.json(tokens);
 });
 
@@ -62,4 +61,3 @@ app.get("/auth/callback", async (req, res) => {
 		res.status(500).send("Erro durante o processo de autenticação");
 	}
 });
-

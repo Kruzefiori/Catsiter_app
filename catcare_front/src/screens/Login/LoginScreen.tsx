@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoginSchema, loginSchema } from './validation'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, NavigateOptions, useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { saveAuthToken, setUserData } from '@/services/Authenticator'
 import axios from 'axios'
@@ -28,22 +28,12 @@ type LoginResponse = {
 }
 
 type GoogleResponse = {
-  tokens: {
-    refresh_token?: string | null
-    expiry_date?: number | null
-    access_token?: string | null
-    token_type?: string | null
-    id_token?: string | null
-    scope?: string
-  }
-  userProfile: {
+  token: string
+  user: {
     email: string
-    family_name: string
-    given_name: string
     id: string
     name: string
     picture: string
-    verified_email: boolean
   }
 }
 
@@ -74,28 +64,34 @@ function LoginScreen() {
 
     saveAuthToken(response.data.token)
     toast.success('Login feito com sucesso!')
-    navigate(RouterPaths.HOME)
+    navigate(RouterPaths.HOME, {
+      state: {
+        isGoogleUser: false
+      }
+    })
     reset()
   }, [])
 
   const handleGoogleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
-      console.log(codeResponse)
-
       const response = await axios.post<GoogleResponse>('http://localhost:3000/api/auth/google', {
         code: codeResponse.code
       })
 
-      console.log(response)
-      saveAuthToken(response.data.tokens.access_token)
+      saveAuthToken(response.data.token)
       setUserData({
-        name: response.data.userProfile.name,
-        email: response.data.userProfile.email,
-        picture: response.data.userProfile.picture
+        name: response.data.user.name,
+        email: response.data.user.email,
+        picture: response.data.user.picture
       })
+
       toast.success('Login realizado com sucesso')
-      navigate(RouterPaths.HOME)
+      navigate(RouterPaths.HOME, {
+        state: {
+          isGoogleUser: true
+        }
+      })
     },
     onError: (errorResponse) => {
       toast.error(`${errorResponse.error}: ${errorResponse.error_description}`)
@@ -135,7 +131,7 @@ function LoginScreen() {
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword((show) => !show)} edge="end">
+                    <IconButton tabIndex={-1} onClick={() => setShowPassword((show) => !show)} edge="end">
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>

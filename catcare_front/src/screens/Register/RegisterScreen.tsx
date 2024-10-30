@@ -95,7 +95,7 @@ function RegisterScreen() {
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowMainPassword((show) => !show)} edge="end">
+                    <IconButton tabIndex={-1} onClick={() => setShowMainPassword((show) => !show)} edge="end">
                       {showMainPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -117,7 +117,7 @@ function RegisterScreen() {
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowConfirmPassword((show) => !show)} edge="end">
+                    <IconButton tabIndex={-1} onClick={() => setShowConfirmPassword((show) => !show)} edge="end">
                       {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
