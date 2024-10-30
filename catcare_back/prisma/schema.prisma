@@ -57,14 +57,18 @@ model UserProvider {
 }
 
 model Cat {
-  id      Int    @id @default(autoincrement())
-  name    String
-  age     Int
-  gender  String
-  ownerId Int
-  breed   String
-  weight  Float
-  owner   User   @relation(fields: [ownerId], references: [id])
+  id               Int     @id @default(autoincrement())
+  name             String
+  age              Int
+  gender           String
+  ownerId          Int
+  breed            String
+  weight           Float
+  castrated        Boolean
+  conditions       String
+  protectionScreen Boolean
+  streetAccess     Boolean
+  owner            User    @relation(fields: [ownerId], references: [id])
 
   @@map("cats")
 }
@@ -87,12 +91,12 @@ model catSitter {
 model review {
   id             Int      @id @default(autoincrement())
   rate           Float
-  userReviewedId Int      // user who is reviewed
+  userReviewedId Int // user who is reviewed
   reviews        User     @relation("ReceivedReviews", fields: [userReviewedId], references: [id])
   review         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  userId         Int      // reviewer
+  userId         Int // reviewer
   reviewer       User     @relation("CreatedReviews", fields: [userId], references: [id])
 
   @@map("reviews")
