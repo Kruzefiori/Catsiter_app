@@ -8,6 +8,7 @@ import axios from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import userPlaceholderImg from '@assets/user-placeholder.jpg'
 
 function HomeScreen() {
   const navigate = useNavigate()
@@ -51,7 +52,7 @@ function HomeScreen() {
       <h1>Bem vindo à tela inicial do Catcare!</h1>
       <p>email: {user.email}</p>
       <p>name: {user.name}</p>
-      <img src={user.picture} alt="" />
+      <img src={user.picture ?? userPlaceholderImg} alt="" />
 
       <Button variant="filled" onClick={handleLogout}>
         SAIR
