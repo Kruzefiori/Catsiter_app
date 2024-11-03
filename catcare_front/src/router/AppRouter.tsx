@@ -5,6 +5,8 @@ import { useEffect } from 'react'
 import { RegisterScreen } from '@/screens/Register'
 import { HomeScreen } from '@/screens/Home'
 import { isLogged } from '@/services/Authenticator'
+import { OnboardingScreen } from '@/screens/Onboarding'
+import { PageNotFoundScreen } from '@/screens/PageNotFound/PageNotFound'
 
 function AppRouter() {
   const appLocation = useLocation()
@@ -28,6 +30,8 @@ function AppRouter() {
       <Route path={RouterPaths.LOGIN} element={<LoginScreen />} />
       <Route path={RouterPaths.REGISTER} element={<RegisterScreen />} />
       <Route path={RouterPaths.HOME} element={<HomeScreen />} />
+      <Route path={RouterPaths.ONBOARDING} element={<OnboardingScreen />} />
+      <Route path="*" element={<PageNotFoundScreen />} />
     </Routes>
   )
 }

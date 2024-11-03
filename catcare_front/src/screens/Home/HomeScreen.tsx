@@ -38,7 +38,7 @@ function HomeScreen() {
       }
     }
 
-    if (!isFetched && !appLocation.state.isGoogleUser) run()
+    if (!isFetched && !appLocation.state?.isGoogleUser) run()
   }, [authState])
 
   const handleLogout = () => {
