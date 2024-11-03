@@ -7,6 +7,7 @@ import { HomeScreen } from '@/screens/Home'
 import { isLogged } from '@/services/Authenticator'
 import { OnboardingScreen } from '@/screens/Onboarding'
 import { PageNotFoundScreen } from '@/screens/PageNotFound/PageNotFound'
+import { CatOnboardingScreen } from '@/screens/CatOnboarding/CatOnboarding'
 
 function AppRouter() {
   const appLocation = useLocation()
@@ -31,6 +32,7 @@ function AppRouter() {
       <Route path={RouterPaths.REGISTER} element={<RegisterScreen />} />
       <Route path={RouterPaths.HOME} element={<HomeScreen />} />
       <Route path={RouterPaths.ONBOARDING} element={<OnboardingScreen />} />
+      <Route path={RouterPaths.CAT_ONBOARDING} element={<CatOnboardingScreen />} />
       <Route path="*" element={<PageNotFoundScreen />} />
     </Routes>
   )

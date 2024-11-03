@@ -6,7 +6,7 @@ function OnboardingScreen(props: OnboardingScreenProps) {
     <OnboardingContainer>
       <Header>
         <Title>Vamos completar o seu cadastro!</Title>
-        <Subtitle>Preencha mais algumas informaçẽs sobre você para continuarmos</Subtitle>
+        <Subtitle>Preencha mais algumas informações sobre você para continuarmos</Subtitle>
       </Header>
       <Body>
         <InputWrapper>

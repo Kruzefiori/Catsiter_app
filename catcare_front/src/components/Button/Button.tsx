@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes, PropsWithChildren } from 'react'
 import styled from 'styled-components'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
-  variant: 'filled' | 'outline'
+  variant: 'filled' | 'outline' | 'light-filled'
   gap?: number
 }
 
@@ -19,13 +19,24 @@ function Button(props: ButtonProps) {
 export { Button }
 
 interface ButtonStyledProps {
-  variant: 'filled' | 'outline'
+  variant: 'filled' | 'outline' | 'light-filled'
   gap: number
 }
 
 const ButtonContainer = styled.button<ButtonStyledProps>`
-  border: 1px solid ${({ theme, variant }) => (variant === 'outline' ? theme.colors.secondary : 'transparent')};
-  background-color: ${({ theme, variant }) => (variant === 'filled' ? theme.colors.secondary : 'transparent')};
+  border: 1px solid
+    ${({ theme, variant }) =>
+      variant === 'filled'
+        ? 'transparent'
+        : variant === 'light-filled'
+        ? theme.colors.neutralL0
+        : theme.colors.secondary};
+  background-color: ${({ theme, variant }) =>
+    variant === 'filled'
+      ? theme.colors.secondary
+      : variant === 'light-filled'
+      ? theme.colors.neutralTertiary
+      : 'transparent'};
   color: ${({ theme, variant }) => (variant === 'filled' ? theme.colors.neutralL5 : theme.colors.secondary)};
   width: 100%;
   height: 40px;
@@ -38,6 +49,10 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
   &:hover {
     cursor: pointer;
     background-color: ${({ theme, variant }) =>
-      variant === 'filled' ? getStateColor(theme.colors.secondary, 'hover') : `${theme.colors.secondary}10`};
+      variant === 'filled'
+        ? getStateColor(theme.colors.secondary, 'hover')
+        : variant === 'light-filled'
+        ? getStateColor(theme.colors.neutralTertiary, 'hover')
+        : `${theme.colors.secondary}10`};
   }
 `
