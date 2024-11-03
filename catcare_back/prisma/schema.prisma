@@ -22,6 +22,13 @@ model User {
   updatedAt       DateTime          @updatedAt
   UserCredentials UserCredentials[]
   UserProvider    UserProvider[]
+  cats            Cat[]
+  type            userType          @default(OWNER)
+  catSitter       catSitter[]
+  overallRating   Float             @default(0)
+
+  createdReviews  review[] @relation("CreatedReviews")
+  receivedReviews review[] @relation("ReceivedReviews")
 
   @@map("users")
 }
@@ -47,4 +54,50 @@ model UserProvider {
 
   @@unique([provider, providerUserId])
   @@map("user_providers")
+}
+
+model Cat {
+  id               Int     @id @default(autoincrement())
+  name             String
+  age              Int
+  gender           String
+  ownerId          Int
+  breed            String
+  weight           Float
+  castrated        Boolean
+  conditions       String
+  protectionScreen Boolean
+  streetAccess     Boolean
+  owner            User    @relation(fields: [ownerId], references: [id])
+
+  @@map("cats")
+}
+
+enum userType {
+  OWNER
+  SITTER
+}
+
+model catSitter {
+  id      Int    @id @default(autoincrement())
+  userId  Int    @unique
+  user    User   @relation(fields: [userId], references: [id])
+  jobDesc String
+  price   Float
+
+  @@map("cat_sitters")
+}
+
+model review {
+  id             Int      @id @default(autoincrement())
+  rate           Float
+  userReviewedId Int // user who is reviewed
+  reviews        User     @relation("ReceivedReviews", fields: [userReviewedId], references: [id])
+  review         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userId         Int // reviewer
+  reviewer       User     @relation("CreatedReviews", fields: [userId], references: [id])
+
+  @@map("reviews")
 }
