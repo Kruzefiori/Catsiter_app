@@ -26,9 +26,9 @@ model User {
   type            userType          @default(OWNER)
   catSitter       catSitter[]
   overallRating   Float             @default(0)
-
-  createdReviews  review[] @relation("CreatedReviews")
-  receivedReviews review[] @relation("ReceivedReviews")
+  requests        booking[]
+  createdReviews  review[]          @relation("CreatedReviews")
+  receivedReviews review[]          @relation("ReceivedReviews")
 
   @@map("users")
 }
@@ -57,7 +57,7 @@ model UserProvider {
 }
 
 model Cat {
-  id               Int     @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   name             String
   age              Int
   gender           String
@@ -68,8 +68,7 @@ model Cat {
   conditions       String
   protectionScreen Boolean
   streetAccess     Boolean
-  owner            User    @relation(fields: [ownerId], references: [id])
-
+  owner            User      @relation(fields: [ownerId], references: [id])
   @@map("cats")
 }
 
@@ -79,11 +78,12 @@ enum userType {
 }
 
 model catSitter {
-  id      Int    @id @default(autoincrement())
-  userId  Int    @unique
-  user    User   @relation(fields: [userId], references: [id])
-  jobDesc String
-  price   Float
+  id               Int       @id @default(autoincrement())
+  userId           Int       @unique
+  user             User      @relation(fields: [userId], references: [id])
+  jobDesc          String
+  price            Float
+  requestsReceived booking[] @relation()
 
   @@map("cat_sitters")
 }
@@ -100,4 +100,41 @@ model review {
   reviewer       User     @relation("CreatedReviews", fields: [userId], references: [id])
 
   @@map("reviews")
+}
+
+model booking {
+  id           Int           @id @default(autoincrement())
+  requesterId  Int // user who is requesting
+  requester    User          @relation(fields: [requesterId], references: [id])
+  requestedId  Int // user who is requested
+  requested    catSitter     @relation(fields: [requestedId], references: [id])
+  startDate    String // date and time of the service starts
+  endDate      String // date and time of the service ends
+  totalVisits  Int
+  generalNotes String?
+  status       bookingStatus  @default(PENDING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  visits       visit[]
+}
+
+model visit {
+  id         Int         @id @default(autoincrement())
+  bookingId  Int
+  booking    booking     @relation(fields: [bookingId], references: [id])
+  visitDate  String
+  visitNotes String?
+  status     visitStatus @default(PENDING)
+}
+
+enum visitStatus {
+  PENDING
+  DONE
+  CANCELLED
+}
+
+enum bookingStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
