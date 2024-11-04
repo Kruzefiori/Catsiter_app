@@ -1,7 +1,8 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { OAuth2Client, UserRefreshClient } from "google-auth-library";
 import * as dotenv from "dotenv";
 import cors from "cors";
+import authService from "../services/authService";
 
 // Carregar variáveis de ambiente do arquivo .env
 dotenv.config();
@@ -25,8 +26,38 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 app.post("/auth/google", async (req, res) => {
-	const { tokens } = await client.getToken(req.body.code); // exchange code for tokens
-	res.json(tokens);
+	try {
+        // Troca o código de autorização por tokens de acesso
+        const { tokens } = await client.getToken(req.body.code);
+        client.setCredentials(tokens);
+
+		const ticket = await client.verifyIdToken({
+			idToken: tokens.id_token!,
+			audience: CLIENT_ID,
+		});
+		
+		const payload = ticket.getPayload();
+		
+		if (!payload) {
+			res.status(400).send("Erro ao obter informações do usuário");
+			return;
+		}
+
+		const { email, name, sub: googleId } = payload;
+		
+		if (!email || !name || !googleId) {
+			res.status(400).send("Informações do usuário incompletas");
+			return;
+		}
+
+		// Salvar ou atualizar o usuário no banco de dados
+		const token = await authService.googleSignIn(email, name, googleId);
+
+		res.json(token);
+	} catch (error) {
+		console.error("Erro ao autenticar:", error);
+		res.status(500).send("Erro ao salvar usuário no banco de dados");
+	}
 });
 
 app.get("/", (req, res) => {

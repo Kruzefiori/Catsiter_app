@@ -10,18 +10,52 @@ class authService {
     const passwordHash = await bcrypt.hash(password, salt);
 
     try {
-      await this.prisma.user.create({
-        data: {
-          email,
-          name,
-          UserCredentials: {
-            create: {
-              passwordHash,
-              salt,
+      const existingUser = await this.prisma.user.findFirst({
+        where: { email },
+        include: { UserCredentials: true },
+      });
+
+      if (existingUser) {
+        // Verificar se o usuário pode atualizar suas credenciais
+        if (!existingUser.googleId || existingUser.UserCredentials.length > 0) {
+          throw new Error("email already exists");
+        }
+
+        // Atualizar o usuário existente com as novas credenciais
+        await this.prisma.user.update({
+          where: { email },
+          data: {
+            name,
+            UserCredentials: {
+              upsert: {
+                where: { userId: existingUser.id },
+                create: {
+                  passwordHash,
+                  salt,
+                },
+                update: {
+                  passwordHash,
+                  salt,
+                },
+              },
             },
           },
-        },
-      });
+        });
+      } else {
+        // Criar um novo usuário
+        await this.prisma.user.create({
+          data: {
+            email,
+            name,
+            UserCredentials: {
+              create: {
+                passwordHash,
+                salt,
+              },
+            },
+          },
+        });
+      }
 
       return;
     } catch (err) {
@@ -44,6 +78,10 @@ class authService {
 
       if (!user) {
         throw new Error("user not found");
+      }
+
+      if (user.UserCredentials.length === 0) {
+        throw new Error("please sign in with your google account");
       }
 
       const { passwordHash } = user.UserCredentials[0];
@@ -69,5 +107,44 @@ class authService {
       throw error;
     }
   }
+
+  async googleSignIn(email: string, name: string, googleId: string) {
+    try {
+      let user = await this.prisma.user.findFirst({
+        where: { email },
+      });
+
+      if (!user) {
+        user = await this.prisma.user.create({
+          data: {
+            email,
+            name,
+            googleId,
+          },
+        });
+      } else {
+        // Atualizar o googleId se o usuário já existir
+        user = await this.prisma.user.update({
+          where: { email },
+          data: { googleId },
+        });
+      }
+
+      if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET not defined");
+      }
+
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+        issuer: "catcare",
+        expiresIn: "7d",
+        algorithm: "HS256",
+      });
+
+      return token;
+    } catch (error) {
+      throw new Error("Erro ao salvar usuário no banco de dados");
+    }
+  }
 }
+
 export default new authService();
