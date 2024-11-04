@@ -38,20 +38,13 @@ app.post("/auth/google", async (req, res) => {
 		
 		const payload = ticket.getPayload();
 		
-		if (!payload) {
+		if (!payload?.email || !payload?.name || !payload?.sub) {
 			res.status(400).send("Erro ao obter informações do usuário");
 			return;
 		}
 
-		const { email, name, sub: googleId } = payload;
-		
-		if (!email || !name || !googleId) {
-			res.status(400).send("Informações do usuário incompletas");
-			return;
-		}
-
 		// Salvar ou atualizar o usuário no banco de dados
-		const token = await authService.googleSignIn(email, name, googleId);
+		const token = await authService.googleSignIn(payload?.email, payload?.name, payload?.sub);
 
 		res.json(token);
 	} catch (error) {
