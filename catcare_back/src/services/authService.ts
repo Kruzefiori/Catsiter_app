@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
-import { Prisma, PrismaClient } from "@prisma/client";
+import prisma from "../client";
 import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 
 class authService {
-  prisma = new PrismaClient();
+  prisma = prisma;
 
   async signUp(email: string, name: string, password: string) {
     const salt = await bcrypt.genSalt(10);
@@ -65,7 +66,7 @@ class authService {
         }
       }
 
-      return;
+      throw err;
     }
   }
 

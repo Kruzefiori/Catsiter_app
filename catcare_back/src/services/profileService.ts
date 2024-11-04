@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../client";
 
 interface onboardingProfile {
   userId: number;
@@ -7,7 +7,7 @@ interface onboardingProfile {
 }
 
 class ProfileService {
-  prisma = new PrismaClient();
+  prisma = prisma;
 
   async getProfile(userId: number) {
     const user = await this.prisma.user.findFirst({
@@ -29,15 +29,15 @@ class ProfileService {
     const { userId, jobDesc, price } = body;
     //Verifica se o usuário já realizou o onboarding
     const userType = await this.prisma.user.findFirst({
-      where: { id: body.userId , type: "SITTER" },
+      where: { id: body.userId, type: "SITTER" },
     });
-    if(userType){
+    if (userType) {
       throw new Error("User already onboarded");
     }
     const onboarding = await this.prisma.catSitter.create({
       data: {
-        userId,     
-        jobDesc, 
+        userId,
+        jobDesc,
         price,
       },
     });
@@ -51,7 +51,6 @@ class ProfileService {
 
     return onboarding && userUpdate;
   }
-
 }
 
 export default new ProfileService();
