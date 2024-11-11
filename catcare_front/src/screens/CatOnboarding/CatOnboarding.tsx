@@ -1,6 +1,5 @@
 import { Button } from '@/components/Button/Button'
 import { List, ListItemButton, RadioGroup, Textarea } from '@mui/joy'
-import { useTheme } from 'styled-components'
 import { catSchema, CatSchema } from './validation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
