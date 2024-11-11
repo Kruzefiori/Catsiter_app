@@ -8,6 +8,7 @@ import { isLogged } from '@/services/Authenticator'
 import { OnboardingScreen } from '@/screens/Onboarding'
 import { PageNotFoundScreen } from '@/screens/PageNotFound/PageNotFound'
 import { CatOnboardingScreen } from '@/screens/CatOnboarding/CatOnboarding'
+import { DefaultLayout } from '@/layout/DefaultLayout'
 
 function AppRouter() {
   const appLocation = useLocation()
@@ -27,12 +28,13 @@ function AppRouter() {
 
   return (
     <Routes>
-      <Route path="/" element={null} />
       <Route path={RouterPaths.LOGIN} element={<LoginScreen />} />
       <Route path={RouterPaths.REGISTER} element={<RegisterScreen />} />
-      <Route path={RouterPaths.HOME} element={<HomeScreen />} />
-      <Route path={RouterPaths.ONBOARDING} element={<OnboardingScreen />} />
-      <Route path={RouterPaths.CAT_ONBOARDING} element={<CatOnboardingScreen />} />
+      <Route path="/" element={<DefaultLayout />}>
+        <Route path={RouterPaths.HOME} element={<HomeScreen />} />
+        <Route path={RouterPaths.ONBOARDING} element={<OnboardingScreen />} />
+        <Route path={RouterPaths.CAT_ONBOARDING} element={<CatOnboardingScreen />} />
+      </Route>
       <Route path="*" element={<PageNotFoundScreen />} />
     </Routes>
   )
