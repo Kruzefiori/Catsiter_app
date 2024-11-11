@@ -5,12 +5,13 @@ import styled from 'styled-components'
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
   variant: 'filled' | 'outline' | 'light-filled'
   gap?: number
+  size?: 'sm' | 'lg'
 }
 
 function Button(props: ButtonProps) {
-  const { children, variant, gap, ...rest } = props
+  const { children, variant, gap, size, ...rest } = props
   return (
-    <ButtonContainer variant={variant} gap={gap} {...rest}>
+    <ButtonContainer size={size} variant={variant} gap={gap} {...rest}>
       {children}
     </ButtonContainer>
   )
@@ -21,6 +22,7 @@ export { Button }
 interface ButtonStyledProps {
   variant: 'filled' | 'outline' | 'light-filled'
   gap: number
+  size?: 'sm' | 'lg'
 }
 
 const ButtonContainer = styled.button<ButtonStyledProps>`
@@ -39,12 +41,13 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
       : 'transparent'};
   color: ${({ theme, variant }) => (variant === 'filled' ? theme.colors.neutralL5 : theme.colors.secondary)};
   width: 100%;
-  height: 40px;
+  height: ${({ size }) => (size ? 20 : 40)}px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: ${({ gap }) => gap ?? 0}px;
+  ${({ theme, size }) => (size ? theme.fonts.infoSM : theme.fonts.infoLG)}
 
   &:hover {
     cursor: pointer;

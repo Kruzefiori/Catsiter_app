@@ -31,7 +31,7 @@ type GoogleResponse = {
   token: string
   user: {
     email: string
-    id: string
+    id: string | number
     name: string
     picture: string
   }
@@ -81,6 +81,7 @@ function LoginScreen() {
 
       saveAuthToken(response.data.token)
       setUserData({
+        id: response.data.user.id,
         name: response.data.user.name,
         email: response.data.user.email,
         picture: response.data.user.picture
