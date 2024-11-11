@@ -1,4 +1,4 @@
-import { Radio } from '@mui/joy'
+import { getStateColor } from '@/utils/getStateColor'
 import styled from 'styled-components'
 
 export const OnboardingContainer = styled.div`
@@ -32,53 +32,45 @@ export const Body = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-`
-
-export const Form = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-export const InputWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 `
 
-export const InputLabel = styled.label`
+export const TypeOptions = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+`
+
+export const Label = styled.label`
   ${({ theme }) => theme.fonts.textLG}
   color: ${({ theme }) => theme.colors.secondary};
 `
 
-export const RadioButton = styled(Radio).attrs(({ theme }) => ({
-  sx: {
-    textAlign: 'center',
-    borderRadius: 8
-  },
-  slotProps: {
-    label: ({ checked }) => ({
-      sx: { color: checked ? theme.colors.neutralL5 : theme.colors.secondary }
-    }),
-    action: ({ checked }) => ({
-      sx: () => ({
-        ...(checked
-          ? {
-              border: '1px solid',
-              borderColor: 'transparent',
-              borderRadius: 8,
-              bgcolor: theme.colors.secondary,
-              ':hover': { bgcolor: `${theme.colors.secondary}E9` }
-            }
-          : {
-              border: '1px solid',
-              borderColor: theme.colors.neutralL2,
-              borderRadius: 8,
-              ':hover': { bgcolor: `${theme.colors.neutralL4}E9` }
-            })
-      })
-    })
+export const WarningMessage = styled.p`
+  ${({ theme }) => theme.fonts.textSM}
+  color: ${({ theme }) => theme.colors.notification};
+`
+
+interface SelectButtonProps {
+  isActive: boolean
+}
+
+export const SelectButton = styled.span<SelectButtonProps>`
+  border: 1px solid ${({ theme, isActive }) => (isActive ? 'transparent' : theme.colors.secondary)};
+  background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.neutralL5)};
+  color: ${({ theme, isActive }) => (isActive ? theme.colors.neutralL5 : theme.colors.secondary)};
+  ${({ theme }) => theme.fonts.infoSM}
+  height: 40px;
+  width: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    cursor: pointer;
+    background-color: ${({ theme, isActive }) =>
+      isActive ? getStateColor(theme.colors.secondary, 'hover') : getStateColor(theme.colors.neutralL3, 'hover')};
   }
-}))``
+`

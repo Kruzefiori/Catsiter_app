@@ -143,24 +143,3 @@ export const InputLabel = styled.label`
   ${({ theme }) => theme.fonts.textLG}
   color: ${({ theme }) => theme.colors.secondary};
 `
-
-interface SelectButtonProps {
-  isActive: boolean
-}
-
-export const SelectButton = styled.span<SelectButtonProps>`
-  border: 1px solid transparent;
-  background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.neutralL5)};
-  color: ${({ theme }) => theme.colors.neutralL5};
-  width: 200px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    cursor: pointer;
-    background-color: ${({ theme }) => getStateColor(theme.colors.secondary, 'hover')};
-  }
-`

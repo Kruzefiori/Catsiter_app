@@ -5,34 +5,30 @@ import {
   Title,
   Subtitle,
   Body,
-  InputWrapper,
-  InputLabel,
-  RadioButton,
-  Form
+  TypeOptions,
+  Label,
+  WarningMessage
 } from './OnboardingScreen.styles'
-import { List, ListItemButton, RadioGroup } from '@mui/joy'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { profileSchema, ProfileSchema } from './validation'
-import { useForm } from 'react-hook-form'
-import { TextField } from '@mui/material'
-import { useCallback } from 'react'
-interface OnboardingScreenProps {}
 
-function OnboardingScreen(props: OnboardingScreenProps) {
-  const {} = props
+import { SelectButton } from './OnboardingScreen.styles'
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { RouterPaths } from '@/router/RouterPathsMapper'
 
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<ProfileSchema>({
-    resolver: zodResolver(profileSchema)
-  })
+function OnboardingScreen() {
+  const navigate = useNavigate()
+  const [userType, setUserType] = useState<'owner' | 'sitter'>(null)
+  const [showWarning, setShowWarning] = useState(false)
 
-  const handleSaveUserProfile = useCallback((data: ProfileSchema) => {
-    console.log(data)
-  }, [])
+  useEffect(() => {
+    if (userType !== null) setShowWarning(false)
+  }, [userType])
+
+  const handleNextStep = useCallback(() => {
+    if (userType === 'owner') navigate(RouterPaths.CAT_ONBOARDING)
+    else if (userType === 'sitter') navigate(RouterPaths.SITTER_ONBOARDING)
+    else setShowWarning(true)
+  }, [userType])
 
   return (
     <OnboardingContainer>
@@ -41,57 +37,20 @@ function OnboardingScreen(props: OnboardingScreenProps) {
         <Subtitle>Preencha mais algumas informações sobre você para continuarmos</Subtitle>
       </Header>
       <Body>
-        <Form onSubmit={handleSubmit(handleSaveUserProfile)}>
-          <InputWrapper>
-            <InputLabel>Seu nome</InputLabel>
-            <TextField
-              size="small"
-              placeholder="Como podemos te chamar?"
-              error={!!errors.name}
-              helperText={errors.name ? errors.name.message : ''}
-              {...register('name')}
-            />
-          </InputWrapper>
-          <InputWrapper>
-            <InputLabel>O que melhor descreve você?</InputLabel>
-            <RadioGroup name="userType" orientation="horizontal" {...register('jobDesc')}>
-              <List orientation="horizontal" sx={{ gap: 3 }}>
-                {[
-                  { id: 'owner', value: 'Tutor(a)' },
-                  { id: 'sitter', value: 'Catsitter' }
-                ].map((item) => (
-                  <ListItemButton
-                    variant="plain"
-                    key={item.id}
-                    sx={{
-                      boxShadow: 'none',
-                      border: 'none',
-                      borderRadius: 8,
-                      height: 20,
-                      alignSelf: 'center',
-                      justifyContent: 'center',
-                      flex: 1
-                    }}
-                  >
-                    <RadioButton
-                      overlay
-                      variant="plain"
-                      value={item.id}
-                      label={item.value}
-                      disableIcon
-                      color="neutral"
-                      {...register('jobDesc')}
-                    />
-                  </ListItemButton>
-                ))}
-              </List>
-            </RadioGroup>
-          </InputWrapper>
-          <Button type="submit" variant="filled">
-            Continuar
-          </Button>
-        </Form>
+        <Label>O que melhor descreve você?</Label>
+        <TypeOptions>
+          <SelectButton isActive={userType === 'owner'} onClick={() => setUserType('owner')}>
+            Tutor(a)
+          </SelectButton>
+          <SelectButton isActive={userType === 'sitter'} onClick={() => setUserType('sitter')}>
+            Catsitter
+          </SelectButton>
+        </TypeOptions>
+        {showWarning && <WarningMessage>Escolha uma das opções acima</WarningMessage>}
       </Body>
+      <Button variant="filled" onClick={handleNextStep}>
+        Continuar
+      </Button>
     </OnboardingContainer>
   )
 }

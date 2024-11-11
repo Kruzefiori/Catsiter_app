@@ -9,6 +9,7 @@ import { OnboardingScreen } from '@/screens/Onboarding'
 import { PageNotFoundScreen } from '@/screens/PageNotFound/PageNotFound'
 import { CatOnboardingScreen } from '@/screens/CatOnboarding/CatOnboarding'
 import { DefaultLayout } from '@/layout/DefaultLayout'
+import { SitterOnboardingScreen } from '@/screens/SitterOnboarding'
 
 function AppRouter() {
   const appLocation = useLocation()
@@ -34,6 +35,7 @@ function AppRouter() {
         <Route path={RouterPaths.HOME} element={<HomeScreen />} />
         <Route path={RouterPaths.ONBOARDING} element={<OnboardingScreen />} />
         <Route path={RouterPaths.CAT_ONBOARDING} element={<CatOnboardingScreen />} />
+        <Route path={RouterPaths.SITTER_ONBOARDING} element={<SitterOnboardingScreen />} />
       </Route>
       <Route path="*" element={<PageNotFoundScreen />} />
     </Routes>
