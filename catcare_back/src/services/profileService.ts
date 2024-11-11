@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../client";
 
 interface onboardingProfile {
 	userId: number;
@@ -7,7 +7,7 @@ interface onboardingProfile {
 }
 
 class ProfileService {
-	prisma = new PrismaClient();
+	prisma = prisma;
 
 	async getProfile(userId: number) {
 		const user = await this.prisma.user.findFirst({
