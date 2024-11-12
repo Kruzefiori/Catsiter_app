@@ -25,16 +25,7 @@ type LoginBody = {
 
 type LoginResponse = {
   token: string
-}
-
-type GoogleResponse = {
-  token: string
-  user: {
-    email: string
-    id: string | number
-    name: string
-    picture: string
-  }
+  expiresIn: string
 }
 
 function LoginScreen() {
@@ -62,30 +53,20 @@ function LoginScreen() {
       return
     }
 
-    saveAuthToken(response.data.token)
+    saveAuthToken(response.data.token, response.data.expiresIn, new Date().getTime().toString())
     toast.success('Login feito com sucesso!')
-    navigate(RouterPaths.HOME, {
-      state: {
-        isGoogleUser: false
-      }
-    })
+    navigate(RouterPaths.HOME)
     reset()
   }, [])
 
   const handleGoogleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
-      const response = await axios.post<GoogleResponse>('http://localhost:3000/api/auth/google', {
+      const response = await axios.post<LoginResponse>('http://localhost:3000/api/auth/google', {
         code: codeResponse.code
       })
 
-      saveAuthToken(response.data.token)
-      setUserData({
-        id: response.data.user.id,
-        name: response.data.user.name,
-        email: response.data.user.email,
-        picture: response.data.user.picture
-      })
+      saveAuthToken(response.data.token, response.data.expiresIn, new Date().getTime().toString())
 
       toast.success('Login realizado com sucesso')
       navigate(RouterPaths.HOME, {

@@ -16,16 +16,24 @@ function AppRouter() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!isLogged() && appLocation.pathname !== RouterPaths.LOGIN && appLocation.pathname !== RouterPaths.REGISTER)
-      navigate(RouterPaths.LOGIN)
-    else if (
-      isLogged() &&
-      (appLocation.pathname === RouterPaths.LOGIN ||
-        appLocation.pathname === RouterPaths.REGISTER ||
-        appLocation.pathname === '/')
-    )
-      navigate(RouterPaths.HOME)
-  }, [appLocation])
+    const run = () => {
+      if (!isLogged() && appLocation.pathname !== RouterPaths.LOGIN && appLocation.pathname !== RouterPaths.REGISTER)
+        navigate(RouterPaths.LOGIN)
+      else if (
+        isLogged() &&
+        (appLocation.pathname === RouterPaths.LOGIN ||
+          appLocation.pathname === RouterPaths.REGISTER ||
+          appLocation.pathname === '/')
+      )
+        navigate(RouterPaths.HOME)
+    }
+
+    run()
+
+    const intervalId = setInterval(run, 1000 * 60 * 5)
+
+    return () => clearInterval(intervalId)
+  }, [appLocation, navigate])
 
   return (
     <Routes>

@@ -13,7 +13,6 @@ import userPlaceholderImg from '@assets/user-placeholder.png'
 
 function DefaultLayout() {
   const navigate = useNavigate()
-  const appLocation = useLocation()
 
   const [isFetched, setIsFetched] = useState(false)
   const authState = useBehaviorSubject<AuthStateProps>(AuthState)
@@ -44,14 +43,14 @@ function DefaultLayout() {
       }
     }
 
-    if (!isFetched && !appLocation.state?.isGoogleUser) run()
+    if (!isFetched) run()
   }, [authState])
 
   return (
     <div>
       <Header>
         <AccountWrapper>
-          <img src={user?.picture ?? userPlaceholderImg} alt="" />
+          <img src={userPlaceholderImg} alt="" />
           <UserDescription>{user?.name}</UserDescription>
           <Button size="sm" variant="filled" onClick={handleLogout}>
             SAIR

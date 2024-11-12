@@ -2,17 +2,6 @@ import authService from "../services/authService";
 import { z, ZodError } from "zod";
 import { OAuth2Client } from "google-auth-library";
 import { Request, Response } from "express";
-import axios from "axios";
-
-type UserProfile = {
-	email: string;
-	family_name: string;
-	given_name: string;
-	id: string;
-	name: string;
-	picture: string;
-	verified_email: boolean;
-};
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -106,13 +95,13 @@ class UserController {
 			}
 
 			// Salvar ou atualizar o usuário no banco de dados
-			const userData = await authService.googleSignIn(
+			const token = await authService.googleSignIn(
 				payload?.email,
 				payload?.name,
 				payload?.sub
 			);
 
-			res.json(userData);
+			res.status(200).json({ token, expiresIn: "7d" });
 		} catch (error) {
 			console.error("Erro ao autenticar:", error);
 			res.status(500).send("Erro ao salvar usuário no banco de dados");

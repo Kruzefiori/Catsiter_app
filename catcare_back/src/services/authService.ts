@@ -141,12 +141,7 @@ class authService {
 				algorithm: "HS256",
 			});
 
-			return {
-				token,
-				id: user.id,
-				name: user.name,
-				email: user.email,
-			};
+			return token;
 		} catch (error) {
 			throw new Error("Erro ao salvar usuário no banco de dados");
 		}
