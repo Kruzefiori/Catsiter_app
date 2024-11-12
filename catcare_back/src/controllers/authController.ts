@@ -93,46 +93,29 @@ class UserController {
 			const { tokens } = await oAuth2Client.getToken(code);
 			oAuth2Client.setCredentials(tokens);
 
-			const googleUserInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
-			const { data: userProfile } = await axios.get<UserProfile>(
-				googleUserInfoUrl,
-				{
-					headers: {
-						Authorization: `Bearer ${tokens.access_token}`,
-					},
-				}
-			);
-
-			const googleUser = {
-				id: userProfile.id,
-				email: userProfile.email,
-				name: userProfile.name,
-				picture: userProfile.picture,
-			};
-
-			const signUpSchema = z.object({
-				id: z.string(),
-				email: z.string().email(),
-				name: z.string(),
-				picture: z.string(),
+			const ticket = await oAuth2Client.verifyIdToken({
+				idToken: tokens.id_token!,
+				audience: CLIENT_ID,
 			});
 
-			try {
-				signUpSchema.parse(googleUser);
-			} catch (error) {
-				if (error instanceof ZodError)
-					res.status(400).json({ error: error.errors });
+			const payload = ticket.getPayload();
+
+			if (!payload?.email || !payload?.name || !payload?.sub) {
+				res.status(400).send("Erro ao obter informações do usuário");
 				return;
 			}
 
-			// await authService.saveGoogleUser(googleUser.email, googleUser.name);
-			res.status(200).json({
-				token: tokens.access_token,
-				user: googleUser,
-			});
+			// Salvar ou atualizar o usuário no banco de dados
+			const userData = await authService.googleSignIn(
+				payload?.email,
+				payload?.name,
+				payload?.sub
+			);
+
+			res.json(userData);
 		} catch (error) {
-			console.error("An error occurred on google login:", error);
-			res.status(400).json(error);
+			console.error("Erro ao autenticar:", error);
+			res.status(500).send("Erro ao salvar usuário no banco de dados");
 		}
 	}
 }
