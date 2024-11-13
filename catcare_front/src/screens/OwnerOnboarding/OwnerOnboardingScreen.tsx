@@ -8,6 +8,7 @@ import { AuthState, AuthStateProps } from '@/states/AuthState'
 import { useCallback } from 'react'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { Button } from '@/components/Button/Button'
+import { TextField } from '@mui/material'
 
 type OwnerSchema = z.infer<typeof ownerSchema>
 
@@ -40,6 +41,16 @@ function OwnerOnboardingScreen() {
         <Subtitle>Precisamos de mais algumas informações para finalizarmos o seu cadastro</Subtitle>
       </Header>
       <Form onSubmit={handleSubmit(handleFinish)}>
+        <Label>Qual o seu endereço?</Label>
+        <TextField
+          size="small"
+          type="text"
+          id="address"
+          placeholder="rua, número, bairro, cidade, estado"
+          // error={!!errors.email}
+          // helperText={errors.email ? errors.email.message : ''}
+          // {...register('email', { required: 'Informe o email' })}
+        />
         <Button type="submit" variant="filled">
           Finalizar
         </Button>
