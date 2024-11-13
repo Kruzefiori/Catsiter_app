@@ -6,12 +6,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWith
   variant: 'filled' | 'outline' | 'light-filled'
   gap?: number
   size?: 'sm' | 'lg'
+  fullWidth?: boolean
 }
 
 function Button(props: ButtonProps) {
-  const { children, variant, gap, size, ...rest } = props
+  const { children, variant, gap, size, fullWidth, ...rest } = props
   return (
-    <ButtonContainer size={size} variant={variant} gap={gap} {...rest}>
+    <ButtonContainer size={size} variant={variant} gap={gap} fullWidth={fullWidth} {...rest}>
       {children}
     </ButtonContainer>
   )
@@ -23,6 +24,7 @@ interface ButtonStyledProps {
   variant: 'filled' | 'outline' | 'light-filled'
   gap: number
   size?: 'sm' | 'lg'
+  fullWidth?: boolean
 }
 
 const ButtonContainer = styled.button<ButtonStyledProps>`
@@ -40,9 +42,10 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
       ? theme.colors.neutralTertiary
       : 'transparent'};
   color: ${({ theme, variant }) => (variant === 'filled' ? theme.colors.neutralL5 : theme.colors.secondary)};
-  width: 100%;
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
   height: ${({ size }) => (size ? 20 : 40)}px;
   border-radius: 8px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;

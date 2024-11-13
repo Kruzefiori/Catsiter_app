@@ -15,6 +15,7 @@ function DefaultLayout() {
   const authState = useBehaviorSubject<AuthStateProps>(AuthState)
 
   const user = useMemo(() => authState?.user, [authState])
+  console.log(user)
 
   const handleLogout = () => {
     toast.info('Saindo da sua conta')
@@ -106,6 +107,7 @@ const AccountWrapper = styled.div`
 
 const UserDescription = styled.p`
   ${({ theme }) => theme.fonts.infoLG}
+  color: ${({ theme }) => theme.colors.secondary};
   flex: 1;
   text-align: start;
 `

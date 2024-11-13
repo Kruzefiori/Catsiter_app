@@ -8,7 +8,13 @@ export interface AuthStateProps {
 
 const INITIAL_STATE: AuthStateProps = {
   token: null,
-  user: null
+  user: {
+    email: null,
+    id: null,
+    name: null,
+    isCatsitter: null,
+    onBoardingDone: null
+  }
 }
 
 export const AuthState = new BehaviorSubject<AuthStateProps>(INITIAL_STATE)

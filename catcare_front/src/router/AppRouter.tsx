@@ -3,7 +3,7 @@ import { RouterPaths } from './RouterPathsMapper'
 import { LoginScreen } from '@/screens/Login'
 import { useEffect } from 'react'
 import { RegisterScreen } from '@/screens/Register'
-import { HomeScreen } from '@/screens/Home'
+import { HomeScreenPresenter } from '@/screens/Home'
 import { isLogged } from '@/services/Authenticator'
 import { OnboardingScreen } from '@/screens/Onboarding'
 import { PageNotFoundScreen } from '@/screens/PageNotFound/PageNotFound'
@@ -44,7 +44,7 @@ function AppRouter() {
       <Route path={RouterPaths.SITTER_ONBOARDING} element={<SitterOnboardingScreen />} />
       <Route path={RouterPaths.OWNER_ONBOARDING} element={<OwnerOnboardingScreen />} />
       <Route path="/" element={<DefaultLayout />}>
-        <Route path={RouterPaths.HOME} element={<HomeScreen />} />
+        <Route path={RouterPaths.HOME} element={<HomeScreenPresenter />} />
         <Route path={RouterPaths.CAT_REGISTER} element={<CatRegisterScreen />} />
       </Route>
       <Route path="*" element={<PageNotFoundScreen />} />
