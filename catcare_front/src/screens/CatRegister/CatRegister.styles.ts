@@ -2,7 +2,7 @@ import { getStateColor } from '@/utils/getStateColor'
 import { Checkbox, Radio } from '@mui/joy'
 import styled from 'styled-components'
 
-export const CatOnboardingContainer = styled.div`
+export const CatRegisterContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;

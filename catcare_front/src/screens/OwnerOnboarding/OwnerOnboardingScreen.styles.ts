@@ -1,7 +1,6 @@
-import { Radio, Textarea } from '@mui/joy'
 import styled from 'styled-components'
 
-export const SitterOnboardingContainer = styled.div`
+export const OwnerOnboardingContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -32,37 +31,10 @@ export const Form = styled.form`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-`
-
-export const InputWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
   gap: 8px;
-
-  input[type='number']::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-  }
-  input[type='number'] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-  }
 `
 
 export const Label = styled.label`
   ${({ theme }) => theme.fonts.textLG}
   color: ${({ theme }) => theme.colors.secondary};
-`
-
-export const WarningMessage = styled.p`
-  ${({ theme }) => theme.fonts.textSM}
-  color: ${({ theme }) => theme.colors.notification};
-`
-
-export const DescriptionField = styled(Textarea).attrs(({}) => ({}))``
-
-export const ErrorMessage = styled.p`
-  ${({ theme }) => theme.fonts.textSM}
-  color: ${({ theme }) => theme.colors.error};
 `

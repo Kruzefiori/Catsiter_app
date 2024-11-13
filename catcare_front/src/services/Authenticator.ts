@@ -1,6 +1,7 @@
 import { User } from '@/domain/models/user/User'
 import { AuthStateMutator } from '@/states/AuthState'
 import ms from 'ms'
+import { toast } from 'react-toastify'
 
 enum storageItems {
   token = 'cat_care-auth_token',
@@ -23,6 +24,7 @@ export const isLogged = () => {
   const expiresIn = ms(tokenExpiresIn)
   const tokenExpired = now - createdAt > expiresIn
   if (tokenExpired) {
+    toast.warning('Sua sessão expirou. Faça o login novamente')
     AuthStateMutator.setToken(null)
     return false
   }

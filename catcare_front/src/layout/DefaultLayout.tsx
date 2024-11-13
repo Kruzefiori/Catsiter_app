@@ -5,8 +5,6 @@ import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { resetAuthToken, setUserData } from '@/services/Authenticator'
 import { useEffect, useMemo, useState } from 'react'
-import axios from 'axios'
-import { User } from '@/domain/models/user/User'
 import { AuthState, AuthStateProps } from '@/states/AuthState'
 import { useBehaviorSubject } from '@/hooks/useBehaviorSubject'
 import userPlaceholderImg from '@assets/user-placeholder.png'
@@ -14,37 +12,15 @@ import userPlaceholderImg from '@assets/user-placeholder.png'
 function DefaultLayout() {
   const navigate = useNavigate()
 
-  const [isFetched, setIsFetched] = useState(false)
   const authState = useBehaviorSubject<AuthStateProps>(AuthState)
-  const user = useMemo(() => authState.user ?? null, [authState])
+
+  const user = useMemo(() => authState?.user, [authState])
 
   const handleLogout = () => {
     toast.info('Saindo da sua conta')
     resetAuthToken()
     navigate(RouterPaths.LOGIN)
   }
-
-  useEffect(() => {
-    const run = async () => {
-      const response = await axios.get<User>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/me`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authState.token}`
-        }
-      })
-
-      if (response.status < 200 || response.status >= 300) {
-        toast.error('Ocorreu um erro ao tentar baixar seus dados.')
-        setIsFetched(true)
-        return
-      } else {
-        setUserData(response.data)
-        setIsFetched(true)
-      }
-    }
-
-    if (!isFetched) run()
-  }, [authState])
 
   return (
     <div>
@@ -65,7 +41,7 @@ function DefaultLayout() {
               <Link to={RouterPaths.ONBOARDING}>Onboarding</Link>
             </li>
             <li>
-              <Link to={RouterPaths.CAT_ONBOARDING}>Cadastro de gatos</Link>
+              <Link to={RouterPaths.CAT_REGISTER}>Cadastro de gatos</Link>
             </li>
           </ul>
         </Nav>

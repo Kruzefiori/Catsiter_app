@@ -55,7 +55,7 @@ function LoginScreen() {
 
     saveAuthToken(response.data.token, response.data.expiresIn, new Date().getTime().toString())
     toast.success('Login feito com sucesso!')
-    navigate(RouterPaths.HOME)
+    navigate(RouterPaths.ONBOARDING)
     reset()
   }, [])
 
@@ -69,11 +69,7 @@ function LoginScreen() {
       saveAuthToken(response.data.token, response.data.expiresIn, new Date().getTime().toString())
 
       toast.success('Login realizado com sucesso')
-      navigate(RouterPaths.HOME, {
-        state: {
-          isGoogleUser: true
-        }
-      })
+      navigate(RouterPaths.ONBOARDING)
     },
     onError: (errorResponse) => {
       toast.error(`${errorResponse.error}: ${errorResponse.error_description}`)

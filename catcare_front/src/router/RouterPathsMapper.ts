@@ -3,8 +3,9 @@ enum RouterPaths {
   REGISTER = '/register',
   HOME = '/home',
   ONBOARDING = '/onboarding',
-  CAT_ONBOARDING = '/cat-onboarding',
-  SITTER_ONBOARDING = '/sitter-onboarding'
+  CAT_REGISTER = '/cat-onboarding',
+  SITTER_ONBOARDING = '/sitter-onboarding',
+  OWNER_ONBOARDING = '/owner-onboarding'
 }
 
 export { RouterPaths }

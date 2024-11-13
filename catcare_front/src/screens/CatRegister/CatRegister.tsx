@@ -3,12 +3,12 @@ import { List, ListItemButton, RadioGroup, Textarea } from '@mui/joy'
 import { catSchema, CatSchema } from './validation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { catCondition } from './catOnboardingUtils'
+import { catCondition } from './catRegisterUtils'
 import { TextField } from '@mui/material'
 
 import {
   Body,
-  CatOnboardingContainer,
+  CatRegisterContainer,
   CheckboxPill,
   Form,
   Header,
@@ -19,13 +19,9 @@ import {
   RadioButton,
   Subtitle,
   Title
-} from './CatOnboarding.styles'
+} from './CatRegister.styles'
 
-interface CatOnboardingScreenProps {}
-
-function CatOnboardingScreen(props: CatOnboardingScreenProps) {
-  const {} = props
-
+function CatRegisterScreen() {
   const {
     register,
     reset,
@@ -45,7 +41,7 @@ function CatOnboardingScreen(props: CatOnboardingScreenProps) {
   }
 
   return (
-    <CatOnboardingContainer>
+    <CatRegisterContainer>
       <Header>
         <Title>Hora de cadastrar os seus gatinhos</Title>
         <Subtitle>
@@ -171,8 +167,8 @@ function CatOnboardingScreen(props: CatOnboardingScreenProps) {
         </Form>
         <Button variant="filled">Continuar</Button>
       </Body>
-    </CatOnboardingContainer>
+    </CatRegisterContainer>
   )
 }
 
-export { CatOnboardingScreen }
+export { CatRegisterScreen }
