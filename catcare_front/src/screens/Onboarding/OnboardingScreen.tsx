@@ -14,46 +14,14 @@ import { SelectButton } from './OnboardingScreen.styles'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { useBehaviorSubject } from '@/hooks/useBehaviorSubject'
-import { AuthState, AuthStateProps } from '@/states/AuthState'
-import axios from 'axios'
-import { User } from '@/domain/models/user/User'
-import { toast } from 'react-toastify'
-import { setUserData } from '@/services/Authenticator'
 
 type UserType = 'owner' | 'sitter'
 
 function OnboardingScreen() {
   const navigate = useNavigate()
 
-  const [isFetched, setIsFetched] = useState(false)
-  const authState = useBehaviorSubject<AuthStateProps>(AuthState)
-
   const [userTypes, setUserTypes] = useState<UserType[]>([])
   const [showWarning, setShowWarning] = useState(false)
-
-  useLayoutEffect(() => {
-    const run = async () => {
-      const response = await axios.get<User>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/me`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authState.token}`
-        }
-      })
-
-      if (response.status < 200 || response.status >= 300) {
-        toast.error('Ocorreu um erro ao tentar baixar seus dados.')
-        setIsFetched(true)
-        return
-      } else {
-        setUserData(response.data)
-        setIsFetched(true)
-        if (response.data.onBoardingDone) navigate(RouterPaths.HOME)
-      }
-    }
-
-    if (!isFetched) run()
-  }, [])
 
   useEffect(() => {
     if (userTypes.length > 0) setShowWarning(false)
@@ -95,7 +63,7 @@ function OnboardingScreen() {
         </TypeOptions>
         {showWarning && <WarningMessage>Escolha ao menos uma das opções acima</WarningMessage>}
       </Body>
-      <Button variant="filled" onClick={handleNextStep}>
+      <Button variant="filled" fullWidth onClick={handleNextStep}>
         Continuar
       </Button>
     </OnboardingContainer>

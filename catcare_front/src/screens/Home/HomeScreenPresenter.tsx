@@ -1,10 +1,12 @@
-import { useBehaviorSubject } from '@/hooks/useBehaviorSubject'
-import { AuthState, AuthStateProps } from '@/states/AuthState'
 import { OwnerHomeScreen } from './OwnerHomeScreen'
 import { SitterHomeScreen } from './SitterHomeScreen'
+import { useContext } from 'react'
+import { AuthContext } from '@/context/AuthContext'
 
 function HomeScreenPresenter() {
-  const authState = useBehaviorSubject<AuthStateProps>(AuthState)
+  const { authState } = useContext(AuthContext)
+
+  console.log(authState.user)
 
   if (!authState.user.isCatsitter) return <SitterHomeScreen />
   else return <OwnerHomeScreen />

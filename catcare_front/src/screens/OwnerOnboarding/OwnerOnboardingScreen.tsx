@@ -3,12 +3,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useNavigate } from 'react-router-dom'
-import { useBehaviorSubject } from '@/hooks/useBehaviorSubject'
-import { AuthState, AuthStateProps } from '@/states/AuthState'
-import { useCallback } from 'react'
+import { useCallback, useContext } from 'react'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { Button } from '@/components/Button/Button'
 import { TextField } from '@mui/material'
+import { AuthContext } from '@/context/AuthContext'
 
 type OwnerSchema = z.infer<typeof ownerSchema>
 
@@ -26,8 +25,7 @@ function OwnerOnboardingScreen() {
     resolver: zodResolver(ownerSchema)
   })
   const navigate = useNavigate()
-
-  const authState = useBehaviorSubject<AuthStateProps>(AuthState)
+  const { authState } = useContext(AuthContext)
 
   const handleFinish = useCallback((data: OwnerSchema) => {
     console.log(data, authState.user.id)
@@ -51,7 +49,7 @@ function OwnerOnboardingScreen() {
           // helperText={errors.email ? errors.email.message : ''}
           // {...register('email', { required: 'Informe o email' })}
         />
-        <Button type="submit" variant="filled">
+        <Button type="submit" variant="filled" fullWidth>
           Finalizar
         </Button>
       </Form>

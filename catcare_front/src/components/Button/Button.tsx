@@ -10,7 +10,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWith
 }
 
 function Button(props: ButtonProps) {
-  const { children, variant, gap, size, fullWidth, ...rest } = props
+  const { children, variant, gap, size, fullWidth = false, ...rest } = props
   return (
     <ButtonContainer size={size} variant={variant} gap={gap} fullWidth={fullWidth} {...rest}>
       {children}

@@ -19,10 +19,10 @@ function SitterHomeScreen() {
               <Visit key={index}>Do dia tal até o dia tal</Visit>
             ))}
             <Footer>
-              <Button variant="filled" size="sm">
+              <Button variant="filled" size="sm" fullWidth>
                 Aceitar
               </Button>
-              <Button variant="filled" size="sm">
+              <Button variant="filled" size="sm" fullWidth>
                 Recusar
               </Button>
             </Footer>

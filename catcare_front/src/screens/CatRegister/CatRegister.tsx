@@ -161,11 +161,13 @@ function CatRegisterScreen() {
             <InputLabel>Informações adicionais</InputLabel>
             <Textarea minRows={2} maxRows={5} {...register('additionalInfo')} />
           </InputWrapper>
-          <Button type="submit" variant="light-filled">
+          <Button type="submit" variant="light-filled" fullWidth>
             Adicionar outro gatinho
           </Button>
         </Form>
-        <Button variant="filled">Continuar</Button>
+        <Button variant="filled" fullWidth>
+          Continuar
+        </Button>
       </Body>
     </CatRegisterContainer>
   )

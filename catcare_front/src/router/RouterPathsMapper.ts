@@ -1,4 +1,5 @@
 enum RouterPaths {
+  ROOT = '/root',
   LOGIN = '/login',
   REGISTER = '/register',
   HOME = '/home',

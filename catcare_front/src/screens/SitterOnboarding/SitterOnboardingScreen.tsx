@@ -7,20 +7,18 @@ import {
   SitterOnboardingContainer,
   Subtitle,
   Title,
-  WarningMessage,
   ErrorMessage,
   InputWrapper
 } from './SitterOnboardingScreen.styles'
-import { useCallback } from 'react'
+import { useCallback, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { useBehaviorSubject } from '@/hooks/useBehaviorSubject'
-import { AuthState, AuthStateProps } from '@/states/AuthState'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { InputAdornment, MenuItem, TextField } from '@mui/material'
 import { cities } from './sitterOnboardingUtils'
+import { AuthContext } from '@/context/AuthContext'
 
 type SitterSchema = z.infer<typeof sitterSchema>
 
@@ -38,8 +36,7 @@ function SitterOnboardingScreen() {
     resolver: zodResolver(sitterSchema)
   })
   const navigate = useNavigate()
-
-  const authState = useBehaviorSubject<AuthStateProps>(AuthState)
+  const { authState } = useContext(AuthContext)
 
   const handleFinish = useCallback((data: SitterSchema) => {
     console.log(data, authState.user.id)
@@ -109,7 +106,7 @@ function SitterOnboardingScreen() {
           <DescriptionField minRows={5} maxRows={10} {...register('jobDesc')} />
           {!!errors.jobDesc && <ErrorMessage>{errors.jobDesc.message}</ErrorMessage>}
         </InputWrapper>
-        <Button type="submit" variant="filled">
+        <Button type="submit" variant="filled" fullWidth>
           Finalizar
         </Button>
       </Form>

@@ -1,18 +1,17 @@
 import { Button } from '@/components/Button/Button'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import { resetAuthToken, setUserData } from '@/services/Authenticator'
-import { useEffect, useMemo, useState } from 'react'
-import { AuthState, AuthStateProps } from '@/states/AuthState'
-import { useBehaviorSubject } from '@/hooks/useBehaviorSubject'
+
+import { useContext, useMemo } from 'react'
+
 import userPlaceholderImg from '@assets/user-placeholder.png'
+import { AuthContext } from '@/context/AuthContext'
 
 function DefaultLayout() {
   const navigate = useNavigate()
-
-  const authState = useBehaviorSubject<AuthStateProps>(AuthState)
+  const { authState, resetAuthToken } = useContext(AuthContext)
 
   const user = useMemo(() => authState?.user, [authState])
   console.log(user)
@@ -29,7 +28,7 @@ function DefaultLayout() {
         <AccountWrapper>
           <img src={userPlaceholderImg} alt="" />
           <UserDescription>{user?.name}</UserDescription>
-          <Button size="sm" variant="filled" onClick={handleLogout}>
+          <Button size="sm" variant="filled" fullWidth onClick={handleLogout}>
             SAIR
           </Button>
         </AccountWrapper>
