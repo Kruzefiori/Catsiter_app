@@ -11,6 +11,7 @@ interface AuthState {
 interface AuthContextData {
   authState: AuthState
   isLogged(): boolean
+  getAuthTokenFromStorage(): string
   saveAuthToken(authToken: string, expiresIn: string, createdAt: string): void
   resetAuthToken(): void
   setUserData(user: User): void
@@ -65,10 +66,13 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       setToken(null)
       return false
     }
-
-    setToken(authToken)
     return true
   }
+
+  const getAuthTokenFromStorage = () => {
+    return localStorage.getItem(StorageItems.Token)
+  }
+
   const saveAuthToken = (authToken: string, expiresIn: string, createdAt: string): void => {
     localStorage.setItem(StorageItems.Token, authToken)
     localStorage.setItem(StorageItems.ExpiresIn, expiresIn)
@@ -87,7 +91,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       ...user
     }
 
-    setUser(user)
+    setUser(parsedUser)
   }
   const resetUserData = (): void => {
     setUser(null)
@@ -98,6 +102,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       value={{
         authState,
         isLogged,
+        getAuthTokenFromStorage,
         resetAuthToken,
         resetUserData,
         saveAuthToken,

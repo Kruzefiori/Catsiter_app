@@ -4,17 +4,47 @@ import { Link, Outlet, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 
-import { useContext, useMemo } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
 import userPlaceholderImg from '@assets/user-placeholder.png'
 import { AuthContext } from '@/context/AuthContext'
+import axios from 'axios'
+import { User } from '@/domain/models/user/User'
 
 function DefaultLayout() {
   const navigate = useNavigate()
-  const { authState, resetAuthToken } = useContext(AuthContext)
+  const { authState, setUserData, resetAuthToken, getAuthTokenFromStorage } = useContext(AuthContext)
+
+  const [isFetched, setIsFetched] = useState(false)
 
   const user = useMemo(() => authState?.user, [authState])
-  console.log(user)
+
+  useEffect(() => {
+    const run = async () => {
+      console.log('get user data')
+      const response = await axios.get<User>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/me`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthTokenFromStorage()}`
+        }
+      })
+
+      if (response.status < 200 || response.status >= 300) {
+        toast.error('Ocorreu um erro ao tentar baixar seus dados.')
+        return
+      } else {
+        setUserData(response.data)
+        if (response.data.onBoardingDone) navigate(RouterPaths.HOME)
+        else navigate(RouterPaths.ONBOARDING)
+      }
+    }
+
+    if (!isFetched) {
+      console.log('isFetched', isFetched)
+      run()
+      setIsFetched(true)
+    }
+  }, [])
 
   const handleLogout = () => {
     toast.info('Saindo da sua conta')
@@ -32,7 +62,7 @@ function DefaultLayout() {
             SAIR
           </Button>
         </AccountWrapper>
-        <Nav>
+        {/* <Nav>
           <ul>
             <li>
               <Link to={RouterPaths.HOME}>Página inicial</Link>
@@ -44,7 +74,7 @@ function DefaultLayout() {
               <Link to={RouterPaths.CAT_REGISTER}>Cadastro de gatos</Link>
             </li>
           </ul>
-        </Nav>
+        </Nav> */}
       </Header>
       <main>
         <Outlet />

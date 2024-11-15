@@ -7,9 +7,10 @@ import {
   SitterOnboardingContainer,
   Subtitle,
   Title,
-  InputWrapper
+  InputWrapper,
+  MenuProps
 } from './SitterOnboardingScreen.styles'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { useForm } from 'react-hook-form'
@@ -38,17 +39,6 @@ const sitterSchema = z.object({
   price: z.number().min(0, 'Informe o preço do serviço'),
   jobDesc: z.string().min(1, 'Informe a descrição do trabalho')
 })
-
-const ITEM_HEIGHT = 48
-const ITEM_PADDING_TOP = 8
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-}
 
 function SitterOnboardingScreen() {
   const {
@@ -89,23 +79,29 @@ function SitterOnboardingScreen() {
         userId: authState.user.id
       }
 
-      const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authState.token}`
-        }
-      })
+      // const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: `Bearer ${authState.token}`
+      //   }
+      // })
 
-      if (response.status < 200 || response.status >= 300) {
-        toast.error('Não foi possível finalizar o cadastro.')
-        return
-      }
+      // if (response.status < 200 || response.status >= 300) {
+      //   toast.error('Não foi possível finalizar o cadastro.')
+      //   return
+      // }
 
       toast.success('Cadastro finalizado!')
       navigate(RouterPaths.HOME)
     },
     [selectedCities, authState.user.id]
   )
+
+  useEffect(() => {
+    if (authState.user?.onBoardingDone) {
+      navigate(RouterPaths.HOME)
+    }
+  }, [authState.user?.onBoardingDone])
 
   return (
     <SitterOnboardingContainer>

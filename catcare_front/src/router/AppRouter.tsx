@@ -44,9 +44,9 @@ function AppRouter() {
       <Route path={RouterPaths.ROOT} element={<RootScreen />} />
       <Route path={RouterPaths.LOGIN} element={<LoginScreen />} />
       <Route path={RouterPaths.REGISTER} element={<RegisterScreen />} />
-      <Route path={RouterPaths.SITTER_ONBOARDING} element={<SitterOnboardingScreen />} />
-      <Route path={RouterPaths.OWNER_ONBOARDING} element={<OwnerOnboardingScreen />} />
       <Route path="/" element={<DefaultLayout />}>
+        <Route path={RouterPaths.SITTER_ONBOARDING} element={<SitterOnboardingScreen />} />
+        <Route path={RouterPaths.OWNER_ONBOARDING} element={<OwnerOnboardingScreen />} />
         <Route path={RouterPaths.ONBOARDING} element={<OnboardingScreen />} />
         <Route path={RouterPaths.HOME} element={<HomeScreenPresenter />} />
         <Route path={RouterPaths.CAT_REGISTER} element={<CatRegisterScreen />} />
