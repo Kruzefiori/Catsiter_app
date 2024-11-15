@@ -8,7 +8,7 @@ function HomeScreenPresenter() {
 
   console.log(authState.user)
 
-  if (!authState.user.isCatsitter) return <SitterHomeScreen />
+  if (authState.user.isCatsitter) return <SitterHomeScreen />
   else return <OwnerHomeScreen />
 }
 

@@ -39,7 +39,7 @@ function RootScreen() {
       run()
       setIsFetched(true)
     }
-  }, [isFetched])
+  }, [])
   return <></>
 }
 

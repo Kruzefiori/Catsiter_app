@@ -23,10 +23,11 @@ function AppRouter() {
       if (!isLogged() && appLocation.pathname !== RouterPaths.LOGIN && appLocation.pathname !== RouterPaths.REGISTER)
         navigate(RouterPaths.LOGIN)
       else if (
-        isLogged() &&
-        (appLocation.pathname === RouterPaths.LOGIN ||
-          appLocation.pathname === RouterPaths.REGISTER ||
-          appLocation.pathname === RouterPaths.ROOT)
+        (isLogged() &&
+          (appLocation.pathname === RouterPaths.LOGIN ||
+            appLocation.pathname === RouterPaths.REGISTER ||
+            appLocation.pathname === RouterPaths.ROOT)) ||
+        appLocation.pathname === '/'
       )
         navigate(RouterPaths.ROOT)
     }
