@@ -1,4 +1,4 @@
-import { Radio, Textarea } from '@mui/joy'
+import { TextField } from '@mui/material'
 import styled from 'styled-components'
 
 export const SitterOnboardingContainer = styled.div`
@@ -60,7 +60,7 @@ export const WarningMessage = styled.p`
   color: ${({ theme }) => theme.colors.notification};
 `
 
-export const DescriptionField = styled(Textarea).attrs(({}) => ({}))``
+export const DescriptionField = styled(TextField).attrs(({}) => ({}))``
 
 export const ErrorMessage = styled.p`
   ${({ theme }) => theme.fonts.textSM}

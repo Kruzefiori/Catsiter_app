@@ -8,11 +8,13 @@ import { RouterPaths } from '@/router/RouterPathsMapper'
 import { Button } from '@/components/Button/Button'
 import { TextField } from '@mui/material'
 import { AuthContext } from '@/context/AuthContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 type OwnerSchema = z.infer<typeof ownerSchema>
 
 const ownerSchema = z.object({
-  jobDesc: z.string().min(1, 'Preencha esse campo')
+  address: z.string().min(1, 'Preencha esse campo')
 })
 
 function OwnerOnboardingScreen() {
@@ -27,9 +29,26 @@ function OwnerOnboardingScreen() {
   const navigate = useNavigate()
   const { authState } = useContext(AuthContext)
 
-  const handleFinish = useCallback((data: OwnerSchema) => {
-    console.log(data, authState.user.id)
+  const handleFinish = useCallback(async (data: OwnerSchema) => {
+    // http://localhost:3000/api/profile/onboarding
+    const body = {
+      ...data,
+      userId: authState.user.id
+    }
 
+    const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authState.token}`
+      }
+    })
+
+    if (response.status < 200 || response.status >= 300) {
+      toast.error('Não foi possível finalizar o cadastro.')
+      return
+    }
+
+    toast.success('Cadastro finalizado!')
     navigate(RouterPaths.HOME)
   }, [])
   return (
@@ -45,9 +64,9 @@ function OwnerOnboardingScreen() {
           type="text"
           id="address"
           placeholder="rua, número, bairro, cidade, estado"
-          // error={!!errors.email}
-          // helperText={errors.email ? errors.email.message : ''}
-          // {...register('email', { required: 'Informe o email' })}
+          error={!!errors.address}
+          helperText={errors.address?.message}
+          {...register('address')}
         />
         <Button type="submit" variant="filled" fullWidth>
           Finalizar
