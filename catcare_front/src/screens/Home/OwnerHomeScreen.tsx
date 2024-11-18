@@ -4,20 +4,14 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '@/context'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-
-interface CatSitter {
-  id: number
-  name: string
-  jobDesc: string
-  price: number
-}
+import { CatSitter } from '@/domain/models/CatSitter'
+import { Booking } from '@/domain/models/Booking'
 
 function OwnerHomeScreen() {
-  const cardInfo = [1, 2, 3, 4, 5]
-
-  const { getAuthTokenFromStorage } = useContext(AuthContext)
+  const { getAuthTokenFromStorage, authState } = useContext(AuthContext)
 
   const [catSitters, setCatSitters] = useState<CatSitter[]>([])
+  const [bookings, setBookings] = useState<Booking[]>([])
 
   useEffect(() => {
     const fetchCatSitters = async () => {
@@ -42,11 +36,70 @@ function OwnerHomeScreen() {
     fetchCatSitters()
   }, [])
 
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const pendingBookingsResponse = await axios.get<Booking[]>(
+        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
+          authState.user.id
+        }&status=PENDING`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthTokenFromStorage()}`
+          }
+        }
+      )
+
+      if (pendingBookingsResponse.status < 200 || pendingBookingsResponse.status >= 300) {
+        toast.error('Não foi possível buscar os bookings.')
+        return
+      }
+
+      const acceptedBookingsResponse = await axios.get<Booking[]>(
+        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
+          authState.user.id
+        }&status=ACCEPTED`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthTokenFromStorage()}`
+          }
+        }
+      )
+
+      if (acceptedBookingsResponse.status < 200 || acceptedBookingsResponse.status >= 300) {
+        toast.error('Não foi possível buscar os bookings.')
+        return
+      }
+
+      const rejectedBookingsResponse = await axios.get<Booking[]>(
+        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
+          authState.user.id
+        }&status=REJECTED`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthTokenFromStorage()}`
+          }
+        }
+      )
+
+      if (rejectedBookingsResponse.status < 200 || rejectedBookingsResponse.status >= 300) {
+        toast.error('Não foi possível buscar os bookings.')
+        return
+      }
+
+      setBookings([...pendingBookingsResponse.data, ...acceptedBookingsResponse.data, ...rejectedBookingsResponse.data])
+    }
+
+    fetchBookings()
+  }, [])
+
   return (
     <OwnerHomeContainer>
       <CardsList>
-        {cardInfo.reverse().map((info) => (
-          <SitterCard key={info}>
+        {catSitters.map((catsitter, catsitterIndex) => (
+          <SitterCard key={catsitter.id}>
             <Header>
               <InfoWrapper>
                 <Name>Nome Catsitter</Name>
@@ -58,7 +111,7 @@ function OwnerHomeScreen() {
             <Footer>
               <Price>Preço</Price>
               <Rating>
-                {[...Array(info)].map((_, index) => (
+                {[...Array(catsitterIndex)].map((_, index) => (
                   <Star width={20} height={20} key={index} />
                 ))}
               </Rating>
