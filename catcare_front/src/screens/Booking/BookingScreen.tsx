@@ -1,6 +1,7 @@
 import { AuthContext } from '@/context/AuthContext'
+import { Visits, VisitStatus } from '@/domain/models/Visits'
 import axios from 'axios'
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { toast } from 'react-toastify'
 import styled from 'styled-components'
 
@@ -12,19 +13,16 @@ function BookingScreen(props: BookingScreenProps) {
   const { catsitterId } = props
 
   const { authState } = useContext(AuthContext)
+  const [visits, setVisits] = useState<Visits[]>([])
 
-  const handleCreateBooking = useCallback(async () => {
-    const visits = [
-      {
-        visitDate: '2023-11-17T00:00:00.000Z',
-        notes: 'Hoje você só dá banho nele'
-      }
-    ]
+  const handleAddVisit = useCallback(
+    (visitDate: string, notes: string) => {
+      setVisits([...visits, { visitDate, notes, status: VisitStatus.PENDING }])
+    },
+    [visits]
+  )
 
-    const startDate = '2023-11-16T00:00:00.000Z'
-    const endDate = '2023-11-18T00:00:00.000Z'
-    const generalNotes = 'Cuida bem do bechano'
-
+  const handleCreateBooking = useCallback(async (startDate: string, endDate: string, generalNotes: string) => {
     const body = {
       visits: visits,
       requesterId: authState.user.id,
