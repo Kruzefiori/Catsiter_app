@@ -12,6 +12,7 @@ import { SitterOnboardingScreen } from '@/screens/Onboarding/SitterOnboarding'
 import { OwnerOnboardingScreen } from '@/screens/Onboarding/OwnerOnboarding'
 import { RootScreen } from '@/screens/Root'
 import { AuthContext } from '@/context/AuthContext'
+import { BookingScreen } from '@/screens/Booking'
 
 function AppRouter() {
   const appLocation = useLocation()
@@ -50,6 +51,7 @@ function AppRouter() {
         <Route path={RouterPaths.ONBOARDING} element={<OnboardingScreen />} />
         <Route path={RouterPaths.HOME} element={<HomeScreenPresenter />} />
         <Route path={RouterPaths.CAT_REGISTER} element={<CatRegisterScreen />} />
+        <Route path={RouterPaths.CREATE_BOOKING} element={<BookingScreen />} />
       </Route>
       <Route path="*" element={<PageNotFoundScreen />} />
     </Routes>

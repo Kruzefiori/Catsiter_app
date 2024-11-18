@@ -1,7 +1,8 @@
 export enum BookingStatus {
   PENDING = 'PENDING',
   ACCEPTED = 'ACCEPTED',
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
+  REQUESTED_UPDATE = 'REQUESTED_UPDATE'
 }
 export interface Booking {
   status: BookingStatus

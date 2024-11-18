@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes, PropsWithChildren } from 'react'
 import styled from 'styled-components'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
-  variant: 'filled' | 'outline' | 'light-filled'
+  variant: 'filled' | 'outline' | 'light-filled' | 'ghost'
   gap?: number
   size?: 'sm' | 'lg'
   fullWidth?: boolean
@@ -21,7 +21,7 @@ function Button(props: ButtonProps) {
 export { Button }
 
 interface ButtonStyledProps {
-  variant: 'filled' | 'outline' | 'light-filled'
+  variant: 'filled' | 'outline' | 'light-filled' | 'ghost'
   gap: number
   size?: 'sm' | 'lg'
   fullWidth?: boolean
@@ -30,7 +30,7 @@ interface ButtonStyledProps {
 const ButtonContainer = styled.button<ButtonStyledProps>`
   border: 1px solid
     ${({ theme, variant }) =>
-      variant === 'filled'
+      variant === 'filled' || variant === 'ghost'
         ? 'transparent'
         : variant === 'light-filled'
         ? theme.colors.neutralL0

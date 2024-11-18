@@ -6,35 +6,39 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { CatSitter } from '@/domain/models/CatSitter'
 import { Booking } from '@/domain/models/Booking'
+import { Button } from '@/components/Button/Button'
+import { useNavigate } from 'react-router-dom'
+import { RouterPaths } from '@/router/RouterPathsMapper'
 
 function OwnerHomeScreen() {
+  const navigate = useNavigate()
   const { getAuthTokenFromStorage, authState } = useContext(AuthContext)
 
   const [catSitters, setCatSitters] = useState<CatSitter[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
 
-  useEffect(() => {
-    const fetchCatSitters = async () => {
-      const response = await axios.get<CatSitter[]>(
-        `${import.meta.env.VITE_CATCARE_SERVER_URL}/catsitter/get-catsitters`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAuthTokenFromStorage()}`
-          }
-        }
-      )
+  // useEffect(() => {
+  //   const fetchCatSitters = async () => {
+  //     const response = await axios.get<CatSitter[]>(
+  //       `${import.meta.env.VITE_CATCARE_SERVER_URL}/catsitter/get-catsitters`,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${getAuthTokenFromStorage()}`
+  //         }
+  //       }
+  //     )
 
-      if (response.status < 200 || response.status >= 300) {
-        toast.error('Não foi possível buscar os catsitters.')
-        return
-      }
+  //     if (response.status < 200 || response.status >= 300) {
+  //       toast.error('Não foi possível buscar os catsitters.')
+  //       return
+  //     }
 
-      setCatSitters(response.data)
-    }
+  //     setCatSitters(response.data)
+  //   }
 
-    fetchCatSitters()
-  }, [])
+  //   fetchCatSitters()
+  // }, [])
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -97,6 +101,9 @@ function OwnerHomeScreen() {
 
   return (
     <OwnerHomeContainer>
+      <Button variant="filled" fullWidth onClick={() => navigate(RouterPaths.CREATE_BOOKING)}>
+        Criar um booking
+      </Button>
       <CardsList>
         {catSitters.map((catsitter, catsitterIndex) => (
           <SitterCard key={catsitter.id}>

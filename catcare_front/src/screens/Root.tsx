@@ -7,11 +7,8 @@ function RootScreen() {
   const navigate = useNavigate()
   const { authState } = useContext(AuthContext)
 
-  // if (user.onBoardingDone) navigate(RouterPaths.HOME)
-  //   else navigate(RouterPaths.ONBOARDING)
-
   useEffect(() => {
-    if (authState.user?.onBoardingDone) {
+    if (!authState.user?.onBoardingDone) {
       navigate(RouterPaths.HOME)
     } else {
       navigate(RouterPaths.ONBOARDING)
