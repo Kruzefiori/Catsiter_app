@@ -1,7 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { OAuth2Client, UserRefreshClient } from "google-auth-library";
 import * as dotenv from "dotenv";
 import cors from "cors";
+import authService from "../services/authService";
 import authService from "../services/authService";
 
 // Carregar variáveis de ambiente do arquivo .env
@@ -26,6 +28,31 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
 const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
 app.post("/auth/google", async (req, res) => {
+	try {
+        // Troca o código de autorização por tokens de acesso
+        const { tokens } = await client.getToken(req.body.code);
+        client.setCredentials(tokens);
+
+		const ticket = await client.verifyIdToken({
+			idToken: tokens.id_token!,
+			audience: CLIENT_ID,
+		});
+		
+		const payload = ticket.getPayload();
+		
+		if (!payload?.email || !payload?.name || !payload?.sub) {
+			res.status(400).send("Erro ao obter informações do usuário");
+			return;
+		}
+
+		// Salvar ou atualizar o usuário no banco de dados
+		const token = await authService.googleSignIn(payload?.email, payload?.name, payload?.sub);
+
+		res.json(token);
+	} catch (error) {
+		console.error("Erro ao autenticar:", error);
+		res.status(500).send("Erro ao salvar usuário no banco de dados");
+	}
 	try {
         // Troca o código de autorização por tokens de acesso
         const { tokens } = await client.getToken(req.body.code);
