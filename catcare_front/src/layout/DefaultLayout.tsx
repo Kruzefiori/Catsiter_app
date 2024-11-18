@@ -34,8 +34,7 @@ function DefaultLayout() {
         return
       } else {
         setUserData(response.data)
-        if (response.data.onBoardingDone) navigate(RouterPaths.HOME)
-        else navigate(RouterPaths.ONBOARDING)
+        // if (!response.data.onBoardingDone) navigate(RouterPaths.ONBOARDING)
       }
     }
 
@@ -58,23 +57,23 @@ function DefaultLayout() {
         <AccountWrapper>
           <img src={userPlaceholderImg} alt="" />
           <UserDescription>{user?.name}</UserDescription>
-          <Button size="sm" variant="filled" fullWidth onClick={handleLogout}>
+          <Button size="sm" variant="light-filled" fullWidth onClick={handleLogout}>
             SAIR
           </Button>
         </AccountWrapper>
-        {/* <Nav>
+        <Nav>
           <ul>
             <li>
               <Link to={RouterPaths.HOME}>Página inicial</Link>
             </li>
             <li>
-              <Link to={RouterPaths.ONBOARDING}>Onboarding</Link>
+              <Link to={RouterPaths.CREATE_BOOKING}>Agendar</Link>
             </li>
             <li>
-              <Link to={RouterPaths.CAT_REGISTER}>Cadastro de gatos</Link>
+              <Link to={RouterPaths.CAT_REGISTER}>Cadastrar de gatos</Link>
             </li>
           </ul>
-        </Nav> */}
+        </Nav>
       </Header>
       <main>
         <Outlet />
@@ -90,6 +89,8 @@ const Header = styled.header`
   flex-direction: column;
   gap: 16px;
   margin-bottom: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.neutralL3};
 `
 
 const Nav = styled.nav`
@@ -104,10 +105,10 @@ const Nav = styled.nav`
     height: 30px;
     padding: 4px 8px;
     border-radius: 8px;
-    background-color: ${({ theme }) => theme.colors.secondary};
+    background-color: ${({ theme }) => theme.colors.neutralTertiary};
     a {
-      color: ${({ theme }) => theme.colors.neutralL5};
-      ${({ theme }) => theme.fonts.textMD}
+      color: ${({ theme }) => theme.colors.secondary};
+      ${({ theme }) => theme.fonts.labelSM}
       text-decoration: none;
       text-align: center;
       vertical-align: middle;
