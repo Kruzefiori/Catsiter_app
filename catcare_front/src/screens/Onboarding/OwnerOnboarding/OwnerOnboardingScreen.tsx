@@ -32,7 +32,8 @@ function OwnerOnboardingScreen() {
   const handleFinish = useCallback(async (data: OwnerSchema) => {
     const body = {
       ...data,
-      userId: authState.user.id
+      userId: authState.user.id,
+      isCatsitter: false
     }
 
     // const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {

@@ -75,8 +75,9 @@ function SitterOnboardingScreen() {
 
       const body = {
         ...data,
-        cities: selectedCities,
-        userId: authState.user.id
+        attendancePlaces: selectedCities,
+        userId: authState.user.id,
+        isCatsitter: true
       }
 
       // const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {

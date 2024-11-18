@@ -20,30 +20,29 @@ type UserType = 'owner' | 'sitter'
 function OnboardingScreen() {
   const navigate = useNavigate()
 
-  const [userTypes, setUserTypes] = useState<UserType[]>([])
+  const [userType, setUserType] = useState<UserType>(null)
   const [showWarning, setShowWarning] = useState(false)
 
   useEffect(() => {
-    if (userTypes.length > 0) setShowWarning(false)
-  }, [userTypes])
+    if (userType) setShowWarning(false)
+  }, [userType])
 
   const handleChangeUserType = useCallback(
-    (typeToAdd: UserType) => {
-      if (userTypes.includes(typeToAdd)) setUserTypes((prev) => prev.filter((type) => type !== typeToAdd))
-      else setUserTypes((prev) => [...prev, typeToAdd])
+    (type: UserType) => {
+      setUserType((prev) => (prev === type ? null : type))
     },
-    [userTypes]
+    [userType]
   )
 
   const handleNextStep = useCallback(() => {
-    if (userTypes.length === 0) {
+    if (!userType) {
       setShowWarning(true)
       return
     }
     // TODO: salvar no backend se o usuário for catsitter
-    if (userTypes.includes('sitter')) navigate(RouterPaths.SITTER_ONBOARDING)
+    if (userType === 'sitter') navigate(RouterPaths.SITTER_ONBOARDING)
     else navigate(RouterPaths.OWNER_ONBOARDING)
-  }, [userTypes])
+  }, [userType])
 
   return (
     <OnboardingContainer>
@@ -54,10 +53,10 @@ function OnboardingScreen() {
       <Body>
         <Label>Você é catsitter também ou apenas tutor(a)?</Label>
         <TypeOptions>
-          <SelectButton isActive={userTypes.includes('owner')} onClick={() => handleChangeUserType('owner')}>
+          <SelectButton isActive={userType === 'owner'} onClick={() => handleChangeUserType('owner')}>
             Tutor(a)
           </SelectButton>
-          <SelectButton isActive={userTypes.includes('sitter')} onClick={() => handleChangeUserType('sitter')}>
+          <SelectButton isActive={userType === 'sitter'} onClick={() => handleChangeUserType('sitter')}>
             Catsitter
           </SelectButton>
         </TypeOptions>
