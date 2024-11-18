@@ -2,7 +2,6 @@ import { Button } from '@/components/Button/Button'
 import { AuthContext } from '@/context/AuthContext'
 import { Visits, VisitStatus } from '@/domain/models/Visits'
 import { longMonthDateOptions } from '@/utils/string'
-import { Accordion } from '@mui/material'
 import axios from 'axios'
 import { useCallback, useContext, useState } from 'react'
 import { toast } from 'react-toastify'
@@ -18,7 +17,8 @@ import {
   Title,
   VisitItem,
   VisitsContainer,
-  VisitSummary
+  VisitSummary,
+  VisitWrapper
 } from './BookingScreen.styles'
 
 interface BookingScreenProps {
@@ -109,7 +109,7 @@ function BookingScreen(props: BookingScreenProps) {
             Adicionar Visita
           </Button>
           {visits.map((visit, index) => (
-            <Accordion key={visit.visitDate?.toISOString() ?? index}>
+            <VisitWrapper key={visit.visitDate?.toISOString() ?? index}>
               <VisitSummary expandIcon={<ArrowDropDownIcon />}>{`${index + 1}ª visita: ${
                 visit.visitDate?.toLocaleDateString('pt-BR', longMonthDateOptions) ?? '(Clique para editar)'
               }`}</VisitSummary>
@@ -125,8 +125,8 @@ function BookingScreen(props: BookingScreenProps) {
                 <Label>
                   Notes:
                   <textarea
-                    minLength={10}
-                    maxLength={200}
+                    minLength={1}
+                    maxLength={2000}
                     value={visit.notes}
                     onChange={(e) => handleUpdateVisit(index, 'notes', e.target.value)}
                   />
@@ -136,7 +136,7 @@ function BookingScreen(props: BookingScreenProps) {
                   Remover Visita
                 </Button>
               </VisitItem>
-            </Accordion>
+            </VisitWrapper>
           ))}
         </VisitsContainer>
       </BookingDetailsContainer>

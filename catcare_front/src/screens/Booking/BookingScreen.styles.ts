@@ -1,11 +1,11 @@
-import { AccordionDetails, AccordionSummary } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import styled from 'styled-components'
 
 export const BookingScreenContainer = styled.div``
 
 export const VisitsContainer = styled.div`
   padding: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -34,6 +34,11 @@ export const BookingSubtitle = styled.h3`
   ${({ theme }) => theme.fonts.titleMD}
   color: ${({ theme }) => theme.colors.secondary};
   text-align: center;
+`
+
+export const VisitWrapper = styled(Accordion)`
+  border: 1px solid ${({ theme }) => theme.colors.neutralL1};
+  border-radius: 8px;
 `
 
 export const VisitSummary = styled(AccordionSummary)`
@@ -76,7 +81,7 @@ export const Label = styled.label`
   }
 
   textarea {
-    min-height: 100px;
+    min-height: 70px;
     resize: none;
   }
 `

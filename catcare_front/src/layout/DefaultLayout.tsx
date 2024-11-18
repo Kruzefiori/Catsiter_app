@@ -34,7 +34,7 @@ function DefaultLayout() {
         return
       } else {
         setUserData(response.data)
-        // if (!response.data.onBoardingDone) navigate(RouterPaths.ONBOARDING)
+        if (!response.data.onBoardingDone) navigate(RouterPaths.ONBOARDING)
       }
     }
 
