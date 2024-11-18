@@ -4,25 +4,8 @@ import { useContext, useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import { AuthContext } from '@/context'
 import { toast } from 'react-toastify'
-import { User } from '@/domain/models/user/User'
-
-enum BookingStatus {
-  PENDING = 'PENDING',
-  ACCEPTED = 'ACCEPTED',
-  REJECTED = 'REJECTED'
-}
-interface Booking {
-  status: BookingStatus
-  requesterId: number
-  requestedId: number
-  startDate: string
-  endDate: string
-  generalNotes: string | null
-  id: number
-  totalVisits: number
-  createdAt: Date
-  updatedAt: Date
-}
+import { User } from '@/domain/models/User'
+import type { Booking } from '@/domain/models/Booking'
 
 function SitterHomeScreen() {
   const { getAuthTokenFromStorage, authState } = useContext(AuthContext)
