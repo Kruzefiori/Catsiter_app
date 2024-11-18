@@ -1,4 +1,4 @@
-import { User } from '@/domain/models/user/User'
+import { User } from '@/domain/models/User'
 import ms from 'ms'
 import { createContext, ReactNode, useState } from 'react'
 import { toast } from 'react-toastify'

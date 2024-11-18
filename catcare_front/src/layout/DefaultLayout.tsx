@@ -9,7 +9,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import userPlaceholderImg from '@assets/user-placeholder.png'
 import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
-import { User } from '@/domain/models/user/User'
+import { User } from '@/domain/models/User'
 
 function DefaultLayout() {
   const navigate = useNavigate()
