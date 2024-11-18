@@ -1,13 +1,50 @@
 import styled from 'styled-components'
-import Star from '@assets/star.svg?react'
 import { Button } from '@/components/Button/Button'
+import { useContext, useEffect, useState } from 'react'
+import axios from 'axios'
+import { AuthContext } from '@/context'
+import { toast } from 'react-toastify'
+
+interface CatSitter {
+  id: number
+  name: string
+  jobDesc: string
+  price: number
+}
 
 function SitterHomeScreen() {
-  const cardInfo = [1, 2, 3, 4, 5]
+  const mockedCardInfo = [1, 2, 3, 4, 5]
+  const { getAuthTokenFromStorage } = useContext(AuthContext)
+
+  const [catSitters, setCatSitters] = useState<CatSitter[]>([])
+
+  useEffect(() => {
+    const fetchCatSitters = async () => {
+      const response = await axios.get<CatSitter[]>(
+        `${import.meta.env.VITE_CATCARE_SERVER_URL}/catsitter/get-catsitters`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthTokenFromStorage()}`
+          }
+        }
+      )
+
+      if (response.status < 200 || response.status >= 300) {
+        toast.error('Não foi possível buscar os catsitters.')
+        return
+      }
+
+      setCatSitters(response.data)
+    }
+
+    fetchCatSitters()
+  }, [])
+
   return (
     <SitterHomeContainer>
       <CardsList>
-        {cardInfo.map((info) => (
+        {mockedCardInfo.map((info) => (
           <Booking key={info}>
             <Header>
               <Name>Nome Catsitter</Name>
