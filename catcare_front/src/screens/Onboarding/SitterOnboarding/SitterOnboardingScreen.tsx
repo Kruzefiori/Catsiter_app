@@ -50,7 +50,7 @@ function SitterOnboardingScreen() {
     resolver: zodResolver(sitterSchema)
   })
   const navigate = useNavigate()
-  const { authState } = useContext(AuthContext)
+  const { authState, setUserData } = useContext(AuthContext)
 
   const [selectedCities, setSelectedCities] = useState<string[]>([])
   const [emptyCitiesError, setEmptyCitiesError] = useState(false)
@@ -91,6 +91,8 @@ function SitterOnboardingScreen() {
       //   toast.error('Não foi possível finalizar o cadastro.')
       //   return
       // }
+
+      setUserData({ ...authState.user, isCatsitter: true, onBoardingDone: true })
 
       toast.success('Cadastro finalizado!')
       navigate(RouterPaths.HOME)
