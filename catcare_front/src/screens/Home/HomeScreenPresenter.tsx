@@ -6,8 +6,6 @@ import { AuthContext } from '@/context/AuthContext'
 function HomeScreenPresenter() {
   const { authState } = useContext(AuthContext)
 
-  console.log(authState.user)
-
   if (authState.user.isCatsitter) return <SitterHomeScreen />
   else return <OwnerHomeScreen />
 }
