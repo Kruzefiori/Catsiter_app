@@ -85,3 +85,8 @@ export const Label = styled.label`
     resize: none;
   }
 `
+
+export const Value = styled.span`
+  ${({ theme }) => theme.fonts.labelMD}
+  color: ${({ theme }) => theme.colors.neutralL0};
+`

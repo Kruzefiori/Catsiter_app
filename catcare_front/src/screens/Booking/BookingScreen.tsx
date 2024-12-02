@@ -11,6 +11,7 @@ import {
   BookingDetailsContainer,
   BookingScreenContainer,
   BookingSubtitle,
+  Value,
   Label,
   PeriodWrapper,
   Subtitle,
@@ -21,6 +22,7 @@ import {
   VisitWrapper
 } from './BookingScreen.styles'
 import { useNavigate, useParams } from 'react-router-dom'
+import { getFirstVisitDate, getLastVisitDate } from './utils'
 
 function BookingScreen() {
   const { catsitterId } = useParams()
@@ -34,8 +36,6 @@ function BookingScreen() {
 
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
   const [visits, setVisits] = useState<Visits[]>([])
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
   const [generalNotes, setGeneralNotes] = useState('')
 
   const handleAddVisit = useCallback(() => {
@@ -70,8 +70,8 @@ function BookingScreen() {
       visits: visits,
       requesterId: authState.user.id,
       requestedId: catsitterId,
-      startDate: startDate,
-      endDate: endDate,
+      startDate: getFirstVisitDate(visits),
+      endDate: getLastVisitDate(visits),
       generalNotes: generalNotes
     }
     // verificando os dados antes de enviar
@@ -91,7 +91,7 @@ function BookingScreen() {
 
     toast.success('Sua reserva foi solicitada com sucesso!')
     console.log('response', response.data)
-  }, [authState.user.id, catsitterId, endDate, generalNotes, getAuthTokenFromStorage, startDate, visits])
+  }, [authState.user.id, catsitterId, generalNotes, getAuthTokenFromStorage, visits])
 
   return (
     <BookingScreenContainer>
@@ -100,54 +100,58 @@ function BookingScreen() {
       <BookingDetailsContainer>
         <BookingSubtitle>Dados da Reserva</BookingSubtitle>
         <PeriodWrapper>
-          <Label>
-            Data de Início:
-            <input type="datetime-local" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-          </Label>
-          <Label>
-            Data de Fim:
-            <input type="datetime-local" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </Label>
+          {visits.length > 0 && (
+            <Label>
+              Data de Início: <Value>{getFirstVisitDate(visits)?.toLocaleDateString() ?? ''}</Value>
+            </Label>
+          )}
+          {visits.length > 1 && (
+            <Label>
+              Data de Fim: <Value>{getLastVisitDate(visits)?.toLocaleDateString() ?? ''}</Value>
+            </Label>
+          )}
         </PeriodWrapper>
         <Label>
-          Informações adicionais:
+          informações adicionais:
           <textarea value={generalNotes} onChange={(e) => setGeneralNotes(e.target.value)} />
         </Label>
         <VisitsContainer>
+          {[...visits]
+            .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())
+            .map((visit, index) => (
+              <VisitWrapper key={visit.visitDate?.toISOString() ?? index}>
+                <VisitSummary expandIcon={<ArrowDropDownIcon />}>{`${index + 1}ª visita: ${
+                  visit.visitDate?.toLocaleDateString('pt-BR', longMonthDateOptions) ?? '(Clique para editar)'
+                }`}</VisitSummary>
+                <VisitItem>
+                  <Label>
+                    Visit Date:
+                    <input
+                      type="datetime-local"
+                      value={visit.visitDate?.toISOString().split('.')[0] ?? ''}
+                      onChange={(e) => handleUpdateVisit(index, 'visitDate', e.target.value)}
+                    />
+                  </Label>
+                  <Label>
+                    Notes:
+                    <textarea
+                      minLength={1}
+                      maxLength={2000}
+                      value={visit.notes}
+                      onChange={(e) => handleUpdateVisit(index, 'notes', e.target.value)}
+                    />
+                  </Label>
+                  <Button variant="ghost" fullWidth onClick={() => handleRemoveVisit(index)}>
+                    <Delete />
+                    Remover Visita
+                  </Button>
+                </VisitItem>
+              </VisitWrapper>
+            ))}
           <Button variant="ghost" fullWidth onClick={handleAddVisit}>
             <Add />
             Adicionar Visita
           </Button>
-          {visits.map((visit, index) => (
-            <VisitWrapper key={visit.visitDate?.toISOString() ?? index}>
-              <VisitSummary expandIcon={<ArrowDropDownIcon />}>{`${index + 1}ª visita: ${
-                visit.visitDate?.toLocaleDateString('pt-BR', longMonthDateOptions) ?? '(Clique para editar)'
-              }`}</VisitSummary>
-              <VisitItem>
-                <Label>
-                  Visit Date:
-                  <input
-                    type="datetime-local"
-                    value={visit.visitDate?.toISOString().split('.')[0] ?? ''}
-                    onChange={(e) => handleUpdateVisit(index, 'visitDate', e.target.value)}
-                  />
-                </Label>
-                <Label>
-                  Notes:
-                  <textarea
-                    minLength={1}
-                    maxLength={2000}
-                    value={visit.notes}
-                    onChange={(e) => handleUpdateVisit(index, 'notes', e.target.value)}
-                  />
-                </Label>
-                <Button variant="ghost" fullWidth onClick={() => handleRemoveVisit(index)}>
-                  <Delete />
-                  Remover Visita
-                </Button>
-              </VisitItem>
-            </VisitWrapper>
-          ))}
         </VisitsContainer>
       </BookingDetailsContainer>
 
