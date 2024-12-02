@@ -39,7 +39,7 @@ function BookingScreen() {
   const [generalNotes, setGeneralNotes] = useState('')
 
   const handleAddVisit = useCallback(() => {
-    setVisits([...visits, { visitDate: null, notes: '', status: VisitStatus.PENDING }])
+    setVisits([...visits, { id: crypto.randomUUID(), visitDate: null, notes: '', status: VisitStatus.PENDING }])
   }, [visits])
 
   const handleUpdateVisit = (index: number, field: string, value: string) => {

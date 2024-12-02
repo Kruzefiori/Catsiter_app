@@ -9,7 +9,9 @@ import { Booking } from '@/domain/models/Booking'
 import { Button } from '@/components/Button/Button'
 import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { mockedCatSitters } from './homeScreenUtils'
+import { mockedCatSitters } from './utils'
+import { CalendarMonth } from '@mui/icons-material'
+import { CalendarPopup, CalendarEvent } from '@/components/CalendarPopup'
 
 function OwnerHomeScreen() {
   const navigate = useNavigate()
@@ -17,6 +19,7 @@ function OwnerHomeScreen() {
 
   const [catSitters, setCatSitters] = useState<CatSitter2[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [eventsToShow, setEventsToShow] = useState<CalendarEvent[]>([])
 
   useEffect(() => {
     // const fetchCatSitters = async () => {
@@ -39,67 +42,102 @@ function OwnerHomeScreen() {
     // }
 
     // fetchCatSitters()
-    setCatSitters(mockedCatSitters)
-  }, [])
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      const pendingBookingsResponse = await axios.get<Booking[]>(
-        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
-          authState.user.id
-        }&status=PENDING`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAuthTokenFromStorage()}`
-          }
-        }
-      )
+    // const catsitterBookings = bookings.filter((booking) => booking.requestedId === catsitterId)
+    // const events: CatSitterCalendar['events'] = []
 
-      if (pendingBookingsResponse.status < 200 || pendingBookingsResponse.status >= 300) {
-        toast.error('Não foi possível buscar os bookings.')
-        return
-      }
+    // catsitterBookings.forEach((booking) => {
+    //   booking.visits.forEach((visit) => {
+    //     events.push({
+    //       title: `Visita ${visit.id}`,
+    //       start: new Date(visit.visitDate),
+    //       end: new Date(visit.visitDate)
+    //     })
+    //   })
+    // })
+    // Do the same for each catsitter
+    mockedCatSitters.forEach((catsitter) => {
+      const events: CalendarEvent[] = []
+      catsitter.bookings.forEach((booking) => {
+        booking.visits.forEach((visit) => {
+          events.push({
+            title: `Visita ${visit.id}`,
+            start: new Date(visit.visitDate),
+            end: new Date(visit.visitDate)
+          })
+        })
+      })
+      setCatSitters((prev) => [...prev, { ...catsitter, events }])
+    })
 
-      const acceptedBookingsResponse = await axios.get<Booking[]>(
-        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
-          authState.user.id
-        }&status=ACCEPTED`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAuthTokenFromStorage()}`
-          }
-        }
-      )
-
-      if (acceptedBookingsResponse.status < 200 || acceptedBookingsResponse.status >= 300) {
-        toast.error('Não foi possível buscar os bookings.')
-        return
-      }
-
-      const rejectedBookingsResponse = await axios.get<Booking[]>(
-        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
-          authState.user.id
-        }&status=REJECTED`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAuthTokenFromStorage()}`
-          }
-        }
-      )
-
-      if (rejectedBookingsResponse.status < 200 || rejectedBookingsResponse.status >= 300) {
-        toast.error('Não foi possível buscar os bookings.')
-        return
-      }
-
-      setBookings([...pendingBookingsResponse.data, ...acceptedBookingsResponse.data, ...rejectedBookingsResponse.data])
+    return () => {
+      setCatSitters([])
     }
-
-    fetchBookings()
   }, [])
+
+  // useEffect(() => {
+  //   const fetchBookings = async () => {
+  //     const pendingBookingsResponse = await axios.get<Booking[]>(
+  //       `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
+  //         authState.user.id
+  //       }&status=PENDING`,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${getAuthTokenFromStorage()}`
+  //         }
+  //       }
+  //     )
+
+  //     if (pendingBookingsResponse.status < 200 || pendingBookingsResponse.status >= 300) {
+  //       toast.error('Não foi possível buscar os bookings.')
+  //       return
+  //     }
+
+  //     const acceptedBookingsResponse = await axios.get<Booking[]>(
+  //       `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
+  //         authState.user.id
+  //       }&status=ACCEPTED`,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${getAuthTokenFromStorage()}`
+  //         }
+  //       }
+  //     )
+
+  //     if (acceptedBookingsResponse.status < 200 || acceptedBookingsResponse.status >= 300) {
+  //       toast.error('Não foi possível buscar os bookings.')
+  //       return
+  //     }
+
+  //     const rejectedBookingsResponse = await axios.get<Booking[]>(
+  //       `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requester?userId=${
+  //         authState.user.id
+  //       }&status=REJECTED`,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${getAuthTokenFromStorage()}`
+  //         }
+  //       }
+  //     )
+
+  //     if (rejectedBookingsResponse.status < 200 || rejectedBookingsResponse.status >= 300) {
+  //       toast.error('Não foi possível buscar os bookings.')
+  //       return
+  //     }
+
+  //     setBookings([...pendingBookingsResponse.data, ...acceptedBookingsResponse.data, ...rejectedBookingsResponse.data])
+  //   }
+
+  //   fetchBookings()
+  // }, [])
+
+  const handleShowCalendar = (catsitterId: number) => {
+    const catsitter = catSitters.find((catsitter) => catsitter.id === catsitterId)
+    setEventsToShow(catsitter.events)
+  }
 
   return (
     <OwnerHomeContainer>
@@ -111,6 +149,9 @@ function OwnerHomeScreen() {
                 <Name>{catsitter.name}</Name>
                 <Address>{catsitter.address}</Address>
               </InfoWrapper>
+              <IconButton title="Ver disponibilidade" onClick={() => handleShowCalendar(catsitter.id)}>
+                <CalendarMonth color="action" />
+              </IconButton>
             </Header>
             <Description>{catsitter.jobDesc}</Description>
             <Footer>
@@ -121,6 +162,7 @@ function OwnerHomeScreen() {
                 ))}
               </Rating>
             </Footer>
+            {eventsToShow.length > 0 && <CalendarPopup events={eventsToShow} onClose={() => setEventsToShow([])} />}
             <Button
               variant="filled"
               fullWidth
@@ -193,3 +235,9 @@ const Price = styled.p`
 `
 
 const Rating = styled.span``
+
+const IconButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+`

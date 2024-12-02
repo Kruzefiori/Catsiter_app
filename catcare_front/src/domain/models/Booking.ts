@@ -1,3 +1,5 @@
+import { Visits } from './Visits'
+
 export enum BookingStatus {
   PENDING = 'PENDING',
   ACCEPTED = 'ACCEPTED',
@@ -15,4 +17,5 @@ export interface Booking {
   totalVisits: number
   createdAt: Date
   updatedAt: Date
+  visits: Visits[]
 }
