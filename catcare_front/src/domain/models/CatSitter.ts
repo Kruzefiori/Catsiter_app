@@ -4,3 +4,7 @@ export interface CatSitter {
   jobDesc: string
   price: number
 }
+
+export interface CatSitter2 extends CatSitter {
+  address: string
+}

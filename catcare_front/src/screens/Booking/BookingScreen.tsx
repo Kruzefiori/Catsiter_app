@@ -3,7 +3,7 @@ import { AuthContext } from '@/context/AuthContext'
 import { Visits, VisitStatus } from '@/domain/models/Visits'
 import { longMonthDateOptions } from '@/utils/string'
 import axios from 'axios'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { Add, Delete } from '@mui/icons-material'
@@ -20,13 +20,17 @@ import {
   VisitSummary,
   VisitWrapper
 } from './BookingScreen.styles'
+import { useNavigate, useParams } from 'react-router-dom'
 
-interface BookingScreenProps {
-  catsitterId?: number
-}
+function BookingScreen() {
+  const { catsitterId } = useParams()
+  const navigate = useNavigate()
 
-function BookingScreen(props: BookingScreenProps) {
-  const { catsitterId } = props
+  useEffect(() => {
+    if (!catsitterId) {
+      navigate(-1)
+    }
+  }, [catsitterId])
 
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
   const [visits, setVisits] = useState<Visits[]>([])
@@ -55,11 +59,17 @@ function BookingScreen(props: BookingScreenProps) {
     setVisits(updatedVisits)
   }
 
+  const handleRemoveVisit = (index: number) => {
+    const updatedVisits = [...visits]
+    updatedVisits.splice(index, 1)
+    setVisits(updatedVisits)
+  }
+
   const handleCreateBooking = useCallback(async () => {
     const body = {
       visits: visits,
       requesterId: authState.user.id,
-      requestedId: catsitterId ?? 1, // TODO: Mudar isso, pois se não tiver catsitterId, deve dar erro
+      requestedId: catsitterId,
       startDate: startDate,
       endDate: endDate,
       generalNotes: generalNotes
@@ -131,7 +141,7 @@ function BookingScreen(props: BookingScreenProps) {
                     onChange={(e) => handleUpdateVisit(index, 'notes', e.target.value)}
                   />
                 </Label>
-                <Button variant="ghost" fullWidth onClick={handleAddVisit}>
+                <Button variant="ghost" fullWidth onClick={() => handleRemoveVisit(index)}>
                   <Delete />
                   Remover Visita
                 </Button>

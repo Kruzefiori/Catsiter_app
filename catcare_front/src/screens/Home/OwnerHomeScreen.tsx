@@ -4,41 +4,43 @@ import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '@/context'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { CatSitter } from '@/domain/models/CatSitter'
+import { CatSitter2 } from '@/domain/models/CatSitter'
 import { Booking } from '@/domain/models/Booking'
 import { Button } from '@/components/Button/Button'
 import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
+import { mockedCatSitters } from './homeScreenUtils'
 
 function OwnerHomeScreen() {
   const navigate = useNavigate()
   const { getAuthTokenFromStorage, authState } = useContext(AuthContext)
 
-  const [catSitters, setCatSitters] = useState<CatSitter[]>([])
+  const [catSitters, setCatSitters] = useState<CatSitter2[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
 
-  // useEffect(() => {
-  //   const fetchCatSitters = async () => {
-  //     const response = await axios.get<CatSitter[]>(
-  //       `${import.meta.env.VITE_CATCARE_SERVER_URL}/catsitter/get-catsitters`,
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${getAuthTokenFromStorage()}`
-  //         }
-  //       }
-  //     )
+  useEffect(() => {
+    // const fetchCatSitters = async () => {
+    //   const response = await axios.get<CatSitter[]>(
+    //     `${import.meta.env.VITE_CATCARE_SERVER_URL}/catsitter/get-catsitters`,
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${getAuthTokenFromStorage()}`
+    //       }
+    //     }
+    //   )
 
-  //     if (response.status < 200 || response.status >= 300) {
-  //       toast.error('Não foi possível buscar os catsitters.')
-  //       return
-  //     }
+    //   if (response.status < 200 || response.status >= 300) {
+    //     toast.error('Não foi possível buscar os catsitters.')
+    //     return
+    //   }
 
-  //     setCatSitters(response.data)
-  //   }
+    //   setCatSitters(response.data)
+    // }
 
-  //   fetchCatSitters()
-  // }, [])
+    // fetchCatSitters()
+    setCatSitters(mockedCatSitters)
+  }, [])
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -101,28 +103,31 @@ function OwnerHomeScreen() {
 
   return (
     <OwnerHomeContainer>
-      <Button variant="filled" fullWidth onClick={() => navigate(RouterPaths.CREATE_BOOKING)}>
-        Criar um booking
-      </Button>
       <CardsList>
         {catSitters.map((catsitter, catsitterIndex) => (
           <SitterCard key={catsitter.id}>
             <Header>
               <InfoWrapper>
-                <Name>Nome Catsitter</Name>
-                <Address>Localização abrev.</Address>
+                <Name>{catsitter.name}</Name>
+                <Address>{catsitter.address}</Address>
               </InfoWrapper>
-              <button>Mais opções</button>
             </Header>
-            <Description>Descrição</Description>
+            <Description>{catsitter.jobDesc}</Description>
             <Footer>
-              <Price>Preço</Price>
+              <Price>R$ {catsitter.price.toFixed(2)}</Price>
               <Rating>
-                {[...Array(catsitterIndex)].map((_, index) => (
+                {[...Array(catsitterIndex + 1)].map((_, index) => (
                   <Star width={20} height={20} key={index} />
                 ))}
               </Rating>
             </Footer>
+            <Button
+              variant="filled"
+              fullWidth
+              onClick={() => navigate(`${RouterPaths.CREATE_BOOKING}/${catsitter.id}`)}
+            >
+              Contratar
+            </Button>
           </SitterCard>
         ))}
       </CardsList>
@@ -159,18 +164,22 @@ const Header = styled.div`
 
 const InfoWrapper = styled.span``
 
-const Name = styled.p``
+const Name = styled.p`
+  ${({ theme }) => theme.fonts.infoMD}
+`
 
-const Address = styled.p``
+const Address = styled.p`
+  ${({ theme }) => theme.fonts.textSM}
+`
 
 const Description = styled.div`
   height: 600px;
   width: 100%;
   height: 100px;
   background-color: ${({ theme }) => theme.colors.neutralL4};
-  border: 1px solid ${({ theme }) => theme.colors.neutralSecondary};
   border-radius: 8px;
   padding: 6px;
+  ${({ theme }) => theme.fonts.textMD}
 `
 
 const Footer = styled.span`
@@ -179,6 +188,8 @@ const Footer = styled.span`
   padding: 6px;
 `
 
-const Price = styled.p``
+const Price = styled.p`
+  ${({ theme }) => theme.fonts.infoMD}
+`
 
 const Rating = styled.span``

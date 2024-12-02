@@ -1,7 +1,7 @@
 import { Button } from '@/components/Button/Button'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import styled, { css } from 'styled-components'
 import { toast } from 'react-toastify'
 
 import { useContext, useEffect, useMemo, useState } from 'react'
@@ -10,9 +10,11 @@ import userPlaceholderImg from '@assets/user-placeholder.png'
 import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import { User } from '@/domain/models/User'
+import { getStateColor } from '@/utils/getStateColor'
 
 function DefaultLayout() {
   const navigate = useNavigate()
+  const appLocation = useLocation()
   const { authState, setUserData, resetAuthToken, getAuthTokenFromStorage } = useContext(AuthContext)
 
   const [isFetched, setIsFetched] = useState(false)
@@ -63,15 +65,12 @@ function DefaultLayout() {
         </AccountWrapper>
         <Nav>
           <ul>
-            <li>
+            <LinkButton active={appLocation.pathname === RouterPaths.HOME}>
               <Link to={RouterPaths.HOME}>Página inicial</Link>
-            </li>
-            <li>
-              <Link to={RouterPaths.CREATE_BOOKING}>Agendar</Link>
-            </li>
-            <li>
+            </LinkButton>
+            <LinkButton active={appLocation.pathname === RouterPaths.CAT_REGISTER}>
               <Link to={RouterPaths.CAT_REGISTER}>Cadastrar de gatos</Link>
-            </li>
+            </LinkButton>
           </ul>
         </Nav>
       </Header>
@@ -99,20 +98,42 @@ const Nav = styled.nav`
     list-style: none;
     justify-content: space-between;
   }
+`
 
-  li {
-    width: fit-content;
-    height: 30px;
-    padding: 4px 8px;
-    border-radius: 8px;
-    background-color: ${({ theme }) => theme.colors.neutralTertiary};
-    a {
-      color: ${({ theme }) => theme.colors.secondary};
-      ${({ theme }) => theme.fonts.labelSM}
-      text-decoration: none;
-      text-align: center;
-      vertical-align: middle;
-    }
+interface LinkButtonProps {
+  active?: boolean
+}
+
+const LinkButton = styled.li<LinkButtonProps>`
+  width: fit-content;
+  height: 30px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background-color: ${({ active, theme }) => (active ? theme.colors.secondary : theme.colors.neutralTertiary)};
+  a {
+    color: ${({ theme, active }) => (active ? theme.colors.neutralL5 : theme.colors.secondary)};
+    ${({ theme }) => theme.fonts.labelSM}
+    text-decoration: none;
+    text-align: center;
+    vertical-align: middle;
+    cursor: ${({ active }) => (active ? 'default' : 'pointer')};
+  }
+
+  &:hover {
+    ${({ theme, active }) =>
+      !active
+        ? css`
+            background-color: ${getStateColor(theme.colors.neutralL2, 'hover')};
+          `
+        : ''}
+  }
+  &:active {
+    ${({ theme, active }) =>
+      !active
+        ? css`
+            background-color: ${getStateColor(theme.colors.neutralL2, 'pressed')};
+          `
+        : ''}
   }
 `
 

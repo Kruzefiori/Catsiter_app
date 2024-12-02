@@ -86,12 +86,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     setToken(null)
   }
   const setUserData = (user: User): void => {
-    const parsedUser: User = {
-      ...INITIAL_STATE_USER,
-      ...user
-    }
-
-    setUser(parsedUser)
+    setUser(user)
   }
   const resetUserData = (): void => {
     setUser(null)
