@@ -5,7 +5,7 @@ import styled from 'styled-components'
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, PropsWithChildren {
   variant: 'filled' | 'outline' | 'light-filled' | 'ghost'
   gap?: number
-  size?: 'sm' | 'lg'
+  size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
 }
 
@@ -23,7 +23,7 @@ export { Button }
 interface ButtonStyledProps {
   variant: 'filled' | 'outline' | 'light-filled' | 'ghost'
   gap: number
-  size?: 'sm' | 'lg'
+  size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
 }
 
@@ -43,7 +43,7 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
       : 'transparent'};
   color: ${({ theme, variant }) => (variant === 'filled' ? theme.colors.neutralL5 : theme.colors.secondary)};
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
-  height: ${({ size }) => (size ? 20 : 40)}px;
+  height: ${({ size }) => (size === 'sm' ? '32px' : size === 'md' ? '40px' : '48px')};
   border-radius: 8px;
   padding: 8px;
   display: flex;

@@ -44,6 +44,11 @@ export const VisitWrapper = styled(Accordion)`
 export const VisitSummary = styled(AccordionSummary)`
   ${({ theme }) => theme.fonts.titleXS}
   color: ${({ theme }) => theme.colors.secondary};
+  & > * {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 `
 
 export const VisitItem = styled(AccordionDetails).attrs({
@@ -76,7 +81,7 @@ export const Label = styled.label`
     border: 1px solid ${({ theme }) => theme.colors.neutralL1};
 
     &:focus {
-      border-color: ${({ theme }) => theme.colors.neutralL0};
+      border: 1px solid ${({ theme }) => theme.colors.secondary};
     }
   }
 
@@ -89,4 +94,38 @@ export const Label = styled.label`
 export const Value = styled.span`
   ${({ theme }) => theme.fonts.labelMD}
   color: ${({ theme }) => theme.colors.neutralL0};
+`
+
+export const EditEventModal = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: fit-content;
+  background-color: ${({ theme }) => theme.colors.neutralL3};
+  box-shadow: 0 0 8px black;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 1000;
+`
+
+export const IconButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.secondary};
+  }
+
+  &:focus {
+    outline: none;
+  }
 `

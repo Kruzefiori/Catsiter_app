@@ -3,10 +3,9 @@ import { AuthContext } from '@/context/AuthContext'
 import { Visits, VisitStatus } from '@/domain/models/Visits'
 import { longMonthDateOptions } from '@/utils/string'
 import axios from 'axios'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState, useMemo } from 'react'
 import { toast } from 'react-toastify'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import { Add, Delete } from '@mui/icons-material'
+import { Add, Close, Delete, Edit } from '@mui/icons-material'
 import {
   BookingDetailsContainer,
   BookingScreenContainer,
@@ -19,10 +18,15 @@ import {
   VisitItem,
   VisitsContainer,
   VisitSummary,
-  VisitWrapper
+  VisitWrapper,
+  EditEventModal,
+  IconButton
 } from './BookingScreen.styles'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getFirstVisitDate, getLastVisitDate } from './utils'
+import { CalendarEvent, CalendarPopup } from '@/components/CalendarPopup'
+import { SlotInfo } from 'react-big-calendar'
+import { mockedCatSitters } from '../Home/utils'
 
 function BookingScreen() {
   const { catsitterId } = useParams()
@@ -36,11 +40,29 @@ function BookingScreen() {
 
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
   const [visits, setVisits] = useState<Visits[]>([])
+  const [currentEvents, setCurrentEvents] = useState<CalendarEvent[]>([])
   const [generalNotes, setGeneralNotes] = useState('')
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
 
-  const handleAddVisit = useCallback(() => {
-    setVisits([...visits, { id: crypto.randomUUID(), visitDate: null, notes: '', status: VisitStatus.PENDING }])
-  }, [visits])
+  const catsitterAgenda = useMemo(() => {
+    const catsitter = mockedCatSitters.find((catsitter) => catsitter.id === Number(catsitterId))
+    if (!catsitter) {
+      return []
+    }
+    const events: CalendarEvent[] = []
+    catsitter.bookings.forEach((booking) => {
+      booking.visits.forEach((visit) => {
+        events.push({
+          id: visit.id,
+          title: 'Ocupado',
+          start: new Date(visit.visitDate),
+          end: new Date(visit.visitDate),
+          color: '#ff1e00'
+        })
+      })
+    })
+    return events
+  }, [catsitterId])
 
   const handleUpdateVisit = (index: number, field: string, value: string) => {
     const updatedVisits = [...visits]
@@ -57,12 +79,14 @@ function BookingScreen() {
       [field]: value
     }
     setVisits(updatedVisits)
+    toast.success('Visita atualizada com sucesso!')
   }
 
   const handleRemoveVisit = (index: number) => {
     const updatedVisits = [...visits]
     updatedVisits.splice(index, 1)
     setVisits(updatedVisits)
+    toast.info('Visita removida com sucesso!')
   }
 
   const handleCreateBooking = useCallback(async () => {
@@ -93,6 +117,59 @@ function BookingScreen() {
     console.log('response', response.data)
   }, [authState.user.id, catsitterId, generalNotes, getAuthTokenFromStorage, visits])
 
+  const handleSlotClick = useCallback(
+    (slotInfo: SlotInfo) => {
+      setCurrentEvents([
+        ...currentEvents,
+        { id: crypto.randomUUID(), title: 'Nova Visita', start: slotInfo.start, end: slotInfo.end, color: '#00ff00' }
+      ])
+    },
+    [currentEvents]
+  )
+
+  const handleDeleteEvent = useCallback(
+    (event: CalendarEvent) => {
+      const updatedEvents = currentEvents.filter((currentEvent) => currentEvent.id !== event.id)
+      setCurrentEvents(updatedEvents)
+    },
+    [currentEvents]
+  )
+
+  const handleOpenCalendar = useCallback(() => {
+    const events = visits.map((visit) => ({
+      id: visit.id,
+      start: visit.visitDate,
+      end: visit.visitDate,
+      title: 'Visita Agendada',
+      color: '#0077ff'
+    }))
+    setCurrentEvents(events)
+    setIsCalendarOpen(true)
+  }, [visits, catsitterAgenda])
+
+  const handleSaveVisits = useCallback(() => {
+    if (currentEvents.length === 0) {
+      setIsCalendarOpen(false)
+      toast.warning('Nenhuma visita foi adicionada')
+      return
+    }
+    const newVisits = currentEvents.map((event) => ({
+      id: crypto.randomUUID(),
+      visitDate: event.start,
+      notes: '',
+      status: VisitStatus.PENDING
+    }))
+    setVisits(newVisits)
+    setCurrentEvents([])
+    setIsCalendarOpen(false)
+
+    toast.success('Visitas adicionadas com sucesso!')
+  }, [currentEvents, visits])
+
+  const handleCancelSchedule = useCallback(() => {
+    setIsCalendarOpen(false)
+  }, [])
+
   return (
     <BookingScreenContainer>
       <Title>Vamos agendar uma visita</Title>
@@ -115,25 +192,48 @@ function BookingScreen() {
           informações adicionais:
           <textarea value={generalNotes} onChange={(e) => setGeneralNotes(e.target.value)} />
         </Label>
+        {isCalendarOpen && (
+          <CalendarPopup
+            events={[...currentEvents, ...catsitterAgenda]}
+            width="90%"
+            height="90%"
+            onSlotClick={handleSlotClick}
+            onSelectEvent={handleDeleteEvent}
+            onClose={() => setIsCalendarOpen(false)}
+            onConfirm={handleSaveVisits}
+            onCancel={handleCancelSchedule}
+          />
+        )}
+
         <VisitsContainer>
+          <Button variant="ghost" fullWidth onClick={handleOpenCalendar}>
+            <Add />
+            Adicionar Visitas
+          </Button>
           {[...visits]
             .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())
             .map((visit, index) => (
-              <VisitWrapper key={visit.visitDate?.toISOString() ?? index}>
-                <VisitSummary expandIcon={<ArrowDropDownIcon />}>{`${index + 1}ª visita: ${
-                  visit.visitDate?.toLocaleDateString('pt-BR', longMonthDateOptions) ?? '(Clique para editar)'
-                }`}</VisitSummary>
+              <VisitWrapper key={visit.visitDate?.toISOString() ?? index} onChange={() => console.log('visit')}>
+                <VisitSummary>
+                  <IconButton onClick={() => handleRemoveVisit(index)}>
+                    <Close fontSize="small" />
+                  </IconButton>
+                  {`${index + 1}ª visita: ${
+                    visit.visitDate?.toLocaleDateString('pt-BR', longMonthDateOptions) ?? '(Clique para editar)'
+                  }`}
+                  <Edit />
+                </VisitSummary>
                 <VisitItem>
                   <Label>
-                    Visit Date:
+                    Data:
                     <input
-                      type="datetime-local"
-                      value={visit.visitDate?.toISOString().split('.')[0] ?? ''}
+                      type="date"
+                      value={visit.visitDate?.toISOString().split('T')[0] ?? ''}
                       onChange={(e) => handleUpdateVisit(index, 'visitDate', e.target.value)}
                     />
                   </Label>
                   <Label>
-                    Notes:
+                    Detalhes:
                     <textarea
                       minLength={1}
                       maxLength={2000}
@@ -148,15 +248,13 @@ function BookingScreen() {
                 </VisitItem>
               </VisitWrapper>
             ))}
-          <Button variant="ghost" fullWidth onClick={handleAddVisit}>
-            <Add />
-            Adicionar Visita
-          </Button>
         </VisitsContainer>
       </BookingDetailsContainer>
-
       <Button variant="filled" fullWidth onClick={handleCreateBooking}>
         Solicitar Reserva
+      </Button>
+      <Button variant="ghost" fullWidth onClick={() => navigate(-1)}>
+        Cancelar
       </Button>
     </BookingScreenContainer>
   )

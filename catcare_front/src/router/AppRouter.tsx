@@ -17,20 +17,25 @@ import { BookingScreen } from '@/screens/Booking'
 function AppRouter() {
   const appLocation = useLocation()
   const navigate = useNavigate()
-  const { isLogged } = useContext(AuthContext)
+  const { isLogged, authState } = useContext(AuthContext)
 
   useEffect(() => {
     const run = () => {
-      if (!isLogged() && appLocation.pathname !== RouterPaths.LOGIN && appLocation.pathname !== RouterPaths.REGISTER)
+      if (!isLogged() && appLocation.pathname !== RouterPaths.LOGIN && appLocation.pathname !== RouterPaths.REGISTER) {
         navigate(RouterPaths.LOGIN)
-      else if (
+        return
+      } else if (
         (isLogged() &&
           (appLocation.pathname === RouterPaths.LOGIN ||
             appLocation.pathname === RouterPaths.REGISTER ||
             appLocation.pathname === RouterPaths.ROOT)) ||
         appLocation.pathname === '/'
-      )
-        navigate(RouterPaths.ROOT)
+      ) {
+        if (!authState.user.onBoardingDone) {
+          navigate(RouterPaths.ROOT)
+          return
+        }
+      }
     }
 
     run()

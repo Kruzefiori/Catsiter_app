@@ -1,33 +1,72 @@
-import { Calendar, momentLocalizer } from 'react-big-calendar'
+import { Calendar, momentLocalizer, SlotInfo } from 'react-big-calendar'
 import moment from 'moment'
 
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import styled from 'styled-components'
+import { useRef } from 'react'
+import { Button } from '../Button/Button'
 
 export interface CalendarEvent {
-  title: string
+  id: string
+  title?: string
   start: Date
   end: Date
-  // implementar cor do evento para marcar se foi aceito ou não, ou se está pendente
+  color?: string
 }
 
 export interface CalendarPopupProps {
+  width?: string
+  height?: string
   events: CalendarEvent[]
+  onConfirm?: () => void
+  onCancel?: () => void
   onClose: () => void
+  onSelectEvent?: (event: CalendarEvent) => void
+  onSlotClick?: (slotInfo: SlotInfo) => void
 }
 
+moment.locale('pt-br')
+const localizer = momentLocalizer(moment)
+
 function CalendarPopup(props: CalendarPopupProps) {
-  const { events, onClose } = props
+  const { events, height, width, onClose, onSlotClick, onCancel, onConfirm, onSelectEvent } = props
+
+  const popupRef = useRef<HTMLDivElement>(null)
+
+  const eventStyleGetter = (event: CalendarEvent) => {
+    return {
+      style: {
+        backgroundColor: event.color
+      }
+    }
+  }
+
   return (
     <PopupContainer onClick={onClose}>
-      <Popup>
+      <Popup ref={popupRef} width={width} height={height} onClick={(e) => e.stopPropagation()}>
         <Calendar
-          localizer={momentLocalizer(moment)}
-          defaultDate={new Date()}
+          localizer={localizer}
+          defaultDate={moment().toDate()}
           defaultView="month"
           events={events}
+          selectable
+          onSelectSlot={onSlotClick}
+          onSelectEvent={onSelectEvent}
+          eventPropGetter={eventStyleGetter}
           style={{ height: '100%', width: '100%' }}
         />
+        <ButtonsWrapper>
+          {onConfirm && (
+            <Button variant="filled" onClick={onConfirm}>
+              Confirmar
+            </Button>
+          )}
+          {onCancel && (
+            <Button variant="ghost" onClick={onCancel}>
+              Cancelar
+            </Button>
+          )}
+        </ButtonsWrapper>
       </Popup>
     </PopupContainer>
   )
@@ -45,16 +84,28 @@ const PopupContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 `
 
-const Popup = styled.div`
+interface PopupProps {
+  width?: string
+  height?: string
+}
+
+const Popup = styled.div<PopupProps>`
   background-color: white;
   border-radius: 8px;
   padding: 16px;
-  width: 40%;
-  height: 50%;
+  width: ${({ width }) => width ?? '50%'};
+  height: ${({ height }) => height ?? '50%'};
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+`
+
+const ButtonsWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
 `

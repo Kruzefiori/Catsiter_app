@@ -61,9 +61,11 @@ function OwnerHomeScreen() {
       catsitter.bookings.forEach((booking) => {
         booking.visits.forEach((visit) => {
           events.push({
+            id: visit.id,
             title: `Visita ${visit.id}`,
             start: new Date(visit.visitDate),
-            end: new Date(visit.visitDate)
+            end: new Date(visit.visitDate),
+            color: '#FFD700'
           })
         })
       })
