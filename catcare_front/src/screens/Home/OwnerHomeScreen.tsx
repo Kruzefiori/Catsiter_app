@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { mockedCatSitters } from './utils'
 import { CalendarMonth } from '@mui/icons-material'
-import { CalendarPopup, CalendarEvent } from '@/components/CalendarPopup'
+import { CalendarPopup, CalendarEvent, CalendarColor } from '@/components/CalendarPopup'
 
 function OwnerHomeScreen() {
   const navigate = useNavigate()
@@ -62,10 +62,10 @@ function OwnerHomeScreen() {
         booking.visits.forEach((visit) => {
           events.push({
             id: visit.id,
-            title: `Visita ${visit.id}`,
+            title: 'Ocupado',
             start: new Date(visit.visitDate),
-            end: new Date(visit.visitDate),
-            color: '#FFD700'
+            end: new Date(new Date(visit.visitDate).getTime() + visit.durationInMinutes * 60000),
+            color: CalendarColor.LIGHT_BLUE
           })
         })
       })

@@ -10,8 +10,8 @@ export interface Booking {
   status: BookingStatus
   requesterId: number
   requestedId: number
-  startDate: string
-  endDate: string
+  startDate: Date
+  endDate: Date
   generalNotes: string | null
   id: number
   totalVisits: number

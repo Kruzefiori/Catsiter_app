@@ -5,7 +5,7 @@ import { longMonthDateOptions } from '@/utils/string'
 import axios from 'axios'
 import { useCallback, useContext, useEffect, useState, useMemo } from 'react'
 import { toast } from 'react-toastify'
-import { Add, Close, Delete, Edit } from '@mui/icons-material'
+import { Add, ArrowDropDown, Close, Delete, Edit } from '@mui/icons-material'
 import {
   BookingDetailsContainer,
   BookingScreenContainer,
@@ -20,11 +20,12 @@ import {
   VisitSummary,
   VisitWrapper,
   EditEventModal,
-  IconButton
+  IconButton,
+  Tip
 } from './BookingScreen.styles'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getFirstVisitDate, getLastVisitDate } from './utils'
-import { CalendarEvent, CalendarPopup } from '@/components/CalendarPopup'
+import { addOneHour, getDifferenceInHours, getFirstVisitDate, getLastVisitDate } from './utils'
+import { CalendarColor, CalendarEvent, CalendarPopup } from '@/components/CalendarPopup'
 import { SlotInfo } from 'react-big-calendar'
 import { mockedCatSitters } from '../Home/utils'
 
@@ -56,8 +57,8 @@ function BookingScreen() {
           id: visit.id,
           title: 'Ocupado',
           start: new Date(visit.visitDate),
-          end: new Date(visit.visitDate),
-          color: '#ff1e00'
+          end: addOneHour(new Date(visit.visitDate)),
+          color: CalendarColor.DARK_RED
         })
       })
     })
@@ -119,9 +120,16 @@ function BookingScreen() {
 
   const handleSlotClick = useCallback(
     (slotInfo: SlotInfo) => {
+      const end = getDifferenceInHours(slotInfo.end, slotInfo.start) > 1 ? slotInfo.end : addOneHour(slotInfo.start)
       setCurrentEvents([
         ...currentEvents,
-        { id: crypto.randomUUID(), title: 'Nova Visita', start: slotInfo.start, end: slotInfo.end, color: '#00ff00' }
+        {
+          id: crypto.randomUUID(),
+          title: 'Nova Visita',
+          start: slotInfo.start,
+          end,
+          color: CalendarColor.LIGHT_GREEN
+        }
       ])
     },
     [currentEvents]
@@ -136,13 +144,15 @@ function BookingScreen() {
   )
 
   const handleOpenCalendar = useCallback(() => {
-    const events = visits.map((visit) => ({
-      id: visit.id,
-      start: visit.visitDate,
-      end: visit.visitDate,
-      title: 'Visita Agendada',
-      color: '#0077ff'
-    }))
+    const events = [...visits]
+      .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())
+      .map((visit, index) => ({
+        id: visit.id,
+        start: visit.visitDate,
+        end: new Date(new Date(visit.visitDate).getTime() + visit.durationInMinutes * 60000),
+        title: `Visita ${index + 1}`,
+        color: CalendarColor.LIGHT_BLUE
+      }))
     setCurrentEvents(events)
     setIsCalendarOpen(true)
   }, [visits, catsitterAgenda])
@@ -156,6 +166,7 @@ function BookingScreen() {
     const newVisits = currentEvents.map((event) => ({
       id: crypto.randomUUID(),
       visitDate: event.start,
+      durationInMinutes: getDifferenceInHours(event.end, event.start) * 60,
       notes: '',
       status: VisitStatus.PENDING
     }))
@@ -195,8 +206,9 @@ function BookingScreen() {
         {isCalendarOpen && (
           <CalendarPopup
             events={[...currentEvents, ...catsitterAgenda]}
-            width="90%"
-            height="90%"
+            width="80%"
+            height="80%"
+            defaultView="week"
             onSlotClick={handleSlotClick}
             onSelectEvent={handleDeleteEvent}
             onClose={() => setIsCalendarOpen(false)}
@@ -210,18 +222,21 @@ function BookingScreen() {
             <Add />
             Adicionar Visitas
           </Button>
+          {visits.length > 0 && <Tip>{'(clique em uma visita para editar os detalhes)'}</Tip>}
           {[...visits]
             .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())
             .map((visit, index) => (
               <VisitWrapper key={visit.visitDate?.toISOString() ?? index} onChange={() => console.log('visit')}>
-                <VisitSummary>
-                  <IconButton onClick={() => handleRemoveVisit(index)}>
-                    <Close fontSize="small" />
+                <VisitSummary expandIcon={<ArrowDropDown />}>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRemoveVisit(index)
+                    }}
+                  >
+                    <Close fontSize="small" color="action" />
                   </IconButton>
-                  {`${index + 1}ª visita: ${
-                    visit.visitDate?.toLocaleDateString('pt-BR', longMonthDateOptions) ?? '(Clique para editar)'
-                  }`}
-                  <Edit />
+                  {`Visita ${index + 1}`}
                 </VisitSummary>
                 <VisitItem>
                   <Label>
@@ -233,7 +248,7 @@ function BookingScreen() {
                     />
                   </Label>
                   <Label>
-                    Detalhes:
+                    Observações:
                     <textarea
                       minLength={1}
                       maxLength={2000}

@@ -47,7 +47,7 @@ export const VisitSummary = styled(AccordionSummary)`
   & > * {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
   }
 `
 
@@ -128,4 +128,11 @@ export const IconButton = styled.button`
   &:focus {
     outline: none;
   }
+`
+
+export const Tip = styled.p`
+  ${({ theme }) => theme.fonts.textMD}
+  color: ${({ theme }) => theme.colors.neutralL0};
+  text-align: center;
+  font-style: italic;
 `
