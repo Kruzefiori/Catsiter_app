@@ -29,6 +29,7 @@ export interface CalendarEvent {
   title?: string
   start: Date
   end: Date
+  notes?: string
   color?: string
 }
 
@@ -73,7 +74,13 @@ function CalendarPopup(props: CalendarPopupProps) {
 
   return (
     <PopupContainer onClick={onClose}>
-      <Popup ref={popupRef} width={width} height={height} onClick={(e) => e.stopPropagation()}>
+      <Popup
+        ref={popupRef}
+        width={width}
+        height={height}
+        eventCursor={onSelectEvent ? 'pointer' : 'default'}
+        onClick={(e) => e.stopPropagation()}
+      >
         <Calendar
           localizer={localizer}
           messages={calendarMessagesPtBr}
@@ -125,6 +132,7 @@ const PopupContainer = styled.div`
 interface PopupProps {
   width?: string
   height?: string
+  eventCursor: 'pointer' | 'default'
 }
 
 const Popup = styled.div<PopupProps>`
@@ -147,6 +155,7 @@ const Popup = styled.div<PopupProps>`
   & .rbc-event {
     font-size: 12px;
     color: ${({ theme }) => theme.colors.secondary};
+    cursor: ${({ eventCursor }) => eventCursor};
   }
 `
 

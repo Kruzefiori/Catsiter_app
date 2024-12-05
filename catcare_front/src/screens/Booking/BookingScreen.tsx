@@ -19,7 +19,7 @@ import {
   VisitsContainer,
   VisitSummary,
   VisitWrapper,
-  EditEventModal,
+  EventModal,
   IconButton,
   Tip
 } from './BookingScreen.styles'
@@ -42,6 +42,7 @@ function BookingScreen() {
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
   const [visits, setVisits] = useState<Visits[]>([])
   const [currentEvents, setCurrentEvents] = useState<CalendarEvent[]>([])
+  const [eventToShow, setEventToShow] = useState<CalendarEvent | null>(null)
   const [generalNotes, setGeneralNotes] = useState('')
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
 
@@ -80,7 +81,6 @@ function BookingScreen() {
       [field]: value
     }
     setVisits(updatedVisits)
-    toast.success('Visita atualizada com sucesso!')
   }
 
   const handleRemoveVisit = (index: number) => {
@@ -138,10 +138,18 @@ function BookingScreen() {
   const handleDeleteEvent = useCallback(
     (event: CalendarEvent) => {
       const updatedEvents = currentEvents.filter((currentEvent) => currentEvent.id !== event.id)
+      if (updatedEvents.length === currentEvents.length) {
+        toast.error('Você não pode remover essa visita')
+        return
+      }
       setCurrentEvents(updatedEvents)
     },
     [currentEvents]
   )
+
+  const handleShowEvent = useCallback((event: CalendarEvent) => {
+    setEventToShow(event)
+  }, [])
 
   const handleOpenCalendar = useCallback(() => {
     const events = [...visits]
@@ -151,6 +159,7 @@ function BookingScreen() {
         start: visit.visitDate,
         end: new Date(new Date(visit.visitDate).getTime() + visit.durationInMinutes * 60000),
         title: `Visita ${index + 1}`,
+        notes: visit.notes,
         color: CalendarColor.LIGHT_BLUE
       }))
     setCurrentEvents(events)
@@ -160,7 +169,7 @@ function BookingScreen() {
   const handleSaveVisits = useCallback(() => {
     if (currentEvents.length === 0) {
       setIsCalendarOpen(false)
-      toast.warning('Nenhuma visita foi adicionada')
+      toast.warning('As visitas foram salvas!')
       return
     }
     const newVisits = currentEvents.map((event) => ({
@@ -170,6 +179,7 @@ function BookingScreen() {
       notes: '',
       status: VisitStatus.PENDING
     }))
+
     setVisits(newVisits)
     setCurrentEvents([])
     setIsCalendarOpen(false)
@@ -210,13 +220,47 @@ function BookingScreen() {
             height="80%"
             defaultView="week"
             onSlotClick={handleSlotClick}
-            onSelectEvent={handleDeleteEvent}
+            onSelectEvent={handleShowEvent}
             onClose={() => setIsCalendarOpen(false)}
             onConfirm={handleSaveVisits}
             onCancel={handleCancelSchedule}
           />
         )}
-
+        {eventToShow && (
+          <EventModal>
+            <IconButton
+              style={{ position: 'absolute', right: 12, top: 12 }}
+              title={'fechar'}
+              onClick={() => setEventToShow(null)}
+            >
+              <Close fontSize="small" />
+            </IconButton>
+            <Label>
+              Nome: <Value>{eventToShow.title}</Value>
+            </Label>
+            <Label>
+              Data Início: <Value>{eventToShow.start.toLocaleString('pt-BR', longMonthDateOptions)}</Value>
+            </Label>
+            <Label>
+              Data Fim: <Value>{eventToShow.end.toLocaleString('pt-BR', longMonthDateOptions)}</Value>
+            </Label>
+            <Label>
+              Observações: <Value>{eventToShow.notes}</Value>
+            </Label>
+            <Button
+              variant="ghost"
+              size="sm"
+              fullWidth
+              onClick={() => {
+                setEventToShow(null)
+                handleDeleteEvent(eventToShow)
+              }}
+            >
+              <Delete />
+              Remover Visita
+            </Button>
+          </EventModal>
+        )}
         <VisitsContainer>
           <Button variant="ghost" fullWidth onClick={handleOpenCalendar}>
             <Add />

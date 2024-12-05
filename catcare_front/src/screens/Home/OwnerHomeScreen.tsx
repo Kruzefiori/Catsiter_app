@@ -168,6 +168,7 @@ function OwnerHomeScreen() {
             <Button
               variant="filled"
               fullWidth
+              size="md"
               onClick={() => navigate(`${RouterPaths.CREATE_BOOKING}/${catsitter.id}`)}
             >
               Contratar

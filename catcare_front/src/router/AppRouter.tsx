@@ -31,6 +31,7 @@ function AppRouter() {
             appLocation.pathname === RouterPaths.ROOT)) ||
         appLocation.pathname === '/'
       ) {
+        console.log('authState.user', authState.user)
         if (!authState.user.onBoardingDone) {
           navigate(RouterPaths.ROOT)
           return

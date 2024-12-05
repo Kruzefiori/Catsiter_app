@@ -96,7 +96,7 @@ export const Value = styled.span`
   color: ${({ theme }) => theme.colors.neutralL0};
 `
 
-export const EditEventModal = styled.div`
+export const EventModal = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
