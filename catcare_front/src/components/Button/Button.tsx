@@ -45,12 +45,12 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
   height: ${({ size }) => (size === 'sm' ? '32px' : size === 'md' ? '40px' : '48px')};
   border-radius: 8px;
-  padding: 8px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: ${({ gap }) => gap ?? 0}px;
-  ${({ theme, size }) => (size ? theme.fonts.infoSM : theme.fonts.infoLG)}
+  ${({ theme, size }) => (size === 'sm' ? theme.fonts.infoSM : size === 'md' ? theme.fonts.infoMD : theme.fonts.infoLG)}
 
   &:hover {
     cursor: pointer;
