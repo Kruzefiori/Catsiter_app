@@ -15,7 +15,7 @@ import { getStateColor } from '@/utils/getStateColor'
 function DefaultLayout() {
   const navigate = useNavigate()
   const appLocation = useLocation()
-  const { authState, setUserData, resetAuthToken, getAuthTokenFromStorage } = useContext(AuthContext)
+  const { authState, setUser, resetAuthToken, getAuthTokenFromStorage } = useContext(AuthContext)
 
   const [isFetched, setIsFetched] = useState(false)
 
@@ -35,7 +35,7 @@ function DefaultLayout() {
         toast.error('Ocorreu um erro ao tentar baixar seus dados.')
         return
       } else {
-        setUserData(response.data)
+        setUser(response.data)
         if (!response.data.onBoardingDone) navigate(RouterPaths.ONBOARDING)
       }
     }

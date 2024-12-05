@@ -14,7 +14,7 @@ interface AuthContextData {
   getAuthTokenFromStorage(): string
   saveAuthToken(authToken: string, expiresIn: string, createdAt: string): void
   resetAuthToken(): void
-  setUserData(user: User): void
+  setUser(user: User): void
   resetUserData(): void
 }
 
@@ -101,7 +101,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         resetAuthToken,
         resetUserData,
         saveAuthToken,
-        setUserData
+        setUser
       }}
     >
       {children}

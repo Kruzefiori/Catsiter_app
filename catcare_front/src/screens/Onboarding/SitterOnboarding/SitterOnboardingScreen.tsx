@@ -50,7 +50,7 @@ function SitterOnboardingScreen() {
     resolver: zodResolver(sitterSchema)
   })
   const navigate = useNavigate()
-  const { authState, setUserData } = useContext(AuthContext)
+  const { authState, setUser } = useContext(AuthContext)
 
   const [selectedCities, setSelectedCities] = useState<string[]>([])
   const [emptyCitiesError, setEmptyCitiesError] = useState(false)
@@ -92,7 +92,7 @@ function SitterOnboardingScreen() {
       //   return
       // }
 
-      setUserData({ ...authState.user, isCatsitter: true, onBoardingDone: true })
+      setUser({ ...authState.user, isCatsitter: true, onBoardingDone: true })
 
       toast.success('Cadastro finalizado!')
       navigate(RouterPaths.HOME)

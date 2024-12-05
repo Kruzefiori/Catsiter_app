@@ -27,7 +27,7 @@ function OwnerOnboardingScreen() {
     resolver: zodResolver(ownerSchema)
   })
   const navigate = useNavigate()
-  const { authState, setUserData } = useContext(AuthContext)
+  const { authState, setUser } = useContext(AuthContext)
 
   const handleFinish = useCallback(async (data: OwnerSchema) => {
     const body = {
@@ -48,7 +48,7 @@ function OwnerOnboardingScreen() {
     //   return
     // }
 
-    setUserData({ ...authState.user, isCatsitter: false, onBoardingDone: true })
+    setUser({ ...authState.user, isCatsitter: false, onBoardingDone: true })
     toast.success('Cadastro finalizado!')
     navigate(RouterPaths.HOME)
   }, [])
