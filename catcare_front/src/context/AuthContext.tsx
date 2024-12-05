@@ -30,7 +30,7 @@ enum StorageItems {
   TokenCreatedAt = 'cat_care-token-created_at'
 }
 
-const INITIAL_STATE_USER: User = { id: null, name: null, email: null, isCatsitter: null, onBoardingDone: null }
+const INITIAL_STATE_USER: User = { id: null, name: null, email: null, isCatsitter: true, onBoardingDone: true } // TODO: isCatsitter e onBoardingDone não devem ser true
 
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [authState, setAuthState] = useState<AuthState>({
@@ -43,7 +43,15 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   }
 
   const setUser = (user: User) => {
-    setAuthState((prev) => ({ ...prev, user }))
+    setAuthState((prev) => {
+      return {
+        ...prev,
+        user: {
+          ...prev.user,
+          ...user
+        }
+      }
+    })
   }
 
   const isLogged = (): boolean => {
@@ -85,11 +93,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     localStorage.removeItem(StorageItems.TokenCreatedAt)
     setToken(null)
   }
-  const setUserData = (user: User): void => {
-    setUser(user)
-  }
   const resetUserData = (): void => {
-    setUser(null)
+    setAuthState((prev) => ({ ...prev, user: INITIAL_STATE_USER }))
   }
 
   return (

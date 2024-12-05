@@ -10,7 +10,6 @@ import { CatRegisterScreen } from '@/screens/CatRegister/CatRegister'
 import { DefaultLayout } from '@/layout/DefaultLayout'
 import { SitterOnboardingScreen } from '@/screens/Onboarding/SitterOnboarding'
 import { OwnerOnboardingScreen } from '@/screens/Onboarding/OwnerOnboarding'
-import { RootScreen } from '@/screens/Root'
 import { AuthContext } from '@/context/AuthContext'
 import { BookingScreen } from '@/screens/Booking'
 
@@ -25,30 +24,25 @@ function AppRouter() {
         navigate(RouterPaths.LOGIN)
         return
       } else if (
-        (isLogged() &&
-          (appLocation.pathname === RouterPaths.LOGIN ||
-            appLocation.pathname === RouterPaths.REGISTER ||
-            appLocation.pathname === RouterPaths.ROOT)) ||
-        appLocation.pathname === '/'
+        isLogged() &&
+        (appLocation.pathname === RouterPaths.LOGIN ||
+          appLocation.pathname === RouterPaths.REGISTER ||
+          appLocation.pathname === '/')
       ) {
-        console.log('authState.user', authState.user)
-        if (!authState.user.onBoardingDone) {
-          navigate(RouterPaths.ROOT)
-          return
-        }
+        navigate(RouterPaths.HOME)
       }
     }
 
     run()
 
-    const intervalId = setInterval(run, 1000 * 60 * 5)
+    // const intervalId = setInterval(run, 1000 * 60 * 5)
+    const intervalId = setInterval(run, 1000 * 15)
 
     return () => clearInterval(intervalId)
-  }, [])
+  }, [appLocation.pathname])
 
   return (
     <Routes>
-      <Route path={RouterPaths.ROOT} element={<RootScreen />} />
       <Route path={RouterPaths.LOGIN} element={<LoginScreen />} />
       <Route path={RouterPaths.REGISTER} element={<RegisterScreen />} />
       <Route path="/" element={<DefaultLayout />}>

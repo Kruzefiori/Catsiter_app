@@ -67,7 +67,6 @@ function SitterOnboardingScreen() {
 
   const handleFinish = useCallback(
     async (data: SitterSchema) => {
-      console.log(data, authState.user.id)
       if (selectedCities.length === 0) {
         setEmptyCitiesError(true)
         return

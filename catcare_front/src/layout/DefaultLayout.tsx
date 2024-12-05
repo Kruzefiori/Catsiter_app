@@ -15,7 +15,7 @@ import { getStateColor } from '@/utils/getStateColor'
 function DefaultLayout() {
   const navigate = useNavigate()
   const appLocation = useLocation()
-  const { authState, setUser, resetAuthToken, getAuthTokenFromStorage } = useContext(AuthContext)
+  const { authState, setUser, resetAuthToken, resetUserData, getAuthTokenFromStorage } = useContext(AuthContext)
 
   const [isFetched, setIsFetched] = useState(false)
 
@@ -23,7 +23,6 @@ function DefaultLayout() {
 
   useEffect(() => {
     const run = async () => {
-      console.log('get user data')
       const response = await axios.get<User>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/me`, {
         headers: {
           'Content-Type': 'application/json',
@@ -36,12 +35,10 @@ function DefaultLayout() {
         return
       } else {
         setUser(response.data)
-        if (!response.data.onBoardingDone) navigate(RouterPaths.ONBOARDING)
       }
     }
 
     if (!isFetched) {
-      console.log('isFetched', isFetched)
       run()
       setIsFetched(true)
     }
@@ -50,6 +47,7 @@ function DefaultLayout() {
   const handleLogout = () => {
     toast.info('Saindo da sua conta')
     resetAuthToken()
+    resetUserData()
     navigate(RouterPaths.LOGIN)
   }
 
