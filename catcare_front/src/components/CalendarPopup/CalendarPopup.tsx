@@ -1,4 +1,5 @@
 import { Calendar, momentLocalizer, SlotInfo } from 'react-big-calendar'
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import moment from 'moment'
 import 'moment/dist/locale/pt-br'
 import 'moment-timezone'
@@ -8,6 +9,7 @@ import styled from 'styled-components'
 import { useRef } from 'react'
 import { Button } from '../Button/Button'
 import { calendarMessagesPtBr } from './utils'
+import { toast } from 'react-toastify'
 
 export enum CalendarColor {
   // Light colors
@@ -38,6 +40,8 @@ export interface CalendarPopupProps {
   height?: string
   events: CalendarEvent[]
   defaultView?: 'month' | 'week' | 'day' | 'agenda'
+  // add a prop that allows add events in the same date and time
+  addEventsInSameDate?: boolean
   onConfirm?: () => void
   onCancel?: () => void
   onClose: () => void
@@ -48,6 +52,7 @@ export interface CalendarPopupProps {
 moment.locale('pt-br')
 moment.tz.setDefault('America/Sao_Paulo')
 const localizer = momentLocalizer(moment)
+const DnDCalendar = withDragAndDrop<CalendarEvent>(Calendar)
 
 function CalendarPopup(props: CalendarPopupProps) {
   const {
@@ -55,6 +60,7 @@ function CalendarPopup(props: CalendarPopupProps) {
     height,
     width,
     defaultView = 'month',
+    addEventsInSameDate = false,
     onClose,
     onSlotClick,
     onCancel,
@@ -72,6 +78,27 @@ function CalendarPopup(props: CalendarPopupProps) {
     }
   }
 
+  const handleSelectSlot = (slotInfo: SlotInfo) => {
+    if (!onSlotClick) return
+    if (addEventsInSameDate) {
+      onSlotClick(slotInfo)
+      return
+    }
+
+    // Verify if the selected slot is not into any event in events array
+    const isSlotAvailable = events.every((event) => {
+      const slotStart = moment(slotInfo.start).toDate()
+      const slotEnd = moment(slotInfo.end).toDate()
+      const eventStart = moment(event.start).toDate()
+      const eventEnd = moment(event.end).toDate()
+
+      return slotEnd <= eventStart || slotStart >= eventEnd
+    })
+
+    if (!isSlotAvailable) toast.error('Você não pode agendar um horário que já está ocupado')
+    else onSlotClick(slotInfo)
+  }
+
   return (
     <PopupContainer onClick={onClose}>
       <Popup
@@ -81,7 +108,7 @@ function CalendarPopup(props: CalendarPopupProps) {
         eventCursor={onSelectEvent ? 'pointer' : 'default'}
         onClick={(e) => e.stopPropagation()}
       >
-        <Calendar
+        <DnDCalendar
           localizer={localizer}
           messages={calendarMessagesPtBr}
           defaultDate={moment().toDate()}
@@ -90,7 +117,7 @@ function CalendarPopup(props: CalendarPopupProps) {
           min={new Date(0, 0, 0, 8)}
           max={new Date(0, 0, 0, 20)}
           selectable
-          onSelectSlot={onSlotClick}
+          onSelectSlot={handleSelectSlot}
           onSelectEvent={onSelectEvent}
           eventPropGetter={eventStyleGetter}
           style={{ height: '87%', width: '100%' }}
