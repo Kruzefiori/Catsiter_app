@@ -52,7 +52,7 @@ function DefaultLayout() {
   }
 
   return (
-    <div>
+    <LayoutContainer>
       <Header>
         <AccountWrapper>
           <img src={userPlaceholderImg} alt="" />
@@ -75,11 +75,25 @@ function DefaultLayout() {
       <main>
         <Outlet />
       </main>
-    </div>
+    </LayoutContainer>
   )
 }
 
 export { DefaultLayout }
+
+const LayoutContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  height: 100%;
+  width: 100%;
+
+  & main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+`
 
 const Header = styled.header`
   display: flex;

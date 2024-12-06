@@ -213,7 +213,8 @@ export const mockedUserBookings: Booking[] = [
     requestedId: 2,
     startDate: new Date('2024-12-01T00:00:00'),
     endDate: new Date('2024-12-10T00:00:00'),
-    generalNotes: 'Gato muito bravo.',
+    generalNotes:
+      'O gato é muito tímido e pode se esconder embaixo da cama ou atrás do sofá. Por favor, não o force a sair. Deixe um pouco de comida e água perto do esconderijo dele. Se ele se sentir confortável, você pode tentar atraí-lo com o brinquedo de varinha que está na gaveta da estante.',
     status: BookingStatus.PENDING,
     totalVisits: 3,
     createdAt: new Date('2024-12-01T00:00:00'),
@@ -248,7 +249,8 @@ export const mockedUserBookings: Booking[] = [
     requestedId: 2,
     startDate: new Date('2024-12-15T00:00:00'),
     endDate: new Date('2024-12-20T00:00:00'),
-    generalNotes: 'Gato muito doente.',
+    generalNotes:
+      'Lembre-se de limpar a caixa de areia antes de sair. Use o saco de lixo biodegradável que está no armário do banheiro e reponha com a areia nova que está no balde azul. Ele gosta que a caixa esteja sempre limpa e pode ficar estressado se não estiver.',
     status: BookingStatus.PENDING,
     totalVisits: 2,
     createdAt: new Date('2024-12-01T00:00:00'),
@@ -276,7 +278,8 @@ export const mockedUserBookings: Booking[] = [
     requestedId: 2,
     startDate: new Date('2024-12-25T00:00:00'),
     endDate: new Date('2024-12-30T00:00:00'),
-    generalNotes: 'Gato muito mimado.',
+    generalNotes:
+      'No almoço, sirva metade de uma lata da ração úmida e misture com a ração seca que está no pote verde. Ele tem tendência a comer rápido, então, divida a refeição em duas porções com um intervalo de 15 minutos para evitar vômitos.',
     status: BookingStatus.PENDING,
     totalVisits: 1,
     createdAt: new Date('2024-12-01T00:00:00'),
@@ -304,7 +307,8 @@ export const mockedUserBookings: Booking[] = [
     requestedId: 2,
     startDate: new Date('2024-12-15T00:00:00'),
     endDate: new Date('2024-12-20T00:00:00'),
-    generalNotes: 'Gato muito doente.',
+    generalNotes:
+      'Ele precisa tomar um comprimido de vermífugo hoje. Envolva o comprimido em um pedacinho de patê (está na geladeira) para facilitar. Se ele recusar, há uma seringa de administração no kit de medicamentos dele, mas só use se for realmente necessário.',
     status: BookingStatus.PENDING,
     totalVisits: 2,
     createdAt: new Date('2024-12-01T00:00:00'),
@@ -332,7 +336,8 @@ export const mockedUserBookings: Booking[] = [
     requestedId: 2,
     startDate: new Date('2024-12-25T00:00:00'),
     endDate: new Date('2024-12-30T00:00:00'),
-    generalNotes: 'Gato muito mimado.',
+    generalNotes:
+      'Antes de sair, passe um tempo brincando com ele, principalmente com os ratinhos de brinquedo. Ele tem muita energia acumulada e isso o ajuda a relaxar. Não esqueça de guardar os brinquedos no cesto, porque ele pode tentar morder os fios.',
     status: BookingStatus.PENDING,
     totalVisits: 1,
     createdAt: new Date('2024-12-01T00:00:00'),
@@ -353,34 +358,5 @@ export const mockedUserBookings: Booking[] = [
         notes: 'Meus gatos não gostam de visitas muito longas.'
       }
     ]
-  }
-]
-
-type Requester = User & { address: string }
-
-export const requestersData: Requester[] = [
-  {
-    id: 1,
-    name: 'Rodrigo Oliveira',
-    address: 'Rua dos Gatos, 123',
-    email: 'rodrigo@email.com',
-    isCatsitter: false,
-    onBoardingDone: true
-  },
-  {
-    id: 3,
-    name: 'João Silva',
-    address: 'Avenida dos Felinos, 456',
-    email: 'joao@email.com',
-    isCatsitter: false,
-    onBoardingDone: true
-  },
-  {
-    id: 5,
-    name: 'Maria Souza',
-    address: 'Travessa dos Gatinhos, 789',
-    email: 'maria@email.com',
-    isCatsitter: false,
-    onBoardingDone: true
   }
 ]

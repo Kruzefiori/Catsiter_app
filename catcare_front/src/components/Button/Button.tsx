@@ -43,7 +43,8 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
       : variant === 'light-filled'
       ? color ?? theme.colors.neutralTertiary
       : 'transparent'};
-  color: ${({ theme, variant }) => (variant === 'filled' ? theme.colors.neutralL5 : theme.colors.secondary)};
+  color: ${({ theme, variant, color }) =>
+    variant === 'filled' ? theme.colors.neutralL5 : color ?? theme.colors.secondary};
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'fit-content')};
   height: ${({ size }) => (size === 'sm' ? '32px' : size === 'md' ? '40px' : '48px')};
   border-radius: 8px;
