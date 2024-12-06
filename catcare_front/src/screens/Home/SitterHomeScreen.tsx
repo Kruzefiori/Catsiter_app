@@ -1,59 +1,64 @@
-import styled from 'styled-components'
 import { Button } from '@/components/Button/Button'
 import { useContext, useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import { AuthContext } from '@/context'
 import { toast } from 'react-toastify'
-import { User } from '@/domain/models/User'
-import type { Booking } from '@/domain/models/Booking'
+import { mockedUserBookings, requestersData } from './utils'
+import {
+  BookingCard,
+  CardsList,
+  DateInfo,
+  Footer,
+  Header,
+  Address,
+  Name,
+  Notes,
+  SitterHomeContainer,
+  VisitWrapper,
+  VisitSummary,
+  IconButton,
+  VisitItem,
+  Info,
+  Details
+} from './SitterStyles'
+import { Booking } from '@/domain/models/Booking'
+import { ArrowDropDown } from '@mui/icons-material'
 
 function SitterHomeScreen() {
   const { getAuthTokenFromStorage, authState } = useContext(AuthContext)
 
   const [pendingBookings, setPendingBookings] = useState<Booking[]>([])
   const [acceptedBookings, setAcceptedBookings] = useState<Booking[]>([])
-  const [catSitterProfile, setCatSitterProfile] = useState<User | null>(null)
 
   useEffect(() => {
-    const fetchBookings = async () => {
-      const bookingsResponse = await axios.get<Booking[]>(
-        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
-          authState.user.id
-        }&status=PENDING`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAuthTokenFromStorage()}`
-          }
-        }
-      )
+    // const fetchBookings = async () => {
+    //   const bookingsResponse = await axios.get<Booking[]>(
+    //     `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
+    //       authState.user.id
+    //     }&status=PENDING`,
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${getAuthTokenFromStorage()}`
+    //       }
+    //     }
+    //   )
 
-      if (bookingsResponse.status < 200 || bookingsResponse.status >= 300) {
-        toast.error('Não foi possível buscar os bookings.')
-        return
-      }
+    //   if (bookingsResponse.status < 200 || bookingsResponse.status >= 300) {
+    //     toast.error('Não foi possível buscar os bookings.')
+    //     return
+    //   }
 
-      setPendingBookings(bookingsResponse.data)
+    //   setPendingBookings(bookingsResponse.data)
+    // }
 
-      const catSitterProfileResponse = await axios.get<User>(
-        `${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/get-profile?userId=${authState.user.id}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getAuthTokenFromStorage()}`
-          }
-        }
-      )
+    // fetchBookings()
 
-      if (catSitterProfileResponse.status < 200 || catSitterProfileResponse.status >= 300) {
-        toast.error('Não foi possível buscar o perfil do catsitter.')
-        return
-      }
+    const myPendingBookings: Booking[] = mockedUserBookings.filter((booking) => booking.status === 'PENDING')
+    setPendingBookings(myPendingBookings)
 
-      setCatSitterProfile(catSitterProfileResponse.data)
-    }
-
-    fetchBookings()
+    const myAcceptedBookings: Booking[] = mockedUserBookings.filter((booking) => booking.status === 'ACCEPTED')
+    setAcceptedBookings(myAcceptedBookings)
   }, [])
 
   const handleAcceptBooking = useCallback(async (bookingId: number) => {
@@ -107,29 +112,54 @@ function SitterHomeScreen() {
     <SitterHomeContainer>
       <CardsList>
         {pendingBookings.map((booking) => (
-          <Booking key={booking.id}>
-            <Header>
-              {/* TODO: fetch user name */}
-              <Name>{booking.requesterId}</Name>
-              <button>Mais opções</button>
-            </Header>
-            <Location>Localização abrev.</Location>
+          <BookingCard key={booking.id}>
             <DateInfo>
               {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
             </DateInfo>
-            {[...Array(booking.totalVisits)].map((_, index) => (
-              <Visit key={index}>Visita {index + 1}</Visit>
+            <Header>
+              <Name>
+                <strong>Solicitante:</strong> {requestersData.find((user) => user.id === booking.requesterId)?.name}
+              </Name>
+            </Header>
+            <Address>
+              <strong>Endereço:</strong> {requestersData.find((user) => user.id === booking.requesterId)?.address}
+            </Address>
+            {[...booking.visits].map((visit, index) => (
+              <VisitWrapper key={visit.visitDate?.toISOString() ?? index}>
+                <VisitSummary expandIcon={<ArrowDropDown />}>{`Visita ${index + 1}`}</VisitSummary>
+                <VisitItem>
+                  <Info>
+                    <strong>Data:</strong> {visit.visitDate?.toLocaleDateString()}
+                  </Info>
+                  <Info>
+                    <strong>Observações:</strong>
+                    <Details>{visit.notes || <i>Sem observações.</i>}</Details>
+                  </Info>
+                </VisitItem>
+              </VisitWrapper>
             ))}
             <Notes>{booking.generalNotes}</Notes>
             <Footer>
-              <Button variant="filled" size="sm" fullWidth onClick={() => handleAcceptBooking(booking.id)}>
-                Aceitar
-              </Button>
-              <Button variant="filled" size="sm" fullWidth onClick={() => handleRejectBooking(booking.id)}>
+              <Button
+                variant="filled"
+                color="#d32f2f"
+                size="sm"
+                fullWidth
+                onClick={() => handleRejectBooking(booking.id)}
+              >
                 Recusar
               </Button>
+              <Button
+                variant="filled"
+                color="#00a128"
+                size="sm"
+                fullWidth
+                onClick={() => handleAcceptBooking(booking.id)}
+              >
+                Aceitar
+              </Button>
             </Footer>
-          </Booking>
+          </BookingCard>
         ))}
       </CardsList>
     </SitterHomeContainer>
@@ -137,50 +167,3 @@ function SitterHomeScreen() {
 }
 
 export { SitterHomeScreen }
-
-const SitterHomeContainer = styled.div`
-  padding: 8px 4px;
-`
-
-const CardsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const Booking = styled.div`
-  background-color: ${({ theme }) => theme.colors.neutralTertiary};
-  border: 2px solid ${({ theme }) => theme.colors.neutralL2};
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 6px;
-  border-radius: 8px;
-`
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-`
-
-const Name = styled.p``
-
-const Notes = styled.p``
-const DateInfo = styled.p``
-const Location = styled.p``
-const Visit = styled.div`
-  width: 100%;
-  height: 50px;
-  border: 1px solid ${({ theme }) => theme.colors.neutralL1};
-  border-radius: 6px;
-  padding: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const Footer = styled.span`
-  display: flex;
-  justify-content: space-between;
-  padding: 6px;
-`
