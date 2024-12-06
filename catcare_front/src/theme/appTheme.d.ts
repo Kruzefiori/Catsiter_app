@@ -21,6 +21,7 @@ export interface AppTheme {
     neutralL4: string
     neutralL5: string
     neutralSecondary: string
+    neutralTertiary: string
 
     primary: string
 

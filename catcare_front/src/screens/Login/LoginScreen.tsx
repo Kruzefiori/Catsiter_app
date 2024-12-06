@@ -3,7 +3,7 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
 import GoogleIcon from '@assets/google.svg?react'
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { IconButton, InputAdornment, TextField } from '@mui/material'
 
 import { LoginContainer, Header, Title, Subtitle, InputWrapper, InfoText, Form } from './LoginScreen.styles'
@@ -11,30 +11,17 @@ import { useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoginSchema, loginSchema } from './validation'
-import { Link, NavigateOptions, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { saveAuthToken, setUserData } from '@/services/Authenticator'
+
 import axios from 'axios'
 import { useGoogleLogin } from '@react-oauth/google'
 import { toast } from 'react-toastify'
-
-type LoginBody = {
-  email: string
-  name: string
-}
+import { AuthContext } from '@/context/AuthContext'
 
 type LoginResponse = {
   token: string
-}
-
-type GoogleResponse = {
-  token: string
-  user: {
-    email: string
-    id: string
-    name: string
-    picture: string
-  }
+  expiresIn: string
 }
 
 function LoginScreen() {
@@ -47,6 +34,7 @@ function LoginScreen() {
     resolver: zodResolver(loginSchema)
   })
 
+  const { saveAuthToken } = useContext(AuthContext)
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
 
@@ -58,40 +46,27 @@ function LoginScreen() {
     })
 
     if (response.status < 200 || response.status >= 300) {
-      toast.error('Não foi possível fazer o login. (MELHORE A MENSAGEM!)') // TODO: Não esquece disso
+      toast.error('Não foi possível fazer o login. ') // TODO: (MELHORE A MENSAGEM!)
       return
     }
 
-    saveAuthToken(response.data.token)
+    saveAuthToken(response.data.token, response.data.expiresIn, new Date().getTime().toString())
     toast.success('Login feito com sucesso!')
-    navigate(RouterPaths.HOME, {
-      state: {
-        isGoogleUser: false
-      }
-    })
+    navigate(RouterPaths.HOME)
     reset()
   }, [])
 
   const handleGoogleLogin = useGoogleLogin({
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
-      const response = await axios.post<GoogleResponse>('http://localhost:3000/api/auth/google', {
+      const response = await axios.post<LoginResponse>('http://localhost:3000/api/auth/google', {
         code: codeResponse.code
       })
 
-      saveAuthToken(response.data.token)
-      setUserData({
-        name: response.data.user.name,
-        email: response.data.user.email,
-        picture: response.data.user.picture
-      })
+      saveAuthToken(response.data.token, response.data.expiresIn, new Date().getTime().toString())
 
       toast.success('Login realizado com sucesso')
-      navigate(RouterPaths.HOME, {
-        state: {
-          isGoogleUser: true
-        }
-      })
+      navigate(RouterPaths.HOME)
     },
     onError: (errorResponse) => {
       toast.error(`${errorResponse.error}: ${errorResponse.error_description}`)
@@ -145,12 +120,12 @@ function LoginScreen() {
           </InfoText>
         </InputWrapper>
 
-        <Button type="submit" variant="filled">
+        <Button type="submit" variant="filled" fullWidth>
           Entrar
         </Button>
       </Form>
       <InfoText>ou</InfoText>
-      <Button variant="outline" gap={10} onClick={handleGoogleLogin}>
+      <Button variant="outline" gap={10} fullWidth onClick={handleGoogleLogin}>
         <GoogleIcon width={16} height={16} /> Entrar com o Google
       </Button>
       <InfoText>

@@ -9,6 +9,7 @@ export const LightTheme: AppTheme = {
     neutralL4: '#F2F2F2',
     neutralL5: '#FCFCFC',
     neutralSecondary: '#5A5A5A',
+    neutralTertiary: '#E3E3E3',
 
     primary: '#00A877',
 
