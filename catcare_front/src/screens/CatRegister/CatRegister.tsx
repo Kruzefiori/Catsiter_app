@@ -185,13 +185,10 @@ function CatRegisterScreen() {
             <InputLabel>Sexo</InputLabel>
             <RadioGroup name="gender" orientation="horizontal" {...register('gender')}>
               <List orientation="horizontal" sx={{ gap: 3 }}>
-                {[
-                  { id: 'female', value: 'Fêmea' },
-                  { id: 'male', value: 'Macho' }
-                ].map((item) => (
+                {['fêmea', 'macho'].map((item) => (
                   <ListItemButton
                     variant="plain"
-                    key={item.id}
+                    key={item}
                     sx={{
                       boxShadow: 'none',
                       border: 'none',
@@ -205,8 +202,8 @@ function CatRegisterScreen() {
                     <RadioButton
                       overlay
                       variant="plain"
-                      value={item.id}
-                      label={item.value}
+                      value={item}
+                      label={item}
                       disableIcon
                       color="neutral"
                       {...register('gender')}

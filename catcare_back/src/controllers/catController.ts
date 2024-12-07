@@ -4,7 +4,6 @@ import catService, { catUpdate } from "../services/catService";
 
 class catController {
 	async getCats(req: Request, res: Response) {
-		console.log(req.body.userId);
 		const userId = Number(req.body.userId);
 		try {
 			const cats = await catService.getCats(userId);

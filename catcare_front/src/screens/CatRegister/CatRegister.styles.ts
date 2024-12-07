@@ -162,7 +162,9 @@ export const RadioButton = styled(Radio).attrs(({ theme }) => ({
       })
     })
   }
-}))``
+}))`
+  text-transform: capitalize;
+`
 
 export const InputLabel = styled.label`
   ${({ theme }) => theme.fonts.textLG}

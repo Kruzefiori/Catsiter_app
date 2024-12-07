@@ -63,7 +63,7 @@ function ProfileScreen() {
               <strong>Idade</strong>: {ageByMonths(cat.age)}
             </span>
             <span>
-              <strong>Gênero</strong>: {cat.gender}
+              <strong>Sexo</strong>: {cat.gender}
             </span>
             <span>
               <strong>Raça</strong>: {cat.breed}
@@ -72,16 +72,16 @@ function ProfileScreen() {
               <strong>Peso</strong>: {cat.weight} kg
             </span>
             <span>
-              <strong>Castrado</strong>: {cat.castrated ? 'Sim' : 'Não'}
+              <strong>Castrado</strong>: {cat.castrated ? '✅' : '❌'}
             </span>
             <span>
               <strong>Condições</strong>: {cat.conditions.replace(',', ', ')}
             </span>
             <span>
-              <strong>Tela de proteção</strong>: {cat.protectionScreen ? 'Sim' : 'Não'}
+              <strong>Tela de proteção</strong>: {cat.protectionScreen ? '✅' : '❌'}
             </span>
             <span>
-              <strong>Acesso à rua</strong>: {cat.streetAccess ? 'Sim' : 'Não'}
+              <strong>Acesso à rua</strong>: {cat.streetAccess ? '✅' : '❌'}
             </span>
           </CatItem>
         </CatWrapper>
