@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button/Button'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { toast } from 'react-toastify'
 
@@ -11,7 +11,9 @@ import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import { User } from '@/domain/models/User'
 import { getStateColor } from '@/utils/getStateColor'
-import { Home } from '@mui/icons-material'
+import { CalendarToday, Home } from '@mui/icons-material'
+import { CalendarColor, CalendarEvent, CalendarPopup } from '@/components/CalendarPopup'
+import { mockedUserBookings } from '@/screens/Home/utils'
 
 function DefaultLayout() {
   const navigate = useNavigate()
@@ -19,8 +21,25 @@ function DefaultLayout() {
   const { authState, setUser, resetAuthToken, resetUserData, getAuthTokenFromStorage } = useContext(AuthContext)
 
   const [isFetched, setIsFetched] = useState(false)
+  const [showAgenda, setShowAgenda] = useState(false)
 
   const user = useMemo(() => authState?.user, [authState])
+  const sitterAgenda = useMemo(() => {
+    const events: CalendarEvent[] = []
+    mockedUserBookings.forEach((booking) => {
+      booking.visits.forEach((visit) => {
+        events.push({
+          id: visit.id,
+          title: 'Ocupado',
+          start: new Date(visit.visitDate),
+          end: new Date(new Date(visit.visitDate).getTime() + visit.durationInMinutes * 60000),
+          color: CalendarColor.LIGHT_BLUE
+        })
+      })
+    })
+
+    return events
+  }, [])
 
   useEffect(() => {
     const run = async () => {
@@ -45,6 +64,28 @@ function DefaultLayout() {
     }
   }, [])
 
+  useEffect(() => {
+    // const fetchBookings = async () => {
+    //   const bookingsResponse = await axios.get<Booking[]>(
+    //     `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
+    //       authState.user.id
+    //     }&status=PENDING`,
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         Authorization: `Bearer ${getAuthTokenFromStorage()}`
+    //       }
+    //     }
+    //   )
+    //   if (bookingsResponse.status < 200 || bookingsResponse.status >= 300) {
+    //     toast.error('Não foi possível buscar os bookings.')
+    //     return
+    //   }
+    //   setPendingBookings(bookingsResponse.data)
+    // }
+    // fetchBookings()
+  }, [])
+
   const handleLogout = () => {
     toast.info('Saindo da sua conta')
     resetAuthToken()
@@ -63,12 +104,18 @@ function DefaultLayout() {
               <Home color="action" />
             </IconButton>
           )}
+          {authState?.user?.isCatsitter && (
+            <IconButton onClick={() => setShowAgenda(true)} title="Ver agenda">
+              <CalendarToday color="action" />
+            </IconButton>
+          )}
           <Button size="sm" variant="light-filled" fullWidth onClick={handleLogout}>
             SAIR
           </Button>
         </AccountWrapper>
       </Header>
       <main>
+        {showAgenda && <CalendarPopup events={sitterAgenda} onClose={() => setShowAgenda(false)} />}
         <Outlet />
       </main>
     </LayoutContainer>

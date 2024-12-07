@@ -43,18 +43,6 @@ function OwnerHomeScreen() {
 
     // fetchCatSitters()
 
-    // const catsitterBookings = bookings.filter((booking) => booking.requestedId === catsitterId)
-    // const events: CatSitterCalendar['events'] = []
-
-    // catsitterBookings.forEach((booking) => {
-    //   booking.visits.forEach((visit) => {
-    //     events.push({
-    //       title: `Visita ${visit.id}`,
-    //       start: new Date(visit.visitDate),
-    //       end: new Date(visit.visitDate)
-    //     })
-    //   })
-    // })
     // Do the same for each catsitter
     mockedCatSitters.forEach((catsitter) => {
       const events: CalendarEvent[] = []

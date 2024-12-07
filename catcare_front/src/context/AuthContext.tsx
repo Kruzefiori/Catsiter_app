@@ -30,7 +30,7 @@ enum StorageItems {
   TokenCreatedAt = 'cat_care-token-created_at'
 }
 
-const INITIAL_STATE_USER: User = { id: null, name: null, email: null, isCatsitter: false, onBoardingDone: true } // TODO: isCatsitter e onBoardingDone não devem ser true
+const INITIAL_STATE_USER: User = { id: null, name: null, email: null, isCatsitter: true, onBoardingDone: true } // TODO: isCatsitter e onBoardingDone não devem ser true
 
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [authState, setAuthState] = useState<AuthState>({
