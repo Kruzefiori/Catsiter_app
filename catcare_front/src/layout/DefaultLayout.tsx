@@ -67,7 +67,7 @@ function DefaultLayout() {
               <Link to={RouterPaths.HOME}>Página inicial</Link>
             </LinkButton>
             <LinkButton active={appLocation.pathname === RouterPaths.CAT_REGISTER}>
-              <Link to={RouterPaths.CAT_REGISTER}>Cadastrar de gatos</Link>
+              <Link to={RouterPaths.CAT_REGISTER}>Cadastrar gatos</Link>
             </LinkButton>
           </ul>
         </Nav>
