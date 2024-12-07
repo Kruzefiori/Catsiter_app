@@ -2,149 +2,162 @@ import { Prisma } from "@prisma/client";
 import prisma from "../client";
 
 interface catAdd {
-  name: string;
-  age: number;
-  gender: string;
-  owner: number;
-  breed: string;
-  weight: number;
-  castrated: boolean;
-  conditions: string;
-  protectionScreen: boolean;
-  streetAccess: boolean;
+	name: string;
+	age: number;
+	gender: string;
+	owner: number;
+	breed: string;
+	weight: number;
+	castrated: boolean;
+	conditions: string;
+	protectionScreen: boolean;
+	streetAccess: boolean;
 }
 
 export interface catUpdate {
-  name?: string;
-  age?: number;
-  gender?: string;
-  owner?: number;
-  breed?: string;
-  weight?: number;
-  castrated?: boolean;
-  conditions?: string;
-  protectionScreen?: boolean;
-  streetAccess?: boolean;
+	name?: string;
+	age?: number;
+	gender?: string;
+	owner?: number;
+	breed?: string;
+	weight?: number;
+	castrated?: boolean;
+	conditions?: string;
+	protectionScreen?: boolean;
+	streetAccess?: boolean;
 }
 
 class CatService {
-  prisma = prisma;
+	prisma = prisma;
 
-  async addCat(body: catAdd) {
-    const {
-      name,
-      age,
-      gender,
-      owner,
-      breed,
-      weight,
-      castrated,
-      conditions,
-      protectionScreen,
-      streetAccess,
-    } = body;
-    try {
-      await this.prisma.cat.create({
-        data: {
-          name,
-          age,
-          gender,
-          owner: {
-            connect: { id: owner },
-          },
-          breed,
-          weight,
-          castrated,
-          conditions,
-          streetAccess,
-          protectionScreen,
-        },
-      });
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        throw new Error(err.message);
-      }
-    }
-    return;
-  }
+	async getCats(userId: number) {
+		try {
+			const cats = await this.prisma.cat.findMany({
+				where: { ownerId: userId },
+			});
+			return cats;
+		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError) {
+				throw new Error(err.message);
+			}
+		}
+	}
 
-  async updateCat(catId: number, userId: number, data: catUpdate) {
-    const {
-      name,
-      age,
-      gender,
-      owner,
-      breed,
-      weight,
-      castrated,
-      conditions,
-      protectionScreen,
-      streetAccess,
-    } = data;
+	async addCat(body: catAdd) {
+		const {
+			name,
+			age,
+			gender,
+			owner,
+			breed,
+			weight,
+			castrated,
+			conditions,
+			protectionScreen,
+			streetAccess,
+		} = body;
+		try {
+			await this.prisma.cat.create({
+				data: {
+					name,
+					age,
+					gender,
+					owner: {
+						connect: { id: owner },
+					},
+					breed,
+					weight,
+					castrated,
+					conditions,
+					streetAccess,
+					protectionScreen,
+				},
+			});
+		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError) {
+				throw new Error(err.message);
+			}
+		}
+		return;
+	}
 
-    const cat = await this.prisma.cat.findUnique({
-      where: { id: catId },
-    });
+	async updateCat(catId: number, userId: number, data: catUpdate) {
+		const {
+			name,
+			age,
+			gender,
+			owner,
+			breed,
+			weight,
+			castrated,
+			conditions,
+			protectionScreen,
+			streetAccess,
+		} = data;
 
-    if (!cat) {
-      throw new Error("Gato não encontrado");
-    }
+		const cat = await this.prisma.cat.findUnique({
+			where: { id: catId },
+		});
 
-    if (cat.ownerId !== userId) {
-      throw new Error("Você não tem permissão para editar este gato");
-    }
+		if (!cat) {
+			throw new Error("Gato não encontrado");
+		}
 
-    try {
-      await this.prisma.cat.update({
-        where: { id: catId },
-        data: {
-          name: name ? name : cat.name,
-          age: age ? age : cat.age,
-          gender: gender ? gender : cat.gender,
-          breed: breed ? breed : cat.breed,
-          weight: weight ? weight : cat.weight,
-          castrated: castrated ? castrated : cat.castrated,
-          conditions: conditions ? conditions : cat.conditions,
-          protectionScreen: protectionScreen
-            ? protectionScreen
-            : cat.protectionScreen,
-          streetAccess: streetAccess ? streetAccess : cat.streetAccess,
-        },
-      });
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        throw new Error(err.message);
-      }
-      throw new Error("Erro ao atualizar o gato");
-    }
-  }
+		if (cat.ownerId !== userId) {
+			throw new Error("Você não tem permissão para editar este gato");
+		}
 
-  async deleteCat(catId: number, userId: number) {
-    const cat = await this.prisma.cat.findUnique({
-      where: { id: catId },
-      include: { owner: true },
-    });
+		try {
+			await this.prisma.cat.update({
+				where: { id: catId },
+				data: {
+					name: name ? name : cat.name,
+					age: age ? age : cat.age,
+					gender: gender ? gender : cat.gender,
+					breed: breed ? breed : cat.breed,
+					weight: weight ? weight : cat.weight,
+					castrated: castrated ? castrated : cat.castrated,
+					conditions: conditions ? conditions : cat.conditions,
+					protectionScreen: protectionScreen
+						? protectionScreen
+						: cat.protectionScreen,
+					streetAccess: streetAccess ? streetAccess : cat.streetAccess,
+				},
+			});
+		} catch (err) {
+			if (err instanceof Prisma.PrismaClientKnownRequestError) {
+				throw new Error(err.message);
+			}
+			throw new Error("Erro ao atualizar o gato");
+		}
+	}
 
-    if (!cat) {
-      throw new Error("Gato não encontrado");
-    }
+	async deleteCat(catId: number, userId: number) {
+		const cat = await this.prisma.cat.findUnique({
+			where: { id: catId },
+			include: { owner: true },
+		});
 
-    if (cat.ownerId !== userId) {
-      throw new Error("Você não tem permissão para deletar este gato");
-    }
+		if (!cat) {
+			throw new Error("Gato não encontrado");
+		}
 
-    try {
-      await this.prisma.cat.delete({
-        where: { id: catId },
-      });
-    } catch (err) {
-      console.log(err);
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        throw new Error(err.message);
-      }
-      throw new Error("Erro ao deletar o gato");
-    }
-  }
+		if (cat.ownerId !== userId) {
+			throw new Error("Você não tem permissão para deletar este gato");
+		}
+
+		try {
+			await this.prisma.cat.delete({
+				where: { id: catId },
+			});
+		} catch (err) {
+			console.log(err);
+			if (err instanceof Prisma.PrismaClientKnownRequestError) {
+				throw new Error(err.message);
+			}
+			throw new Error("Erro ao deletar o gato");
+		}
+	}
 }
 
 export default new CatService();
