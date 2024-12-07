@@ -1,16 +1,40 @@
-import { getStateColor } from '@/utils/getStateColor'
 import { Checkbox, Radio } from '@mui/joy'
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import styled from 'styled-components'
 
 export const CatRegisterContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   padding: 16px;
   gap: 24px;
 `
+
+export const CatWrapper = styled(Accordion)`
+  border: 1px solid ${({ theme }) => theme.colors.neutralL1};
+  border-radius: 8px;
+  width: 100%;
+`
+
+export const CatSummary = styled(AccordionSummary)`
+  ${({ theme }) => theme.fonts.titleXS}
+  color: ${({ theme }) => theme.colors.secondary};
+  & > * {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+`
+
+export const CatItem = styled(AccordionDetails).attrs({
+  sx: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    padding: '8px 8px 16px 8px'
+  }
+})``
 
 export const Header = styled.header`
   display: flex;
