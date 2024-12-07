@@ -126,6 +126,7 @@ export const CheckboxPill = styled(Checkbox).attrs(({ theme }) => ({
   }
 }))`
   text-align: center;
+  text-transform: capitalize;
   height: 30px;
   padding: 0 16px;
   display: flex;

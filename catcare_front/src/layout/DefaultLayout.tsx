@@ -55,7 +55,7 @@ function DefaultLayout() {
     <LayoutContainer>
       <Header>
         <AccountWrapper>
-          <img src={userPlaceholderImg} alt="" />
+          <img src={userPlaceholderImg} alt="" title="Ver perfil" onClick={() => navigate(RouterPaths.PROFILE)} />
           <UserDescription>{user?.name}</UserDescription>
           <Button size="sm" variant="light-filled" fullWidth onClick={handleLogout}>
             SAIR
@@ -160,6 +160,7 @@ const AccountWrapper = styled.div`
     width: 50px;
     height: 50px;
     border-radius: 8px;
+    cursor: pointer;
   }
 
   & button {

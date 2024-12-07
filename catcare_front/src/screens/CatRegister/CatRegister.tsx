@@ -30,6 +30,7 @@ import { RouterPaths } from '@/router/RouterPathsMapper'
 import { toast } from 'react-toastify'
 import { AuthContext } from '@/context'
 import { ArrowDropDown } from '@mui/icons-material'
+import { Cat } from '@/domain/models/Cat'
 
 function CatRegisterScreen() {
   const {
@@ -46,56 +47,45 @@ function CatRegisterScreen() {
 
   const [catList, setCatList] = useState<CatSchema[]>([])
 
-  // useEffect(() => {
-  //   const run = async () => {
-  //     try {
-  //       const response = await axios.get<CatSchema[]>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/cat/get-cats`, {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Authorization: `Bearer ${getAuthTokenFromStorage()}`
-  //         }
-  //       })
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const response = await axios.get<CatSchema[]>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/cat/get-cats`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthTokenFromStorage()}`
+          }
+        })
 
-  //       if (response.status < 200 || response.status >= 300) {
-  //         throw new Error('Erro ao buscar os gatinhos')
-  //       }
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error('Erro ao buscar os gatinhos')
+        }
 
-  //       setCatList(response.data)
-  //     } catch (error) {
-  //       if (error instanceof Error) {
-  //         toast.error('Houve um erro ao buscar os gatinhos')
-  //         console.error(error)
-  //       }
-  //     }
-  //   }
+        setCatList(response.data)
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error('Houve um erro ao buscar os gatinhos')
+          console.error(error)
+        }
+      }
+    }
 
-  //   run()
-  // }, [])
+    run()
+  }, [])
 
   const handleRegisterCat = (data: CatSchema) => {
     const run = async () => {
       // preparar os dados
-      // as propriedades do objeto deve ser iguais a:
-      /*
-      name: string,
-			gender: string,
-			age: number, // deve ser um número inteiro representando a quantidade de meses da soma de anos e meses
-			owner: number,
-			breed: string,
-			weight: number,
-			castrated: boolean,
-			conditions: string,
-			protectionScreen: boolean,
-			streetAccess: boolean,
-       */
-      const body = {
+
+      // o tipo de body é Cat, mas sem o id como obrigatório
+      const body: Omit<Cat, 'id'> = {
         name: data.name,
         gender: data.gender,
         age: data.ageYears * 12 + data.ageMonths,
-        owner: authState.user.id,
+        ownerId: authState.user.id,
         breed: data.breed,
         weight: data.weight,
-        castrated: data.conditions.includes('castrated'),
+        castrated: data.conditions.includes('castrado'),
         conditions: data.conditions.join(','),
         protectionScreen: false, // data.protectionScreen,
         streetAccess: false // data.streetAccess
@@ -137,10 +127,8 @@ function CatRegisterScreen() {
   return (
     <CatRegisterContainer>
       <Header>
-        <Title>Hora de cadastrar os seus gatinhos</Title>
-        <Subtitle>
-          Complete o cadastro dos seus gatinhos fornecendo as informações necessárias para que eles sejam bem cuidados
-        </Subtitle>
+        <Title>Vamos cadastrar os seus gatinhos</Title>
+        <Subtitle>Forneça as informações necessárias para que eles sejam bem cuidados</Subtitle>
       </Header>
       <h3>Seus gatinhos</h3>
       {catList.map((cat, index) => (
@@ -157,22 +145,22 @@ function CatRegisterScreen() {
               }}
             >
               <div>
-                <strong>Gender</strong>: {cat.gender}
+                <strong>Idade</strong>: {cat.ageYears} anos e {cat.ageMonths} meses
               </div>
               <div>
-                <strong>Age</strong>: {cat.ageYears} years and {cat.ageMonths} months
+                <strong>Sexo</strong>: {cat.gender}
               </div>
               <div>
-                <strong>Breed</strong>: {cat.breed}
+                <strong>Raça</strong>: {cat.breed}
               </div>
               <div>
-                <strong>Weight</strong>: {cat.weight} kg
+                <strong>Peso</strong>: {cat.weight} kg
               </div>
               <div>
-                <strong>Conditions</strong>: {cat.conditions.join(', ')}
+                <strong>Condições de saúde</strong>: {cat.conditions}
               </div>
               <div>
-                <strong>Additional Info</strong>: {cat.additionalInfo}
+                <strong>Informações adicionais</strong>: {cat.additionalInfo}
               </div>
             </div>
           </CatItem>
@@ -286,11 +274,11 @@ function CatRegisterScreen() {
             <PillGroup>
               {catCondition.map((condition) => (
                 <CheckboxPill
-                  key={condition.id}
+                  key={condition}
                   size="sm"
                   disableIcon
-                  value={condition.id}
-                  label={condition.label}
+                  value={condition}
+                  label={condition}
                   {...register('conditions')}
                 />
               ))}
