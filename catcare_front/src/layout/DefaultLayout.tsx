@@ -11,6 +11,7 @@ import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import { User } from '@/domain/models/User'
 import { getStateColor } from '@/utils/getStateColor'
+import { Home } from '@mui/icons-material'
 
 function DefaultLayout() {
   const navigate = useNavigate()
@@ -57,20 +58,15 @@ function DefaultLayout() {
         <AccountWrapper>
           <img src={userPlaceholderImg} alt="" title="Ver perfil" onClick={() => navigate(RouterPaths.PROFILE)} />
           <UserDescription>{user?.name}</UserDescription>
+          {appLocation.pathname !== RouterPaths.HOME && (
+            <IconButton onClick={() => navigate(RouterPaths.HOME)}>
+              <Home color="action" />
+            </IconButton>
+          )}
           <Button size="sm" variant="light-filled" fullWidth onClick={handleLogout}>
             SAIR
           </Button>
         </AccountWrapper>
-        <Nav>
-          <ul>
-            <LinkButton active={appLocation.pathname === RouterPaths.HOME}>
-              <Link to={RouterPaths.HOME}>Página inicial</Link>
-            </LinkButton>
-            <LinkButton active={appLocation.pathname === RouterPaths.CAT_REGISTER}>
-              <Link to={RouterPaths.CAT_REGISTER}>Cadastrar gatos</Link>
-            </LinkButton>
-          </ul>
-        </Nav>
       </Header>
       <main>
         <Outlet />
@@ -104,6 +100,12 @@ const Header = styled.header`
   border-bottom: 1px solid ${({ theme }) => theme.colors.neutralL3};
 `
 
+const IconButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+`
+
 const Nav = styled.nav`
   ul {
     display: flex;
@@ -112,11 +114,11 @@ const Nav = styled.nav`
   }
 `
 
-interface LinkButtonProps {
+interface NavButtonProps {
   active?: boolean
 }
 
-const LinkButton = styled.li<LinkButtonProps>`
+const NavButton = styled.li<NavButtonProps>`
   width: fit-content;
   height: 30px;
   padding: 4px 8px;
