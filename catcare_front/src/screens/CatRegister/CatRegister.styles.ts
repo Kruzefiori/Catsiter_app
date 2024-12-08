@@ -3,12 +3,18 @@ import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import styled from 'styled-components'
 
 export const CatRegisterContainer = styled.div`
-  height: 100%;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px;
+  padding: 16px 16px 40px 16px;
   gap: 24px;
+
+  h3 {
+    ${({ theme }) => theme.fonts.titleSM}
+    color: ${({ theme }) => theme.colors.secondary};
+    text-align: center;
+  }
 `
 
 export const CatWrapper = styled(Accordion)`
@@ -44,6 +50,15 @@ export const Header = styled.header`
   text-align: left;
 `
 
+export const Tip = styled.p`
+  margin-top: 8px;
+  border-left: 4px solid ${({ theme }) => theme.colors.secondary};
+  padding-left: 8px;
+  ${({ theme }) => theme.fonts.textSM}
+  color: ${({ theme }) => theme.colors.neutralL0};
+  font-style: italic;
+`
+
 export const Title = styled.h1`
   ${({ theme }) => theme.fonts.h1}
 `
@@ -58,6 +73,7 @@ export const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin: 20px 0;
 `
 
 export const Form = styled.form`

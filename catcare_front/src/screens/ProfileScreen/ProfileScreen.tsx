@@ -7,12 +7,22 @@ import styled from 'styled-components'
 import { Cat } from '@/domain/models/Cat'
 import { ArrowDropDown } from '@mui/icons-material'
 import { ageByMonths } from './utils'
+import { useNavigate } from 'react-router-dom'
+import { RouterPaths } from '@/router/RouterPathsMapper'
+import { Add } from '@mui/icons-material'
+import { Button } from '@/components/Button/Button'
 
 function ProfileScreen() {
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
+  const navigate = useNavigate()
+
   const [catList, setCatList] = useState<Cat[]>([])
 
   const user = useMemo(() => authState.user, [authState])
+
+  const handleAddMoreCats = () => {
+    navigate(RouterPaths.CAT_REGISTER)
+  }
 
   useEffect(() => {
     const run = async () => {
@@ -47,7 +57,13 @@ function ProfileScreen() {
       <span>
         <strong>Email</strong>: {user.email}
       </span>
-      <h2>Seus gatinhos</h2>
+      <CatsHeader>
+        <h2>Seus gatinhos</h2>
+        <Button variant="ghost" size="sm" onClick={handleAddMoreCats}>
+          <Add />
+          <span>Adicionar</span>
+        </Button>
+      </CatsHeader>
       {catList.map((cat) => (
         <CatWrapper key={cat.id}>
           <CatSummary expandIcon={<ArrowDropDown />}>
@@ -123,3 +139,10 @@ export const CatItem = styled(AccordionDetails).attrs({
     padding: '8px 8px 16px 8px'
   }
 })``
+
+const CatsHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+`

@@ -13,6 +13,5 @@ export const catSchema = z.object({
   castrated: z.boolean().optional(),
   conditions: z.array(z.string()),
   protectionScreen: z.boolean().optional(),
-  streetAccess: z.boolean().optional(),
-  additionalInfo: z.string().optional()
+  streetAccess: z.boolean().optional()
 })

@@ -57,7 +57,7 @@ class CatService {
 			streetAccess,
 		} = body;
 		try {
-			await this.prisma.cat.create({
+			const cat = await this.prisma.cat.create({
 				data: {
 					name,
 					age,
@@ -73,12 +73,13 @@ class CatService {
 					protectionScreen,
 				},
 			});
+
+			return cat;
 		} catch (err) {
 			if (err instanceof Prisma.PrismaClientKnownRequestError) {
 				throw new Error(err.message);
 			}
 		}
-		return;
 	}
 
 	async updateCat(catId: number, userId: number, data: catUpdate) {
