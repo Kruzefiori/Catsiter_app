@@ -13,7 +13,7 @@ function App() {
           <AppRouter />
         </AuthContextProvider>
       </BrowserRouter>
-      <ToastContainer theme="light" transition={Bounce} autoClose={1500} />
+      <ToastContainer theme="light" transition={Bounce} autoClose={1500} pauseOnHover={false} />
     </AppContainer>
   )
 }

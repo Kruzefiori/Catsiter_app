@@ -9,6 +9,8 @@ import {
   Label,
   WarningMessage
 } from './OnboardingScreen.styles'
+import catCareIcon from '@assets/cat-care.png'
+import catOwnerIcon from '@assets/cat-owner.png'
 
 import { SelectButton } from './OnboardingScreen.styles'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
@@ -29,7 +31,7 @@ function OnboardingScreen() {
 
   const handleChangeUserType = useCallback(
     (type: UserType) => {
-      setUserType((prev) => (prev === type ? null : type))
+      setUserType(type)
     },
     [userType]
   )
@@ -51,12 +53,22 @@ function OnboardingScreen() {
         <Subtitle>Preencha mais algumas informações sobre você para continuarmos</Subtitle>
       </Header>
       <Body>
-        <Label>Você é catsitter também ou apenas tutor(a)?</Label>
+        <Label>Escolha a opção que melhor te define:</Label>
         <TypeOptions>
-          <SelectButton isActive={userType === 'owner'} onClick={() => handleChangeUserType('owner')}>
+          <SelectButton
+            isActive={userType === 'owner'}
+            onClick={() => handleChangeUserType('owner')}
+            buttonColor="#16b7e8"
+          >
+            <img src={catOwnerIcon} width={50} height={50} alt="Dono de gato" />
             Tutor(a)
           </SelectButton>
-          <SelectButton isActive={userType === 'sitter'} onClick={() => handleChangeUserType('sitter')}>
+          <SelectButton
+            isActive={userType === 'sitter'}
+            onClick={() => handleChangeUserType('sitter')}
+            buttonColor="#784ee1"
+          >
+            <img src={catCareIcon} width={50} height={50} alt="Catsitter" />
             Catsitter
           </SelectButton>
         </TypeOptions>

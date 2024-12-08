@@ -5,10 +5,14 @@ export const OnboardingContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   padding: 16px;
   gap: 24px;
+
+  button:last-child {
+    margin-top: auto;
+  }
 `
 
 export const Header = styled.header`
@@ -37,14 +41,17 @@ export const Body = styled.div`
 
 export const TypeOptions = styled.div`
   width: 100%;
+  height: 140px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
 `
 
 export const Label = styled.label`
   ${({ theme }) => theme.fonts.textLG}
   color: ${({ theme }) => theme.colors.secondary};
+  margin-top: 16px;
 `
 
 export const WarningMessage = styled.p`
@@ -54,23 +61,30 @@ export const WarningMessage = styled.p`
 
 interface SelectButtonProps {
   isActive: boolean
+  buttonColor?: string
 }
 
 export const SelectButton = styled.span<SelectButtonProps>`
-  border: 1px solid ${({ theme, isActive }) => (isActive ? 'transparent' : theme.colors.secondary)};
-  background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.neutralL5)};
-  color: ${({ theme, isActive }) => (isActive ? theme.colors.neutralL5 : theme.colors.secondary)};
+  border: 1px solid ${({ theme, isActive }) => (isActive ? 'transparent' : theme.colors.neutralL0)};
+  background-color: ${({ theme, isActive, buttonColor }) =>
+    isActive ? buttonColor ?? theme.colors.neutralL0 : theme.colors.neutralL5};
+  color: ${({ theme, isActive }) => (isActive ? theme.colors.neutralL5 : theme.colors.neutralL0)};
   ${({ theme }) => theme.fonts.infoSM}
-  height: 40px;
+  height: 120px;
   width: 100%;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 8px;
 
   &:hover {
     cursor: pointer;
-    background-color: ${({ theme, isActive }) =>
-      isActive ? getStateColor(theme.colors.secondary, 'hover') : getStateColor(theme.colors.neutralL3, 'hover')};
+
+    background-color: ${({ theme, isActive, buttonColor }) =>
+      isActive
+        ? getStateColor(buttonColor ?? theme.colors.neutralL0, 'hover')
+        : getStateColor(theme.colors.neutralL3, 'hover')};
   }
 `

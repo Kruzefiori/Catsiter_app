@@ -1,4 +1,3 @@
-import { Button } from '@/components/Button/Button'
 import { RouterPaths } from '@/router/RouterPathsMapper'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import styled, { css } from 'styled-components'
@@ -11,7 +10,7 @@ import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import { User } from '@/domain/models/User'
 import { getStateColor } from '@/utils/getStateColor'
-import { CalendarToday, Home } from '@mui/icons-material'
+import { CalendarToday, ExitToApp, Home } from '@mui/icons-material'
 import { CalendarColor, CalendarEvent, CalendarPopup } from '@/components/CalendarPopup'
 import { mockedUserBookings } from '@/screens/Home/utils'
 
@@ -43,7 +42,7 @@ function DefaultLayout() {
 
   useEffect(() => {
     const run = async () => {
-      const response = await axios.get<User>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/me`, {
+      const response = await axios.get<User>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/user`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${getAuthTokenFromStorage()}`
@@ -87,7 +86,7 @@ function DefaultLayout() {
   }, [])
 
   const handleLogout = () => {
-    toast.info('Saindo da sua conta')
+    toast.info('Você saiu da sua conta.')
     resetAuthToken()
     resetUserData()
     navigate(RouterPaths.LOGIN)
@@ -99,20 +98,22 @@ function DefaultLayout() {
         <AccountWrapper>
           <img src={userPlaceholderImg} alt="" title="Ver perfil" onClick={() => navigate(RouterPaths.PROFILE)} />
           <UserDescription>{user?.name}</UserDescription>
+        </AccountWrapper>
+        <HeaderActions>
           {appLocation.pathname !== RouterPaths.HOME && (
-            <IconButton onClick={() => navigate(RouterPaths.HOME)}>
+            <IconButton onClick={() => navigate(RouterPaths.HOME)} title="Página inicial">
               <Home color="action" />
             </IconButton>
           )}
           {authState?.user?.isCatsitter && (
-            <IconButton onClick={() => setShowAgenda(true)} title="Ver agenda">
+            <IconButton onClick={() => setShowAgenda(true)} title="Agenda">
               <CalendarToday color="action" />
             </IconButton>
           )}
-          <Button size="sm" variant="light-filled" fullWidth onClick={handleLogout}>
-            SAIR
-          </Button>
-        </AccountWrapper>
+          <IconButton onClick={handleLogout} title="Sair">
+            <ExitToApp color="action" />
+          </IconButton>
+        </HeaderActions>
       </Header>
       <main>
         {showAgenda && <CalendarPopup events={sitterAgenda} onClose={() => setShowAgenda(false)} />}
@@ -140,7 +141,7 @@ const LayoutContainer = styled.div`
 
 const Header = styled.header`
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 16px;
   margin-bottom: 16px;
   padding: 12px 0;
@@ -204,6 +205,7 @@ const AccountWrapper = styled.div`
   justify-content: space-between;
   gap: 16px;
   width: 100%;
+  flex: 1;
 
   & img {
     width: 50px;
@@ -216,6 +218,12 @@ const AccountWrapper = styled.div`
     width: 70px;
     justify-self: flex-end;
   }
+`
+
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
 `
 
 const UserDescription = styled.p`
