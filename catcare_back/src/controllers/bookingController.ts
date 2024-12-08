@@ -11,7 +11,8 @@ class bookingController {
             visits: array(z.object({
                 visitDate: z.string(),
                 status: z.enum(["PENDING", "ACCEPTED", "REJECTED"]).optional(),
-                notes: z.string().optional()
+                notes: z.string().optional(),
+                durationInMinutes: z.number(),
             })),
             requesterId: z.number(), // user who is requesting
             requestedId: z.number(), // user who is requested
@@ -34,7 +35,8 @@ class bookingController {
             visits: array(z.object({
                 visitDate: z.string(),
                 status: z.enum(["PENDING", "ACCEPTED", "REJECTED"]).optional(),
-                notes: z.string().optional()
+                notes: z.string().optional(),
+                durationInMinutes: z.number(),
             })).optional(),
             requesterId: z.number().optional(), // user who is requesting
             requestedId: z.number().optional(), // user who is requested
@@ -123,6 +125,18 @@ class bookingController {
         }
     }
 
+    async getBookingsWithVisitsByCatSitterId(req: Request, res: Response) {
+        const catSitterId = parseInt(req.params.catSitterId, 10);
+    
+        try {
+          const bookings = await bookingService.getBookingsWithVisitsByCatSitterId(catSitterId);
+          res.status(200).json(bookings);
+        } catch (error) {
+          if (error instanceof Error) {
+            res.status(400).json({ error: error.message });
+          }
+        }
+    }
 }
 
 export default new bookingController()

@@ -5,14 +5,15 @@ interface visits {
   visitDate: string;
   status?: string;
   notes?: string;
+  durationInMinutes?: number;
 }
 
 interface bookingInfo {
   visits: visits[];
   requesterId: number; // user who is requesting
   requestedId: number; // user who is requested
-  startDate: string; // date and time of the service starts
-  endDate: string; // date and time of the service ends
+  startDate: string;   // date and time of the service starts
+  endDate: string;     // date and time of the service ends
   generalNotes?: string;
 }
 
@@ -46,6 +47,7 @@ class BookingService {
         data: {
           visitDate: new Date(visit.visitDate).toISOString(),
           bookingId: booking.id,
+          durationInMinutes: visit.durationInMinutes ? visit.durationInMinutes : 60,
         },
       });
     });
@@ -106,6 +108,7 @@ class BookingService {
           visitDate: visit.visitDate,
           bookingId: bookingId,
           visitNotes: visit.notes ? visit.notes : "",
+          durationInMinutes: visit.durationInMinutes ? visit.durationInMinutes : 60
         },
       });
     });
@@ -193,6 +196,18 @@ class BookingService {
       },
       include: {
         booking: true,
+      },
+    });
+  }
+
+  async getBookingsWithVisitsByCatSitterId(catSitterId: number) {
+    return await this.prisma.booking.findMany({
+      where: {
+        requestedId: catSitterId,
+        status: "ACCEPTED",
+      },
+      include: {
+        visits: true,
       },
     });
   }

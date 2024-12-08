@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { z, ZodError } from "zod";
+import { array, z, ZodError } from "zod";
 import profileService from "../services/profileService";
 
 class ProfileController {
@@ -22,14 +22,34 @@ class ProfileController {
       jobDesc: z.string(),
       rating: z.number(),
       price: z.number(),
+      attendancePlaces: array(z.object({
+        street: z.string(),
+        city: z.string(),
+        state: z.string(),
+        zipCode: z.string(),
+        country: z.string(),
+        complement: z.string().optional(),
+        number: z.number().optional(),
+      })),
   });
     try {
       schema.parse(req.body);
-      const onboarding = await profileService.onboardingProfile_catsitter(req.body);
+      const onboarding = await profileService.onboardingProfileCatsitter(req.body);
       res.status(200).json(onboarding);
     } catch (error) {
       if (error instanceof Error)
         res.status(400).json({ error: error.message });
+    }
+  }
+
+  async getAllCatSitters(req: Request, res: Response) {
+    try {
+      const catSitters = await profileService.getAllCatSitters();
+      res.status(200).json(catSitters);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      }
     }
   }
 }

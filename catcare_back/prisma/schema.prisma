@@ -18,6 +18,7 @@ model User {
   id              Int               @id @default(autoincrement())
   email           String            @unique
   name            String?
+  address         Address?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   googleId        String?           @unique
@@ -25,6 +26,7 @@ model User {
   UserProvider    UserProvider[]
   cats            Cat[]
   type            userType          @default(OWNER)
+  onboardingDone  Boolean           @default(false)
   catSitter       catSitter[]
   overallRating   Float             @default(0)
   requests        booking[]
@@ -70,6 +72,7 @@ model Cat {
   protectionScreen Boolean
   streetAccess     Boolean
   owner            User      @relation(fields: [ownerId], references: [id])
+
   @@map("cats")
 }
 
@@ -79,14 +82,32 @@ enum userType {
 }
 
 model catSitter {
-  id               Int       @id @default(autoincrement())
-  userId           Int       @unique
-  user             User      @relation(fields: [userId], references: [id])
-  jobDesc          String
-  price            Float
-  requestsReceived booking[] @relation()
+  id                Int        @id @default(autoincrement())
+  userId            Int        @unique
+  user              User       @relation(fields: [userId], references: [id])
+  jobDesc           String
+  price             Float
+  requestsReceived  booking[]  @relation()
+  attendancePlaces  Address[]  @relation("AttendancePlaces")
 
   @@map("cat_sitters")
+}
+
+model Address {
+  id            Int        @id @default(autoincrement())
+  userId        Int?       @unique
+  user          User?      @relation(fields: [userId], references: [id])
+  catSitterId   Int?
+  catSitter     catSitter? @relation("AttendancePlaces", fields: [catSitterId], references: [id])
+  street        String
+  city          String
+  state         String
+  zipCode       String
+  country       String
+  complement    String?
+  number        Int?
+
+  @@map("addresses")
 }
 
 model review {
@@ -114,18 +135,19 @@ model booking {
   totalVisits  Int
   generalNotes String?
   status       bookingStatus  @default(PENDING)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   visits       visit[]
 }
 
 model visit {
-  id         Int         @id @default(autoincrement())
-  bookingId  Int
-  booking    booking     @relation(fields: [bookingId], references: [id])
-  visitDate  String
-  visitNotes String?
-  status     visitStatus @default(PENDING)
+  id                Int         @id @default(autoincrement())
+  bookingId         Int
+  booking           booking     @relation(fields: [bookingId], references: [id])
+  visitDate         String
+  visitNotes        String?
+  durationInMinutes Int?
+  status            visitStatus @default(PENDING)
 }
 
 enum visitStatus {

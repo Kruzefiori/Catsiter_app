@@ -10,6 +10,7 @@ router.patch("/update-booking/:bookingId", auth, bookingController.updateBooking
 router.get("/get-bookings-requester", auth, bookingController.getBookingsRequester);
 router.get("/get-bookings-requested", auth, bookingController.getBookingsRequested);
 router.patch("/answer-booking", auth, bookingController.answerBooking);
+router.get("/catsitter/:catSitterId/bookings", bookingController.getBookingsWithVisitsByCatSitterId);
 
 //visit:
 router.get("/visits", auth, bookingController.getVisits);
