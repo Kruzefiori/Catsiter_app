@@ -63,7 +63,7 @@ const ButtonContainer = styled.button<ButtonStyledProps>`
           ? getStateColor(color, 'hover')
           : variant === 'light-filled'
           ? getStateColor(color, 'hover')
-          : `${theme.colors.secondary}10`
+          : `${color}10`
       else
         return variant === 'filled'
           ? getStateColor(theme.colors.secondary, 'hover')

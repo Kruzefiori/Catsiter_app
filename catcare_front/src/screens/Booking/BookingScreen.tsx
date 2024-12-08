@@ -29,6 +29,8 @@ import { CalendarColor, CalendarEvent, CalendarPopup } from '@/components/Calend
 import { SlotInfo } from 'react-big-calendar'
 import { mockedCatSitters } from '../Home/utils'
 
+type VisitWithIdOptional = Omit<Visits, 'id'> & { id?: number }
+
 function BookingScreen() {
   const { catsitterId } = useParams()
   const navigate = useNavigate()
@@ -40,7 +42,7 @@ function BookingScreen() {
   }, [catsitterId])
 
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
-  const [visits, setVisits] = useState<Visits[]>([])
+  const [visits, setVisits] = useState<VisitWithIdOptional[]>([])
   const [currentEvents, setCurrentEvents] = useState<CalendarEvent[]>([])
   const [eventToShow, setEventToShow] = useState<CalendarEvent | null>(null)
   const [generalNotes, setGeneralNotes] = useState('')
@@ -124,7 +126,7 @@ function BookingScreen() {
       setCurrentEvents([
         ...currentEvents,
         {
-          id: crypto.randomUUID(),
+          id: Math.floor(Math.random() * 1000),
           title: 'Nova Visita',
           start: slotInfo.start,
           end,
@@ -173,7 +175,6 @@ function BookingScreen() {
       return
     }
     const newVisits = currentEvents.map((event) => ({
-      id: crypto.randomUUID(),
       visitDate: event.start,
       durationInMinutes: getDifferenceInHours(event.end, event.start) * 60,
       notes: '',

@@ -2,12 +2,14 @@ import { Button } from '@/components/Button/Button'
 import {
   Address,
   BookingCard,
+  ButtonsWrapper,
   CardsList,
   DateInfo,
   Details,
   EmptyMessage,
   Footer,
   Header,
+  IconButton,
   Info,
   Name,
   Notes,
@@ -15,9 +17,15 @@ import {
   VisitSummary,
   VisitWrapper
 } from './BookingList.styles'
-import { ArrowDropDown } from '@mui/icons-material'
+import { ArrowDropDown, CheckCircle, DeleteForever } from '@mui/icons-material'
 import { requestersData } from './utils'
 import { Booking } from '@/domain/models/Booking'
+import { VisitStatus } from '@/domain/models/Visits'
+import { useContext, useState } from 'react'
+import { ResponseModal } from './ResponseModal'
+import axios from 'axios'
+import { AuthContext } from '@/context'
+import { toast } from 'react-toastify'
 
 interface BookingsListProps {
   bookings: Booking[]
@@ -27,6 +35,41 @@ interface BookingsListProps {
 
 function BookingsList(props: BookingsListProps) {
   const { bookings, onAcceptBooking, onRejectBooking } = props
+
+  const { getAuthTokenFromStorage } = useContext(AuthContext)
+
+  const [visitResponse, setVisitResponse] = useState<'done' | 'cancel' | null>(null)
+
+  const handleRespondVisit = async (responseType: 'done' | 'cancel', visitId: number, notes?: string) => {
+    // booking/answer-visit
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-visit`,
+        {
+          visitId,
+          visitNotes: notes,
+          status: responseType === 'done' ? VisitStatus.DONE : VisitStatus.CANCELLED
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthTokenFromStorage()}`
+          }
+        }
+      )
+
+      if (response.status < 200 || response.status >= 300) {
+        toast.error('Erro ao responder visita')
+        throw new Error('Erro ao responder visita')
+        return
+      }
+    } catch (error) {
+      console.error('Erro ao responder visita', error)
+    }
+
+    setVisitResponse(null)
+  }
+
   return (
     <>
       {bookings.length === 0 ? (
@@ -60,9 +103,38 @@ function BookingsList(props: BookingsListProps) {
                     <Info>
                       <strong>Data:</strong> {visit.visitDate?.toLocaleDateString()}
                     </Info>
-
+                    <Info>
+                      <strong>Status:</strong>
+                      {visit.status === VisitStatus.DONE
+                        ? ' Feita'
+                        : visit.status === VisitStatus.PENDING
+                        ? ' Pendente'
+                        : ' Cancelada'}
+                    </Info>
                     <strong>Observações:</strong>
                     <Details>{visit.notes || <i>Sem observações.</i>}</Details>
+                    {visit.status === VisitStatus.PENDING && booking.status === 'ACCEPTED' && (
+                      <>
+                        {visitResponse && (
+                          <ResponseModal
+                            responseType={visitResponse}
+                            visitId={visit.id}
+                            onRespondVisit={handleRespondVisit}
+                            onClose={() => setVisitResponse(null)}
+                          />
+                        )}
+                        <ButtonsWrapper>
+                          <Button size="sm" variant="ghost" color="#2e7d32" onClick={() => setVisitResponse('done')}>
+                            <CheckCircle color="success" />
+                            Marcar como feita
+                          </Button>
+                          <Button size="sm" variant="ghost" color="#d32f2f" onClick={() => setVisitResponse('cancel')}>
+                            <DeleteForever color="error" />
+                            Cancelar visita
+                          </Button>
+                        </ButtonsWrapper>
+                      </>
+                    )}
                   </VisitItem>
                 </VisitWrapper>
               ))}

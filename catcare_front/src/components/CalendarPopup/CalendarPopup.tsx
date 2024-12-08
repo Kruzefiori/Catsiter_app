@@ -27,7 +27,7 @@ export enum CalendarColor {
 }
 
 export interface CalendarEvent {
-  id: string
+  id: number
   title?: string
   start: Date
   end: Date

@@ -5,7 +5,7 @@ export enum VisitStatus {
 }
 
 export interface Visits {
-  id: string
+  id: number
   visitDate: Date
   durationInMinutes: number
   status?: VisitStatus

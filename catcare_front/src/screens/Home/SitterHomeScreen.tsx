@@ -16,34 +16,66 @@ function SitterHomeScreen() {
   const [cardsToShow, setCardsToShow] = useState<'pending' | 'accepted'>('pending')
 
   useEffect(() => {
-    // const fetchBookings = async () => {
-    //   const bookingsResponse = await axios.get<Booking[]>(
-    //     `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
-    //       authState.user.id
-    //     }&status=PENDING`,
-    //     {
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${getAuthTokenFromStorage()}`
-    //       }
-    //     }
-    //   )
+    const fetchPendingBookings = async () => {
+      try {
+        const pendingBookingsResponse = await axios.get<Booking[]>(
+          `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
+            authState.user.id
+          }&status=PENDING`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getAuthTokenFromStorage()}`
+            }
+          }
+        )
 
-    //   if (bookingsResponse.status < 200 || bookingsResponse.status >= 300) {
-    //     toast.error('Não foi possível buscar os bookings.')
-    //     return
-    //   }
+        if (pendingBookingsResponse.status < 200 || pendingBookingsResponse.status >= 300) {
+          toast.error('Erro ao buscar bookings pendentes')
+          return
+        }
+        console.log('pending: ', pendingBookingsResponse.data)
+        setPendingBookings(pendingBookingsResponse.data)
+      } catch (error) {
+        console.error('Erro ao buscar bookings pendentes', error)
+      }
+    }
 
-    //   setPendingBookings(bookingsResponse.data)
-    // }
+    const fetchAcceptedBookings = async () => {
+      try {
+        const acceptedBookingsResponse = await axios.get<Booking[]>(
+          `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
+            authState.user.id
+          }&status=ACCEPTED`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getAuthTokenFromStorage()}`
+            }
+          }
+        )
 
-    // fetchBookings()
+        if (acceptedBookingsResponse.status < 200 || acceptedBookingsResponse.status >= 300) {
+          toast.error('Erro ao buscar bookings aceitos')
+          return
+        }
 
-    const myPendingBookings: Booking[] = mockedUserBookings.filter((booking) => booking.status === 'PENDING')
-    setPendingBookings(myPendingBookings)
+        console.log('accepted: ', acceptedBookingsResponse.data)
+        setAcceptedBookings(acceptedBookingsResponse.data)
+      } catch (error) {
+        console.error('Erro ao buscar bookings aceitos', error)
+      }
+    }
 
-    const myAcceptedBookings: Booking[] = mockedUserBookings.filter((booking) => booking.status === 'ACCEPTED')
-    setAcceptedBookings(myAcceptedBookings)
+    fetchPendingBookings()
+    fetchAcceptedBookings()
+
+    // Mocked data
+    // const myPendingBookings: Booking[] = mockedUserBookings.filter((booking) => booking.status === 'PENDING')
+    // setPendingBookings(myPendingBookings)
+
+    // const myAcceptedBookings: Booking[] = mockedUserBookings.filter((booking) => booking.status === 'ACCEPTED')
+    // setAcceptedBookings(myAcceptedBookings)
   }, [])
 
   const handleAcceptBooking = useCallback(
@@ -103,11 +135,12 @@ function SitterHomeScreen() {
 
   return (
     <SitterHomeContainer>
+      <h1>Suas reservas</h1>
       <ButtonsWrapper>
         <Button
           onClick={() => setCardsToShow('pending')}
           fullWidth
-          size="md"
+          size="sm"
           variant={cardsToShow === 'pending' ? 'filled' : 'outline'}
         >
           Pendentes
@@ -115,10 +148,10 @@ function SitterHomeScreen() {
         <Button
           onClick={() => setCardsToShow('accepted')}
           fullWidth
-          size="md"
+          size="sm"
           variant={cardsToShow === 'accepted' ? 'filled' : 'outline'}
         >
-          Aceitos
+          Aceitas
         </Button>
       </ButtonsWrapper>
       <BookingsList
