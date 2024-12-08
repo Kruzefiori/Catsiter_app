@@ -21,7 +21,8 @@ import {
   PillGroup,
   RadioButton,
   Subtitle,
-  Title
+  Title,
+  Tip
 } from './CatRegister.styles'
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
@@ -31,6 +32,7 @@ import { toast } from 'react-toastify'
 import { AuthContext } from '@/context'
 import { ArrowDropDown } from '@mui/icons-material'
 import { Cat } from '@/domain/models/Cat'
+import { ageByMonths } from '../ProfileScreen/utils'
 
 function CatRegisterScreen() {
   const {
@@ -45,12 +47,12 @@ function CatRegisterScreen() {
   const navigate = useNavigate()
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
 
-  const [catList, setCatList] = useState<CatSchema[]>([])
+  const [catList, setCatList] = useState<Cat[]>([])
 
   useEffect(() => {
     const run = async () => {
       try {
-        const response = await axios.get<CatSchema[]>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/cat/get-cats`, {
+        const response = await axios.get<Cat[]>(`${import.meta.env.VITE_CATCARE_SERVER_URL}/cat/get-cats`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${getAuthTokenFromStorage()}`
@@ -76,17 +78,15 @@ function CatRegisterScreen() {
   const handleRegisterCat = (data: CatSchema) => {
     const run = async () => {
       // preparar os dados
-
-      // o tipo de body é Cat, mas sem o id como obrigatório
       const body: Omit<Cat, 'id'> = {
         name: data.name,
         gender: data.gender,
         age: data.ageYears * 12 + data.ageMonths,
-        ownerId: authState.user.id,
+        owner: authState.user.id,
         breed: data.breed,
         weight: data.weight,
         castrated: data.conditions.includes('castrado'),
-        conditions: data.conditions.join(','),
+        conditions: data.conditions.filter((condition) => condition !== 'castrado').join(','),
         protectionScreen: false, // data.protectionScreen,
         streetAccess: false // data.streetAccess
       }
@@ -105,7 +105,7 @@ function CatRegisterScreen() {
         // dar um feedback visual
         toast.success('Gatinho cadastrado com sucesso!')
         // adicionar o gatinho na lista
-        setCatList([...catList, data])
+        setCatList((prev) => [...prev, response.data])
         // limpar o formulário
         reset()
       } catch (error) {
@@ -129,46 +129,11 @@ function CatRegisterScreen() {
       <Header>
         <Title>Vamos cadastrar os seus gatinhos</Title>
         <Subtitle>Forneça as informações necessárias para que eles sejam bem cuidados</Subtitle>
+        <Tip>Seus gatos já cadastrados aparecem no final da tela. Você pode adicionar quantos gatinhos quiser!</Tip>
       </Header>
-      <h3>Seus gatinhos</h3>
-      {catList.map((cat, index) => (
-        <CatWrapper key={index}>
-          <CatSummary expandIcon={<ArrowDropDown />}>
-            <div>{cat.name}</div>
-          </CatSummary>
-          <CatItem>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8
-              }}
-            >
-              <div>
-                <strong>Idade</strong>: {cat.ageYears} anos e {cat.ageMonths} meses
-              </div>
-              <div>
-                <strong>Sexo</strong>: {cat.gender}
-              </div>
-              <div>
-                <strong>Raça</strong>: {cat.breed}
-              </div>
-              <div>
-                <strong>Peso</strong>: {cat.weight} kg
-              </div>
-              <div>
-                <strong>Condições de saúde</strong>: {cat.conditions}
-              </div>
-              <div>
-                <strong>Informações adicionais</strong>: {cat.additionalInfo}
-              </div>
-            </div>
-          </CatItem>
-        </CatWrapper>
-      ))}
 
       <Body>
-        <h3>Adicionar novo gatinho</h3>
+        <h3>Adicionar novo</h3>
         <Form onSubmit={handleSubmit(handleRegisterCat)}>
           <InputWrapper>
             <InputLabel>Nome</InputLabel>
@@ -281,18 +246,55 @@ function CatRegisterScreen() {
               ))}
             </PillGroup>
           </InputWrapper>
-          <InputWrapper>
+          {/* <InputWrapper>
             <InputLabel>Informações adicionais</InputLabel>
             <Textarea minRows={2} maxRows={5} {...register('additionalInfo')} />
-          </InputWrapper>
-          <Button type="submit" variant="light-filled" fullWidth>
+          </InputWrapper> */}
+          <Button type="submit" size="md" variant="light-filled" fullWidth>
             Adicionar
           </Button>
         </Form>
-        <Button variant="filled" fullWidth onClick={handleFinalizeRegister}>
-          Finalizar cadastro
-        </Button>
+        <h3>Seus gatinhos</h3>
+        {catList.map((cat, index) => (
+          <CatWrapper key={index}>
+            <CatSummary expandIcon={<ArrowDropDown />}>
+              <div>{cat.name}</div>
+            </CatSummary>
+            <CatItem>
+              <span>
+                <strong>Nome</strong>: {cat.name}
+              </span>
+              <span>
+                <strong>Idade</strong>: {ageByMonths(cat.age)}
+              </span>
+              <span>
+                <strong>Sexo</strong>: {cat.gender}
+              </span>
+              <span>
+                <strong>Raça</strong>: {cat.breed}
+              </span>
+              <span>
+                <strong>Peso</strong>: {cat.weight} kg
+              </span>
+              <span>
+                <strong>Castrado</strong>: {cat.castrated ? '✅' : '❌'}
+              </span>
+              <span>
+                <strong>Condições</strong>: {cat.conditions.replace(',', ', ')}
+              </span>
+              <span>
+                <strong>Tela de proteção</strong>: {cat.protectionScreen ? '✅' : '❌'}
+              </span>
+              <span>
+                <strong>Acesso à rua</strong>: {cat.streetAccess ? '✅' : '❌'}
+              </span>
+            </CatItem>
+          </CatWrapper>
+        ))}
       </Body>
+      <Button size="md" variant="filled" fullWidth onClick={handleFinalizeRegister}>
+        Finalizar cadastro
+      </Button>
     </CatRegisterContainer>
   )
 }

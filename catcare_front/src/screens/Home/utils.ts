@@ -29,19 +29,19 @@ export const mockedCatSitters: CatSitter2[] = [
         updatedAt: new Date('2024-12-01T00:00:00'),
         visits: [
           {
-            id: 'b1v1',
+            id: 1,
             visitDate: new Date('2024-12-01T08:30:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b1v2',
+            id: 2,
             visitDate: new Date('2024-12-05T14:15:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b1v3',
+            id: 3,
             visitDate: new Date('2024-12-10T11:45:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
@@ -61,13 +61,13 @@ export const mockedCatSitters: CatSitter2[] = [
         updatedAt: new Date('2024-12-01T00:00:00'),
         visits: [
           {
-            id: 'b4v1',
+            id: 4,
             visitDate: new Date('2024-12-15T09:00:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b4v2',
+            id: 5,
             visitDate: new Date('2024-12-20T16:00:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
@@ -96,13 +96,13 @@ export const mockedCatSitters: CatSitter2[] = [
         updatedAt: new Date('2024-12-01T00:00:00'),
         visits: [
           {
-            id: 'b2v1',
+            id: 6,
             visitDate: new Date('2024-12-15T10:30:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b2v2',
+            id: 7,
             visitDate: new Date('2024-12-20T13:00:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
@@ -122,13 +122,13 @@ export const mockedCatSitters: CatSitter2[] = [
         updatedAt: new Date('2024-12-01T00:00:00'),
         visits: [
           {
-            id: 'b5v1',
+            id: 8,
             visitDate: new Date('2024-12-25T08:00:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b5v2',
+            id: 9,
             visitDate: new Date('2024-12-30T10:30:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
@@ -148,19 +148,19 @@ export const mockedCatSitters: CatSitter2[] = [
         updatedAt: new Date('2024-12-01T00:00:00'),
         visits: [
           {
-            id: 'b6v1',
+            id: 10,
             visitDate: new Date('2024-12-01T14:45:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b6v2',
+            id: 11,
             visitDate: new Date('2024-12-05T10:00:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b6v3',
+            id: 12,
             visitDate: new Date('2024-12-10T12:30:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
@@ -189,13 +189,13 @@ export const mockedCatSitters: CatSitter2[] = [
         updatedAt: new Date('2024-12-01T00:00:00'),
         visits: [
           {
-            id: 'b3v1',
+            id: 13,
             visitDate: new Date('2024-12-25T15:00:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
           },
           {
-            id: 'b3v2',
+            id: 14,
             visitDate: new Date('2024-12-30T09:00:00'),
             status: VisitStatus.PENDING,
             durationInMinutes: 60
@@ -221,21 +221,21 @@ export const mockedUserBookings: Booking[] = [
     updatedAt: new Date('2024-12-01T00:00:00'),
     visits: [
       {
-        id: 'b1v1',
+        id: 1,
         visitDate: new Date('2024-12-01T08:30:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
         notes: 'Quero que alimente o gato com ração de frango.'
       },
       {
-        id: 'b1v2',
+        id: 2,
         visitDate: new Date('2024-12-05T14:15:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
         notes: 'Meu gato adora brincar com bolinhas.'
       },
       {
-        id: 'b1v3',
+        id: 3,
         visitDate: new Date('2024-12-10T11:45:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
@@ -257,14 +257,14 @@ export const mockedUserBookings: Booking[] = [
     updatedAt: new Date('2024-12-01T00:00:00'),
     visits: [
       {
-        id: 'b2v1',
+        id: 4,
         visitDate: new Date('2024-12-15T10:30:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
         notes: 'Hoje, quero que dê o remédio para o gato.'
       },
       {
-        id: 'b2v2',
+        id: 5,
         visitDate: new Date('2024-12-20T13:00:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
@@ -286,14 +286,14 @@ export const mockedUserBookings: Booking[] = [
     updatedAt: new Date('2024-12-01T00:00:00'),
     visits: [
       {
-        id: 'b3v1',
+        id: 6,
         visitDate: new Date('2024-12-25T15:00:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
         notes: 'Meu gato gosta que brinquem com ele.'
       },
       {
-        id: 'b3v2',
+        id: 7,
         visitDate: new Date('2024-12-30T09:00:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
@@ -315,14 +315,14 @@ export const mockedUserBookings: Booking[] = [
     updatedAt: new Date('2024-12-01T00:00:00'),
     visits: [
       {
-        id: 'b4v1',
+        id: 8,
         visitDate: new Date('2024-12-15T09:00:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
         notes: 'Quero que fique um pouco mais para brincar com o gato.'
       },
       {
-        id: 'b4v2',
+        id: 9,
         visitDate: new Date('2024-12-20T16:00:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
@@ -344,14 +344,14 @@ export const mockedUserBookings: Booking[] = [
     updatedAt: new Date('2024-12-01T00:00:00'),
     visits: [
       {
-        id: 'b5v1',
+        id: 10,
         visitDate: new Date('2024-12-25T08:00:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,
         notes: 'Há um brinquedo novo para o gato. Deixe ele brincar um pouco.'
       },
       {
-        id: 'b5v2',
+        id: 11,
         visitDate: new Date('2024-12-30T10:30:00'),
         status: VisitStatus.PENDING,
         durationInMinutes: 60,

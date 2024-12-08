@@ -3,7 +3,7 @@ export interface Cat {
   name: string
   gender: string
   age: number
-  ownerId: number
+  owner: number
   breed: string
   weight: number
   castrated: boolean

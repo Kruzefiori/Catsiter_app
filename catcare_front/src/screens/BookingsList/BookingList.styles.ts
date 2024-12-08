@@ -1,3 +1,4 @@
+import { getStateColor } from '@/utils/getStateColor'
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import styled from 'styled-components'
 
@@ -65,16 +66,24 @@ export const Footer = styled.span`
   gap: 50px;
 `
 
-export const IconButton = styled.button`
+interface IconButtonProps {
+  textColor?: string
+}
+
+export const IconButton = styled.button<IconButtonProps>`
   background-color: transparent;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
+  ${({ textColor }) => textColor && `color: ${textColor};`}
+  ${({ theme }) => theme.fonts.textMD}
 
   &:hover {
-    color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme, textColor }) =>
+      textColor ? getStateColor(textColor, 'hover') : getStateColor(theme.colors.secondary, 'hover')};
   }
 
   &:focus {
@@ -124,5 +133,18 @@ export const Details = styled.div`
 
   i {
     color: ${({ theme }) => theme.colors.neutralL1};
+  }
+`
+
+export const ButtonsWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  button {
+    gap: 8px;
   }
 `

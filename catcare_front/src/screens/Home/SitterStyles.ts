@@ -4,6 +4,12 @@ import styled from 'styled-components'
 export const SitterHomeContainer = styled.div`
   padding: 8px 4px;
   height: 100%;
+
+  & > h1 {
+    margin-bottom: 16px;
+    text-align: center;
+    ${({ theme }) => theme.fonts.titleLG}
+  }
 `
 
 export const ButtonsWrapper = styled.div`
