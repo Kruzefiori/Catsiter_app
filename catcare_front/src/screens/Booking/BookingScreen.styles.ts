@@ -66,11 +66,15 @@ export const PeriodWrapper = styled.div`
   max-width: 100%;
 `
 
-export const Label = styled.label`
+interface LabelProps {
+  direction?: 'column' | 'row'
+}
+
+export const Label = styled.label<LabelProps>`
   ${({ theme }) => theme.fonts.labelMD}
   color: ${({ theme }) => theme.colors.secondary};
   display: flex;
-  flex-direction: column;
+  flex-direction: ${({ direction }) => direction || 'column'};
   gap: 4px;
   flex: 1;
 
@@ -92,7 +96,7 @@ export const Label = styled.label`
 `
 
 export const Value = styled.span`
-  ${({ theme }) => theme.fonts.labelMD}
+  ${({ theme }) => theme.fonts.labelSM}
   color: ${({ theme }) => theme.colors.neutralL0};
 `
 

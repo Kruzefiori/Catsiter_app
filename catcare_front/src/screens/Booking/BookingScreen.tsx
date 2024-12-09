@@ -5,7 +5,7 @@ import { longMonthDateOptions } from '@/utils/string'
 import axios from 'axios'
 import { useCallback, useContext, useEffect, useState, useMemo } from 'react'
 import { toast } from 'react-toastify'
-import { Add, ArrowDropDown, Close, Delete, Edit } from '@mui/icons-material'
+import { CalendarMonth, ArrowDropDown, Close, Delete } from '@mui/icons-material'
 import {
   BookingDetailsContainer,
   BookingScreenContainer,
@@ -277,34 +277,24 @@ function BookingScreen() {
           </EventModal>
         )}
         <VisitsContainer>
-          <Button variant="ghost" fullWidth onClick={handleOpenCalendar}>
-            <Add />
-            Adicionar Visitas
+          <Button variant="ghost" gap={8} fullWidth onClick={handleOpenCalendar}>
+            <CalendarMonth />
+            Editar Visitas
           </Button>
-          {visits.length > 0 && <Tip>{'(clique em uma visita para editar os detalhes)'}</Tip>}
+
           {[...visits]
             .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())
             .map((visit, index) => (
               <VisitWrapper key={visit.visitDate?.toISOString() ?? index}>
-                <VisitSummary expandIcon={<ArrowDropDown />}>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemoveVisit(index)
-                    }}
-                  >
-                    <Close fontSize="small" color="action" />
-                  </IconButton>
-                  {`Visita ${index + 1}`}
-                </VisitSummary>
+                <VisitSummary expandIcon={<ArrowDropDown />}>{`Visita ${index + 1}`}</VisitSummary>
                 <VisitItem>
-                  <Label>
+                  <Label direction="row">
                     Data:
-                    <input
-                      type="date"
-                      value={visit.visitDate?.toISOString().split('T')[0] ?? ''}
-                      onChange={(e) => handleUpdateVisit(visit.id, 'visitDate', e.target.value)}
-                    />
+                    <Value>{visit.visitDate?.toLocaleString('pt-BR', longMonthDateOptions) ?? ''}</Value>
+                  </Label>
+                  <Label direction="row">
+                    Duração:
+                    <Value>{visit.durationInMinutes} minutos</Value>
                   </Label>
                   <Label>
                     Observações:
@@ -315,7 +305,7 @@ function BookingScreen() {
                       onChange={(e) => handleUpdateVisit(visit.id, 'visitNotes', e.target.value)}
                     />
                   </Label>
-                  <Button variant="ghost" fullWidth onClick={() => handleRemoveVisit(index)}>
+                  <Button variant="ghost" size="md" fullWidth onClick={() => handleRemoveVisit(index)}>
                     <Delete />
                     Remover Visita
                   </Button>

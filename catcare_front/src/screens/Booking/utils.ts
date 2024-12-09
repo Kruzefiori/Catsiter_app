@@ -26,4 +26,11 @@ const getDifferenceInHours = (newerDate: Date, olderDate: Date) => {
   return Math.abs(newerDate.getTime() - olderDate.getTime()) / 36e5
 }
 
-export { getLastVisitDate, getFirstVisitDate, addOneHour, getDifferenceInHours }
+const minutesToHours = (minutes: number) => {
+  return {
+    hours: Math.floor(minutes / 60),
+    minutes: minutes % 60
+  }
+}
+
+export { getLastVisitDate, getFirstVisitDate, addOneHour, getDifferenceInHours, minutesToHours }
