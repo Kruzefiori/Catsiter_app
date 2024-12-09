@@ -126,7 +126,13 @@ function OwnerOnboardingScreen() {
           />
           <FormControl fullWidth sx={{ flex: 0.3 }} error={!!errors.address?.state}>
             <InputLabel>Estado</InputLabel>
-            <Select {...register('address.state')} error={!!errors.address?.state} label="Estado" fullWidth>
+            <Select
+              {...register('address.state')}
+              defaultValue={''}
+              error={!!errors.address?.state}
+              label="Estado"
+              fullWidth
+            >
               {statesBR.map((state) => (
                 <MenuItem key={state} value={state}>
                   {state}

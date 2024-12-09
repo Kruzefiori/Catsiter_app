@@ -13,12 +13,13 @@ export const MenuProps = {
 }
 
 export const SitterOnboardingContainer = styled.div`
-  height: 100%;
+  height: fit-content;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   padding: 16px;
+  margin-bottom: 16px;
   gap: 24px;
 `
 
@@ -59,6 +60,11 @@ export const InputWrapper = styled.div`
     -moz-appearance: textfield;
     appearance: textfield;
   }
+`
+
+export const AddressItemGroup = styled.div`
+  display: flex;
+  gap: 16px;
 `
 
 export const Label = styled.label`

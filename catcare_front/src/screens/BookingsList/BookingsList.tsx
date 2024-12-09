@@ -87,7 +87,12 @@ function BookingsList(props: BookingsListProps) {
                 </Name>
               </Header>
               <Address>
-                <strong>Endereço:</strong> {requestersData.find((user) => user.id === booking.requesterId)?.address}
+                <strong>Endereço:</strong>{' '}
+                {`${requestersData.find((user) => user.id === booking.requesterId)?.address.street}, ${
+                  requestersData.find((user) => user.id === booking.requesterId)?.address.number
+                } - ${requestersData.find((user) => user.id === booking.requesterId)?.address.city}, ${
+                  requestersData.find((user) => user.id === booking.requesterId)?.address.state
+                }`}
               </Address>
               <Notes>
                 <strong>Informações adicionais:</strong>

@@ -8,7 +8,8 @@ import {
   Subtitle,
   Title,
   InputWrapper,
-  MenuProps
+  MenuProps,
+  AddressItemGroup
 } from './SitterOnboardingScreen.styles'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -19,15 +20,17 @@ import * as z from 'zod'
 import {
   Box,
   Chip,
+  FormControl,
   FormHelperText,
   InputAdornment,
+  InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
   SelectChangeEvent,
   TextField
 } from '@mui/material'
-import { cities } from './utils'
+import { cities, statesBR } from './utils'
 import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -35,7 +38,15 @@ import { toast } from 'react-toastify'
 type SitterSchema = z.infer<typeof sitterSchema>
 
 const sitterSchema = z.object({
-  address: z.string().min(1, 'Informe o endereço'),
+  address: z.object({
+    street: z.string().min(1, 'Informe a rua'),
+    city: z.string().min(1, 'Informe a cidade'),
+    state: z.string().min(1, 'Informe o estado'),
+    zipCode: z.string().min(1, 'Informe o CEP'),
+    country: z.string().min(1, 'Informe o país'),
+    complement: z.string().optional(),
+    number: z.number().optional()
+  }),
   price: z.number().min(0, 'Informe o preço do serviço'),
   jobDesc: z.string().min(1, 'Informe a descrição do trabalho')
 })
@@ -79,20 +90,28 @@ function SitterOnboardingScreen() {
         type: 'SITTER'
       }
 
-      // const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Bearer ${authState.token}`
-      //   }
-      // })
+      console.log(body)
 
-      // if (response.status < 200 || response.status >= 300) {
-      //   toast.error('Não foi possível finalizar o cadastro.')
-      //   return
-      // }
+      try {
+        const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authState.token}`
+          }
+        })
 
-      toast.success('Cadastro finalizado!')
-      navigate(RouterPaths.HOME)
+        if (response.status < 200 || response.status >= 300) {
+          toast.error('Não foi possível finalizar o cadastro.')
+          throw new Error('Não foi possível finalizar o cadastro.')
+        }
+
+        console.log(response.data)
+
+        toast.success('Cadastro finalizado!')
+        navigate(RouterPaths.HOME)
+      } catch (error) {
+        console.error(error)
+      }
     },
     [selectedCities, authState.user.id]
   )
@@ -111,16 +130,75 @@ function SitterOnboardingScreen() {
       </Header>
       <Form onSubmit={handleSubmit(handleFinish)}>
         <InputWrapper>
-          <Label>Qual o seu endereço?</Label>
+          <Label>Endereço</Label>
+          <AddressItemGroup>
+            <TextField
+              {...register('address.street')}
+              error={!!errors.address?.street}
+              helperText={errors.address?.street?.message}
+              label="Rua"
+              fullWidth
+              sx={{ flex: 1 }}
+            />
+            <TextField
+              type="number"
+              {...register('address.number', { valueAsNumber: true })}
+              error={!!errors.address?.number}
+              helperText={errors.address?.number?.message}
+              label="Número"
+              fullWidth
+              sx={{ flex: 0.3 }}
+            />
+          </AddressItemGroup>
           <TextField
-            size="small"
-            type="text"
-            id="address"
-            placeholder="rua, número, bairro, cidade, estado"
-            error={!!errors.address}
-            helperText={errors.address ? errors.address.message : ''}
-            {...register('address')}
+            {...register('address.complement')}
+            error={!!errors.address?.complement}
+            helperText={errors.address?.complement?.message}
+            label="Complemento"
+            fullWidth
           />
+          <AddressItemGroup>
+            <TextField
+              {...register('address.city')}
+              error={!!errors.address?.city}
+              helperText={errors.address?.city?.message}
+              label="Cidade"
+              fullWidth
+              sx={{ flex: 0.7 }}
+            />
+            <FormControl fullWidth sx={{ flex: 0.3 }} error={!!errors.address?.state}>
+              <InputLabel>Estado</InputLabel>
+              <Select
+                {...register('address.state')}
+                defaultValue={''}
+                error={!!errors.address?.state}
+                label="Estado"
+                fullWidth
+              >
+                {statesBR.map((state) => (
+                  <MenuItem key={state} value={state}>
+                    {state}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </AddressItemGroup>
+          <AddressItemGroup>
+            <TextField
+              {...register('address.zipCode')}
+              error={!!errors.address?.zipCode}
+              helperText={errors.address?.zipCode?.message}
+              label="CEP"
+              fullWidth
+            />
+            <TextField
+              {...register('address.country')}
+              error={!!errors.address?.country}
+              helperText={errors.address?.country?.message}
+              label="País"
+              fullWidth
+            />
+          </AddressItemGroup>
         </InputWrapper>
         <InputWrapper>
           <Label>Onde voce atende?</Label>
@@ -142,15 +220,15 @@ function SitterOnboardingScreen() {
             MenuProps={MenuProps}
             error={emptyCitiesError}
           >
-            {cities.map((city) => (
+            {[...cities].sort().map((city) => (
               <MenuItem
-                key={city.value}
-                value={city.value}
+                key={city}
+                value={city}
                 style={{
-                  backgroundColor: selectedCities.indexOf(city.value) !== -1 ? 'rgba(0, 20, 26, 0.11)' : 'white'
+                  backgroundColor: selectedCities.indexOf(city) !== -1 ? 'rgba(0, 20, 26, 0.11)' : 'white'
                 }}
               >
-                {city.label}
+                {city}
               </MenuItem>
             ))}
           </Select>
