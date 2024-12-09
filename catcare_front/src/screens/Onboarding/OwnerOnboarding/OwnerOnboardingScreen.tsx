@@ -53,8 +53,6 @@ function OwnerOnboardingScreen() {
       type: 'OWNER'
     }
 
-    console.log(body)
-
     try {
       const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {
         headers: {
@@ -67,7 +65,6 @@ function OwnerOnboardingScreen() {
         toast.error('Não foi possível finalizar o cadastro.')
         throw new Error('Não foi possível finalizar o cadastro.')
       }
-      console.log(response.data)
       toast.success('Cadastro finalizado!')
       navigate(RouterPaths.HOME)
     } catch (error) {

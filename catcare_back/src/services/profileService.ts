@@ -15,7 +15,7 @@ interface SitterOnboardingProfile {
 	jobDesc: string;
 	price: number;
 	address: Address;
-	attendancePlaces: Address[];
+	attendancePlaces: string[];
 }
 
 interface OwnerOnboardingProfile {
@@ -73,25 +73,11 @@ class ProfileService {
 		}
 		const onboarding = await this.prisma.catSitter.create({
 			data: {
-				userId,
+				userId: userId,
 				jobDesc,
 				price,
+				attendancePlaces,
 			},
-		});
-
-		attendancePlaces.forEach(async (address) => {
-			await this.prisma.address.create({
-				data: {
-					catSitterId: onboarding.userId,
-					street: address.street,
-					city: address.city,
-					state: address.state,
-					zipCode: address.zipCode,
-					country: address.country,
-					complement: address.complement,
-					number: address.number,
-				},
-			});
 		});
 
 		const userUpdate = await this.prisma.user.update({
