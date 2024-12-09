@@ -119,6 +119,17 @@ class ProfileService {
 			data: {
 				type: "SITTER",
 				onboardingDone: true,
+				address: {
+					create: {
+						street: address.street,
+						city: address.city,
+						state: address.state,
+						zipCode: address.zipCode,
+						country: address.country,
+						complement: address.complement,
+						number: address.number,
+					},
+				},
 			},
 		});
 
@@ -205,6 +216,24 @@ class ProfileService {
 			price: catSitter.price,
 			requestsReceived: catSitter.requestsReceived,
 		}));
+	}
+
+	async getOwnerById(ownerId: number) {
+		const owner = await this.prisma.user.findFirst({
+			where: { id: { equals: ownerId } },
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				address: true,
+			},
+		});
+
+		if (!owner) {
+			throw new Error("owner not found");
+		}
+
+		return owner;
 	}
 }
 

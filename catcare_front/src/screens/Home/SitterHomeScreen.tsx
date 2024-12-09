@@ -5,13 +5,14 @@ import { AuthContext } from '@/context'
 import { toast } from 'react-toastify'
 import { SitterHomeContainer, ButtonsWrapper } from './SitterStyles'
 import { Booking, BookingStatus } from '@/domain/models/Booking'
-import { BookingsList } from '../BookingsList'
+import { BookingsList, Requester } from '../BookingsList'
 
 function SitterHomeScreen() {
   const { getAuthTokenFromStorage, authState } = useContext(AuthContext)
 
   const [pendingBookings, setPendingBookings] = useState<Booking[]>([])
   const [acceptedBookings, setAcceptedBookings] = useState<Booking[]>([])
+  const [requesters, setRequesters] = useState<Requester[]>([])
   const [cardsToShow, setCardsToShow] = useState<'pending' | 'accepted'>('pending')
 
   useEffect(() => {
@@ -54,6 +55,28 @@ function SitterHomeScreen() {
           }
         })
         setPendingBookings(parsedPendingBookings)
+
+        // get requesters
+        const requestersIds = parsedPendingBookings.map((booking) => booking.requesterId)
+        console.log('requestersIds', requestersIds)
+        requestersIds.forEach(async (requesterId) => {
+          const requesterResponse = await axios.get<Requester>(
+            `${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/ownerById?ownerId=${requesterId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${getAuthTokenFromStorage()}`
+              }
+            }
+          )
+
+          if (requesterResponse.status < 200 || requesterResponse.status >= 300) {
+            toast.error('Erro ao buscar solicitantes')
+            return
+          }
+
+          setRequesters((prev) => [...prev, requesterResponse.data])
+        })
       } catch (error) {
         console.error('Erro ao buscar bookings pendentes', error)
       }
@@ -62,7 +85,7 @@ function SitterHomeScreen() {
     const fetchAcceptedBookings = async () => {
       try {
         const acceptedBookingsResponse = await axios.get<Booking[]>(
-          `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
+          `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?ownerId=${
             authState.user.id
           }&status=ACCEPTED`,
           {
@@ -193,6 +216,7 @@ function SitterHomeScreen() {
         </Button>
       </ButtonsWrapper>
       <BookingsList
+        requesters={requesters}
         bookings={cardsToShow === 'pending' ? pendingBookings : acceptedBookings}
         onAcceptBooking={handleAcceptBooking}
         onRejectBooking={handleRejectBooking}

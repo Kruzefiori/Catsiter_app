@@ -126,7 +126,7 @@ function RegisterScreen() {
             }}
           />
         </InputWrapper>
-        <Button type="submit" variant="filled">
+        <Button type="submit" variant="filled" fullWidth>
           Cadastrar
         </Button>
       </Form>

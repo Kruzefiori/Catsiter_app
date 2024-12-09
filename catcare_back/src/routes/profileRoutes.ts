@@ -5,8 +5,8 @@ import profileController from "../controllers/profileController";
 const router = express.Router();
 
 router.get("/user", auth, profileController.getProfile);
+router.get("/ownerById", profileController.getOwnerById);
 router.get("/catsitters", profileController.getAllCatSitters);
 router.post("/onboarding", profileController.onboarding);
-
 
 export default router;

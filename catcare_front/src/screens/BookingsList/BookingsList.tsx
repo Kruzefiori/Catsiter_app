@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button/Button'
 import {
-  Address,
+  AddressInfo,
   BookingCard,
   ButtonsWrapper,
   CardsList,
@@ -18,7 +18,6 @@ import {
   VisitWrapper
 } from './BookingList.styles'
 import { ArrowDropDown, CheckCircle, DeleteForever } from '@mui/icons-material'
-import { requestersData } from './utils'
 import { Booking } from '@/domain/models/Booking'
 import { VisitStatus } from '@/domain/models/Visits'
 import { useContext, useState } from 'react'
@@ -26,15 +25,24 @@ import { ResponseModal } from './ResponseModal'
 import axios from 'axios'
 import { AuthContext } from '@/context'
 import { toast } from 'react-toastify'
+import { Address } from '@/domain/models/Address'
+
+export type Requester = {
+  id: number
+  name: string
+  email: string
+  address: Address
+}
 
 interface BookingsListProps {
+  requesters: Requester[]
   bookings: Booking[]
   onAcceptBooking: (bookingId: number) => void
   onRejectBooking: (bookingId: number) => void
 }
 
 function BookingsList(props: BookingsListProps) {
-  const { bookings, onAcceptBooking, onRejectBooking } = props
+  const { requesters, bookings, onAcceptBooking, onRejectBooking } = props
 
   const { getAuthTokenFromStorage } = useContext(AuthContext)
 
@@ -70,6 +78,8 @@ function BookingsList(props: BookingsListProps) {
     setVisitResponse(null)
   }
 
+  console.log('requesters', requesters)
+
   return (
     <>
       {bookings.length === 0 ? (
@@ -83,17 +93,17 @@ function BookingsList(props: BookingsListProps) {
               </DateInfo>
               <Header>
                 <Name>
-                  <strong>Solicitante:</strong> {requestersData.find((user) => user.id === booking.requesterId)?.name}
+                  <strong>Solicitante:</strong> {requesters.find((user) => user.id === booking.requesterId)?.name}
                 </Name>
               </Header>
-              <Address>
+              <AddressInfo>
                 <strong>Endereço:</strong>{' '}
-                {`${requestersData.find((user) => user.id === booking.requesterId)?.address.street}, ${
-                  requestersData.find((user) => user.id === booking.requesterId)?.address.number
-                } - ${requestersData.find((user) => user.id === booking.requesterId)?.address.city}, ${
-                  requestersData.find((user) => user.id === booking.requesterId)?.address.state
+                {`${requesters.find((user) => user.id === booking.requesterId)?.address.street}, ${
+                  requesters.find((user) => user.id === booking.requesterId)?.address.number
+                } - ${requesters.find((user) => user.id === booking.requesterId)?.address.city}, ${
+                  requesters.find((user) => user.id === booking.requesterId)?.address.state
                 }`}
-              </Address>
+              </AddressInfo>
               <Notes>
                 <strong>Informações adicionais:</strong>
                 <Details>{booking.generalNotes}</Details>

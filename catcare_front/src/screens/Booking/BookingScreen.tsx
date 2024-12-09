@@ -110,8 +110,6 @@ function BookingScreen() {
       endDate: getLastVisitDate(visits),
       generalNotes: generalNotes
     }
-    // verificando os dados antes de enviar
-    console.log('body', body)
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/add-booking`, body, {
@@ -127,7 +125,6 @@ function BookingScreen() {
       }
 
       toast.success('Sua reserva foi solicitada com sucesso!')
-      console.log('response', response.data)
       navigate(-1)
     } catch (error) {
       console.error(error)

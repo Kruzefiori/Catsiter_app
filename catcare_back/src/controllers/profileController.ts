@@ -78,6 +78,20 @@ class ProfileController {
 			}
 		}
 	}
+
+	async getOwnerById(req: Request, res: Response) {
+		const ownerId = req.query.ownerId as string;
+
+		console.log("ownerId", ownerId);
+		try {
+			const owner = await profileService.getOwnerById(Number(ownerId));
+			res.status(200).json(owner);
+		} catch (error) {
+			if (error instanceof Error) {
+				res.status(400).json({ error: error.message });
+			}
+		}
+	}
 }
 
 export default new ProfileController();

@@ -45,10 +45,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     user: INITIAL_STATE_USER
   })
 
-  useEffect(() => {
-    console.log('USER', authState.user)
-  }, [authState.user])
-
   const setToken = (token: string) => {
     setAuthState((prev) => ({ ...prev, token }))
   }

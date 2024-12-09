@@ -50,7 +50,6 @@ function OwnerHomeScreen() {
           toast.error('Não foi possível buscar os catsitters.')
           throw new Error('Não foi possível buscar os catsitters.')
         }
-        console.log(response.data)
         const parsedCatsitters: CatSitter[] = response.data
           .map((catsitter) => ({
             ...catsitter,

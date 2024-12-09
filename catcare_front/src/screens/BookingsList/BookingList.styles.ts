@@ -45,7 +45,7 @@ export const DateInfo = styled.p`
   ${({ theme }) => theme.fonts.titleSM}
   text-align: center;
 `
-export const Address = styled.p`
+export const AddressInfo = styled.p`
   ${({ theme }) => theme.fonts.textMD}
 `
 export const Visit = styled.div`
