@@ -58,7 +58,12 @@ function ProfileScreen() {
         <strong>Email</strong>: {user.email}
       </span>
       <span>
-        <strong>Endereço</strong>: {user.address ? user.address : <i>(Não informado)</i>}
+        <strong>Endereço</strong>:{' '}
+        {user.address ? (
+          `${user.address.street}, ${user.address.number} - ${user.address.city}, ${user.address.state}`
+        ) : (
+          <i>(não informado)</i>
+        )}
       </span>
       <CatsHeader>
         <h2>Seus gatinhos</h2>

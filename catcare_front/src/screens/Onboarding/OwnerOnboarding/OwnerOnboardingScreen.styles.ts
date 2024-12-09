@@ -4,9 +4,9 @@ export const OwnerOnboardingContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 16px;
+  padding: 16px 16px 0 16px;
   gap: 24px;
 `
 
@@ -29,12 +29,36 @@ export const Subtitle = styled.h2`
 
 export const Form = styled.form`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  button:last-child {
+    margin-top: auto;
+  }
 `
 
 export const Label = styled.label`
   ${({ theme }) => theme.fonts.textLG}
   color: ${({ theme }) => theme.colors.secondary};
+`
+
+export const AddressItemGroup = styled.div`
+  display: flex;
+  gap: 8px;
+
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+`
+
+export const SelectOption = styled.option`
+  ${({ theme }) => theme.fonts.textMD}
+  width: fit-content;
+  text-align: center;
 `

@@ -27,7 +27,7 @@ import {
   SelectChangeEvent,
   TextField
 } from '@mui/material'
-import { cities } from './sitterOnboardingUtils'
+import { cities } from './utils'
 import { AuthContext } from '@/context/AuthContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'

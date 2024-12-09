@@ -21,3 +21,33 @@ export const cities = [
   { label: 'Taubaté', value: 'taubate' },
   { label: 'Conceição do Rio Verde', value: 'conceicao-do-rio-verde' }
 ]
+
+export const statesBR = [
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO'
+]
