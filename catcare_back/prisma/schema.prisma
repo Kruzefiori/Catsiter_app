@@ -88,7 +88,7 @@ model catSitter {
   jobDesc           String
   price             Float
   requestsReceived  booking[]  @relation()
-  attendancePlaces  Address[]  @relation("AttendancePlaces")
+  attendancePlaces  String[]
 
   @@map("cat_sitters")
 }
@@ -97,8 +97,6 @@ model Address {
   id            Int        @id @default(autoincrement())
   userId        Int?       @unique
   user          User?      @relation(fields: [userId], references: [id])
-  catSitterId   Int?
-  catSitter     catSitter? @relation("AttendancePlaces", fields: [catSitterId], references: [id])
   street        String
   city          String
   state         String
