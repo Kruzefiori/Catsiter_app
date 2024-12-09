@@ -174,7 +174,24 @@ class ProfileService {
 						overallRating: true,
 					},
 				},
-				requestsReceived: true,
+				requestsReceived: {
+					select: {
+						id: true,
+						endDate: true,
+						startDate: true,
+						generalNotes: true,
+						status: true,
+						visits: {
+							select: {
+								id: true,
+								durationInMinutes: true,
+								status: true,
+								visitDate: true,
+								visitNotes: true,
+							},
+						},
+					},
+				},
 			},
 		});
 

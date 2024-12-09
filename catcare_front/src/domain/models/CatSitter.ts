@@ -10,3 +10,14 @@ export interface CatSitter {
   bookings: Booking[]
   events?: CalendarEvent[]
 }
+
+export interface CatSitterResponse {
+  address: string
+  email: string
+  id: number
+  jobDesc: string
+  name: string
+  overallRating: number
+  price: number
+  requestsReceived: Booking[]
+}

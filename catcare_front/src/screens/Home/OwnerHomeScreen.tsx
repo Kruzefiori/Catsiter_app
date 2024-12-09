@@ -1,64 +1,87 @@
-import styled from 'styled-components'
 import Star from '@assets/star.svg?react'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '@/context'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { CatSitter2 } from '@/domain/models/CatSitter'
+import { CatSitter, CatSitterResponse } from '@/domain/models/CatSitter'
 import { Booking } from '@/domain/models/Booking'
 import { Button } from '@/components/Button/Button'
 import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
-import { mockedCatSitters } from './utils'
 import { CalendarMonth } from '@mui/icons-material'
 import { CalendarPopup, CalendarEvent, CalendarColor } from '@/components/CalendarPopup'
+import {
+  Address,
+  CardsList,
+  Footer,
+  Header,
+  IconButton,
+  InfoWrapper,
+  Name,
+  OwnerHomeContainer,
+  Price,
+  Rating,
+  SitterCard,
+  Description
+} from './OwnerStyles'
 
 function OwnerHomeScreen() {
   const navigate = useNavigate()
   const { getAuthTokenFromStorage, authState } = useContext(AuthContext)
 
-  const [catSitters, setCatSitters] = useState<CatSitter2[]>([])
+  const [catSitters, setCatSitters] = useState<CatSitter[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [eventsToShow, setEventsToShow] = useState<CalendarEvent[]>([])
 
   useEffect(() => {
-    // const fetchCatSitters = async () => {
-    //   const response = await axios.get<CatSitter[]>(
-    //     `${import.meta.env.VITE_CATCARE_SERVER_URL}/catsitter/get-catsitters`,
-    //     {
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Authorization: `Bearer ${getAuthTokenFromStorage()}`
-    //       }
-    //     }
-    //   )
+    const fetchCatSitters = async () => {
+      try {
+        const response = await axios.get<CatSitterResponse[]>(
+          `${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/catsitters`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getAuthTokenFromStorage()}`
+            }
+          }
+        )
 
-    //   if (response.status < 200 || response.status >= 300) {
-    //     toast.error('Não foi possível buscar os catsitters.')
-    //     return
-    //   }
+        if (response.status < 200 || response.status >= 300) {
+          toast.error('Não foi possível buscar os catsitters.')
+          throw new Error('Não foi possível buscar os catsitters.')
+        }
+        console.log(response.data)
+        const parsedCatsitters: CatSitter[] = response.data
+          .map((catsitter) => ({
+            ...catsitter,
+            bookings: catsitter.requestsReceived
+          }))
+          .map((catsitter) => {
+            const events: CalendarEvent[] = []
+            catsitter.bookings?.length > 0 &&
+              catsitter.bookings.forEach((booking) => {
+                booking.visits?.length > 0 &&
+                  booking.visits.forEach((visit) => {
+                    events.push({
+                      id: visit.id,
+                      title: 'Ocupado',
+                      start: new Date(visit.visitDate),
+                      end: new Date(new Date(visit.visitDate).getTime() + visit.durationInMinutes * 60000),
+                      color: CalendarColor.LIGHT_BLUE
+                    })
+                  })
+              })
 
-    //   setCatSitters(response.data)
-    // }
-
-    // fetchCatSitters()
-
-    // Do the same for each catsitter
-    mockedCatSitters.forEach((catsitter) => {
-      const events: CalendarEvent[] = []
-      catsitter.bookings.forEach((booking) => {
-        booking.visits.forEach((visit) => {
-          events.push({
-            id: visit.id,
-            title: 'Ocupado',
-            start: new Date(visit.visitDate),
-            end: new Date(new Date(visit.visitDate).getTime() + visit.durationInMinutes * 60000),
-            color: CalendarColor.LIGHT_BLUE
+            return { ...catsitter, events }
           })
-        })
-      })
-      setCatSitters((prev) => [...prev, { ...catsitter, events }])
-    })
+
+        setCatSitters(parsedCatsitters)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchCatSitters()
 
     return () => {
       setCatSitters([])
@@ -126,6 +149,18 @@ function OwnerHomeScreen() {
 
   const handleShowCalendar = (catsitterId: number) => {
     const catsitter = catSitters.find((catsitter) => catsitter.id === catsitterId)
+    if (!catsitter) {
+      return toast.error('Houve um erro ao buscar os eventos.')
+    }
+
+    if (catsitter.events.length === 0 && catsitter.bookings.length > 0) {
+      toast.error('Não foi possível mostrar a disponibilidade desse catsitter.')
+      return
+    }
+    if (catsitter.bookings.length === 0) {
+      toast.info('Este catsitter está com a agenda aberta.')
+      return
+    }
     setEventsToShow(catsitter.events)
   }
 
@@ -169,66 +204,3 @@ function OwnerHomeScreen() {
 }
 
 export { OwnerHomeScreen }
-
-const OwnerHomeContainer = styled.div`
-  padding: 8px 4px;
-`
-
-const CardsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`
-
-const SitterCard = styled.div`
-  background-color: ${({ theme }) => theme.colors.neutralTertiary};
-  border: 2px solid ${({ theme }) => theme.colors.neutralL2};
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 6px;
-  border-radius: 8px;
-`
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-`
-
-const InfoWrapper = styled.span``
-
-const Name = styled.p`
-  ${({ theme }) => theme.fonts.infoMD}
-`
-
-const Address = styled.p`
-  ${({ theme }) => theme.fonts.textSM}
-`
-
-const Description = styled.div`
-  height: 600px;
-  width: 100%;
-  height: 100px;
-  background-color: ${({ theme }) => theme.colors.neutralL4};
-  border-radius: 8px;
-  padding: 6px;
-  ${({ theme }) => theme.fonts.textMD}
-`
-
-const Footer = styled.span`
-  display: flex;
-  justify-content: space-between;
-  padding: 6px;
-`
-
-const Price = styled.p`
-  ${({ theme }) => theme.fonts.infoMD}
-`
-
-const Rating = styled.span``
-
-const IconButton = styled.button`
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-`

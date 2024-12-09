@@ -1,6 +1,6 @@
 import { Visits } from '@/domain/models/Visits'
 
-type VisitWithoutIds = Omit<Visits, 'id' | 'bookingId'> & { id?: number; bookingId?: number }
+type VisitWithoutIds = Omit<Visits, 'id' | 'bookingId'> & { id?: number | string; bookingId?: number }
 
 const sortVisits = (visits: VisitWithoutIds[]) => {
   return [...visits]

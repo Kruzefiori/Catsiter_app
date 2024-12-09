@@ -29,14 +29,13 @@ import { CalendarColor, CalendarEvent, CalendarPopup } from '@/components/Calend
 import { SlotInfo } from 'react-big-calendar'
 import { mockedCatSitters } from '../Home/utils'
 
-type VisitWithoutIds = Omit<Visits, 'id' | 'bookingId'> & { id?: number; bookingId?: number }
+type VisitWithoutIds = Omit<Visits, 'id' | 'bookingId'> & { id?: number | string; bookingId?: number }
 
 function BookingScreen() {
   const { catsitterId } = useParams()
   const navigate = useNavigate()
 
   useEffect(() => {
-    console.log('catsitterId', catsitterId)
     if (!catsitterId) {
       navigate(-1)
     }
@@ -69,18 +68,22 @@ function BookingScreen() {
     return events
   }, [catsitterId])
 
-  const handleUpdateVisit = (index: number, field: string, value: string) => {
+  const handleUpdateVisit = (visitId: number | string, field: string, value: string) => {
     const updatedVisits = [...visits]
+    const visitIndex = updatedVisits.findIndex((visit) => visit.id === visitId)
+    if (visitIndex === -1) {
+      return
+    }
     if (field === 'visitDate') {
-      updatedVisits[index] = {
-        ...updatedVisits[index],
+      updatedVisits[visitIndex] = {
+        ...updatedVisits[visitIndex],
         visitDate: new Date(value)
       }
       setVisits(updatedVisits)
       return
     }
-    updatedVisits[index] = {
-      ...updatedVisits[index],
+    updatedVisits[visitIndex] = {
+      ...updatedVisits[visitIndex],
       [field]: value
     }
     setVisits(updatedVisits)
@@ -95,7 +98,12 @@ function BookingScreen() {
 
   const handleCreateBooking = useCallback(async () => {
     const body = {
-      visits: visits,
+      visits: visits.map((visit) => ({
+        visitDate: visit.visitDate,
+        status: visit.status,
+        visitNotes: visit.visitNotes,
+        durationInMinutes: visit.durationInMinutes
+      })),
       requesterId: authState.user.id,
       requestedId: Number(catsitterId),
       startDate: getFirstVisitDate(visits),
@@ -129,16 +137,15 @@ function BookingScreen() {
   const handleSlotClick = useCallback(
     (slotInfo: SlotInfo) => {
       const end = getDifferenceInHours(slotInfo.end, slotInfo.start) > 1 ? slotInfo.end : addOneHour(slotInfo.start)
-      setCurrentEvents([
-        ...currentEvents,
-        {
-          id: Math.floor(Math.random() * 1000),
-          title: 'Nova Visita',
-          start: slotInfo.start,
-          end,
-          color: CalendarColor.LIGHT_GREEN
-        }
-      ])
+      const newEvent: CalendarEvent = {
+        id: crypto.randomUUID(),
+        title: 'Nova Visita',
+        start: slotInfo.start,
+        end,
+        color: CalendarColor.LIGHT_GREEN
+      }
+
+      setCurrentEvents([...currentEvents, newEvent])
     },
     [currentEvents]
   )
@@ -181,6 +188,7 @@ function BookingScreen() {
       return
     }
     const newVisits: VisitWithoutIds[] = currentEvents.map((event) => ({
+      id: event.id,
       visitDate: event.start,
       durationInMinutes: getDifferenceInHours(event.end, event.start) * 60,
       visitNotes: event.notes,
@@ -295,7 +303,7 @@ function BookingScreen() {
                     <input
                       type="date"
                       value={visit.visitDate?.toISOString().split('T')[0] ?? ''}
-                      onChange={(e) => handleUpdateVisit(index, 'visitDate', e.target.value)}
+                      onChange={(e) => handleUpdateVisit(visit.id, 'visitDate', e.target.value)}
                     />
                   </Label>
                   <Label>
@@ -304,7 +312,7 @@ function BookingScreen() {
                       minLength={1}
                       maxLength={2000}
                       value={visit.visitNotes}
-                      onChange={(e) => handleUpdateVisit(index, 'notes', e.target.value)}
+                      onChange={(e) => handleUpdateVisit(visit.id, 'visitNotes', e.target.value)}
                     />
                   </Label>
                   <Button variant="ghost" fullWidth onClick={() => handleRemoveVisit(index)}>

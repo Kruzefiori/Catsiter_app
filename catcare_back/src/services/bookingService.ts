@@ -4,7 +4,7 @@ import prisma from "../client";
 interface visits {
 	visitDate: string;
 	status?: string;
-	notes?: string;
+	visitNotes?: string;
 	durationInMinutes?: number;
 }
 
@@ -50,6 +50,7 @@ class BookingService {
 					durationInMinutes: visit.durationInMinutes
 						? visit.durationInMinutes
 						: 60,
+					visitNotes: visit.visitNotes ? visit.visitNotes : "",
 				},
 			});
 		});
@@ -109,7 +110,7 @@ class BookingService {
 				data: {
 					visitDate: visit.visitDate,
 					bookingId: bookingId,
-					visitNotes: visit.notes ? visit.notes : "",
+					visitNotes: visit.visitNotes ? visit.visitNotes : "",
 					durationInMinutes: visit.durationInMinutes
 						? visit.durationInMinutes
 						: 60,
