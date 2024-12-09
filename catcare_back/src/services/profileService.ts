@@ -33,7 +33,19 @@ class ProfileService {
 				id: true,
 				email: true,
 				name: true,
-				address: true,
+				address: {
+					select: {
+						street: true,
+						city: true,
+						state: true,
+						zipCode: true,
+						country: true,
+						complement: true,
+						number: true,
+					},
+				},
+				type: true,
+				onboardingDone: true,
 			},
 		});
 

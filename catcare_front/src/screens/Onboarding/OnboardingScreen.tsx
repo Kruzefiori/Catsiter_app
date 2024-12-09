@@ -13,13 +13,15 @@ import catCareIcon from '@assets/cat-care.png'
 import catOwnerIcon from '@assets/cat-owner.png'
 
 import { SelectButton } from './OnboardingScreen.styles'
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RouterPaths } from '@/router/RouterPathsMapper'
+import { AuthContext } from '@/context'
 
 type UserType = 'owner' | 'sitter'
 
 function OnboardingScreen() {
+  const { authState } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const [userType, setUserType] = useState<UserType>(null)
@@ -41,10 +43,15 @@ function OnboardingScreen() {
       setShowWarning(true)
       return
     }
-    // TODO: salvar no backend se o usuário for catsitter
     if (userType === 'sitter') navigate(RouterPaths.SITTER_ONBOARDING)
     else navigate(RouterPaths.OWNER_ONBOARDING)
   }, [userType])
+
+  useLayoutEffect(() => {
+    if (authState.user.onboardingDone) {
+      navigate(RouterPaths.HOME)
+    }
+  }, [authState.user.onboardingDone])
 
   return (
     <OnboardingContainer>

@@ -5,6 +5,6 @@ export interface User {
   name: string
   email: string
   address?: Address
-  isCatsitter?: boolean
-  onBoardingDone?: boolean
+  type: 'OWNER' | 'SITTER'
+  onboardingDone?: boolean
 }

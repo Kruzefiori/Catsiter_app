@@ -68,7 +68,6 @@ function OwnerOnboardingScreen() {
         throw new Error('Não foi possível finalizar o cadastro.')
       }
       console.log(response.data)
-      setUser({ ...authState.user, isCatsitter: false, onBoardingDone: true })
       toast.success('Cadastro finalizado!')
       navigate(RouterPaths.HOME)
     } catch (error) {
@@ -77,10 +76,10 @@ function OwnerOnboardingScreen() {
   }, [])
 
   useEffect(() => {
-    if (authState.user?.onBoardingDone) {
+    if (authState.user?.onboardingDone) {
       navigate(RouterPaths.HOME)
     }
-  }, [authState.user?.onBoardingDone])
+  }, [authState.user?.onboardingDone])
 
   return (
     <OwnerOnboardingContainer>

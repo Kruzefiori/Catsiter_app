@@ -76,7 +76,7 @@ function SitterOnboardingScreen() {
         ...data,
         attendancePlaces: selectedCities,
         userId: authState.user.id,
-        isCatsitter: true
+        type: 'SITTER'
       }
 
       // const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/onboarding`, body, {
@@ -91,8 +91,6 @@ function SitterOnboardingScreen() {
       //   return
       // }
 
-      setUser({ ...authState.user, isCatsitter: true, onBoardingDone: true })
-
       toast.success('Cadastro finalizado!')
       navigate(RouterPaths.HOME)
     },
@@ -100,10 +98,10 @@ function SitterOnboardingScreen() {
   )
 
   useEffect(() => {
-    if (authState.user?.onBoardingDone) {
+    if (authState.user?.onboardingDone) {
       navigate(RouterPaths.HOME)
     }
-  }, [authState.user?.onBoardingDone])
+  }, [authState.user?.onboardingDone])
 
   return (
     <SitterOnboardingContainer>

@@ -34,7 +34,6 @@ function SitterHomeScreen() {
           toast.error('Erro ao buscar bookings pendentes')
           return
         }
-        console.log('pending: ', pendingBookingsResponse.data)
         setPendingBookings(pendingBookingsResponse.data)
       } catch (error) {
         console.error('Erro ao buscar bookings pendentes', error)
@@ -60,7 +59,6 @@ function SitterHomeScreen() {
           return
         }
 
-        console.log('accepted: ', acceptedBookingsResponse.data)
         setAcceptedBookings(acceptedBookingsResponse.data)
       } catch (error) {
         console.error('Erro ao buscar bookings aceitos', error)

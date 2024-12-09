@@ -53,7 +53,7 @@ function ProfileScreen() {
   return (
     <ProfileScreenContainer>
       <h1>{user.name}</h1>
-      <span>{user.isCatsitter ? 'Catsitter' : 'Dono de gato'}</span>
+      <span>{user.type === 'OWNER' ? 'Proprietário' : 'Cuidador'}</span>
       <span>
         <strong>Email</strong>: {user.email}
       </span>

@@ -54,6 +54,9 @@ function DefaultLayout() {
         return
       } else {
         setUser(response.data)
+        if (response.data.onboardingDone === false) {
+          navigate(RouterPaths.ONBOARDING)
+        }
       }
     }
 
@@ -105,7 +108,7 @@ function DefaultLayout() {
               <Home color="action" />
             </IconButton>
           )}
-          {authState?.user?.isCatsitter && (
+          {authState?.user?.type === 'SITTER' && (
             <IconButton onClick={() => setShowAgenda(true)} title="Agenda">
               <CalendarToday color="action" />
             </IconButton>

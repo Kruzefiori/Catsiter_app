@@ -1,6 +1,6 @@
 import { User } from '@/domain/models/User'
 import ms from 'ms'
-import { createContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 interface AuthState {
@@ -35,8 +35,8 @@ const INITIAL_STATE_USER: User = {
   name: null,
   email: null,
   address: null,
-  isCatsitter: null,
-  onBoardingDone: null
+  type: null,
+  onboardingDone: null
 }
 
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
@@ -44,6 +44,10 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     token: null,
     user: INITIAL_STATE_USER
   })
+
+  useEffect(() => {
+    console.log('USER', authState.user)
+  }, [authState.user])
 
   const setToken = (token: string) => {
     setAuthState((prev) => ({ ...prev, token }))
