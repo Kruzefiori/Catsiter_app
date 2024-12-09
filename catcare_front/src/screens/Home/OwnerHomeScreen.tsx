@@ -163,15 +163,17 @@ function OwnerHomeScreen() {
     setEventsToShow(catsitter.events)
   }
 
+  console.log('catSitters', catSitters)
+
   return (
     <OwnerHomeContainer>
       <CardsList>
-        {catSitters.map((catsitter, catsitterIndex) => (
+        {catSitters.map((catsitter) => (
           <SitterCard key={catsitter.id}>
             <Header>
               <InfoWrapper>
-                <Name>{catsitter.name}</Name>
-                <Address>{catsitter.address}</Address>
+                {catsitter.name && <Name>{catsitter.name}</Name>}
+                {catsitter.address && <Address>{`${catsitter.address.city}, ${catsitter.address.state}`}</Address>}
               </InfoWrapper>
               <IconButton title="Ver disponibilidade" onClick={() => handleShowCalendar(catsitter.id)}>
                 <CalendarMonth color="action" />
@@ -181,9 +183,11 @@ function OwnerHomeScreen() {
             <Footer>
               <Price>R$ {catsitter.price.toFixed(2)}</Price>
               <Rating>
-                {[...Array(catsitterIndex + 1)].map((_, index) => (
-                  <Star width={20} height={20} key={index} />
-                ))}
+                {[...Array(catsitter.overallRating && catsitter.overallRating > 5 ? 5 : catsitter.overallRating)].map(
+                  (_, index) => (
+                    <Star width={20} height={20} key={index} />
+                  )
+                )}
               </Rating>
             </Footer>
             {eventsToShow.length > 0 && <CalendarPopup events={eventsToShow} onClose={() => setEventsToShow([])} />}

@@ -38,11 +38,12 @@ export const Address = styled.p`
 export const Description = styled.div`
   height: 600px;
   width: 100%;
-  height: 100px;
+  min-height: 100px;
+  height: fit-content;
   background-color: ${({ theme }) => theme.colors.neutralL4};
   border-radius: 8px;
-  padding: 6px;
-  ${({ theme }) => theme.fonts.textMD}
+  padding: 16px 8px;
+  ${({ theme }) => theme.fonts.textSM}
 `
 
 export const Footer = styled.span`

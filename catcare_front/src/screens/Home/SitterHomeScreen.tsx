@@ -85,8 +85,8 @@ function SitterHomeScreen() {
     const fetchAcceptedBookings = async () => {
       try {
         const acceptedBookingsResponse = await axios.get<Booking[]>(
-          `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?ownerId=${
-            authState.user.id
+          `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
+            authState.user.catSitterId
           }&status=ACCEPTED`,
           {
             headers: {
@@ -123,6 +123,28 @@ function SitterHomeScreen() {
           }
         })
         setAcceptedBookings(parsedAcceptedBookings)
+
+        // get requesters
+        const requestersIds = parsedAcceptedBookings.map((booking) => booking.requesterId)
+        console.log('requestersIds', requestersIds)
+        requestersIds.forEach(async (requesterId) => {
+          const requesterResponse = await axios.get<Requester>(
+            `${import.meta.env.VITE_CATCARE_SERVER_URL}/profile/ownerById?ownerId=${requesterId}`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${getAuthTokenFromStorage()}`
+              }
+            }
+          )
+
+          if (requesterResponse.status < 200 || requesterResponse.status >= 300) {
+            toast.error('Erro ao buscar solicitantes')
+            return
+          }
+
+          setRequesters((prev) => [...prev, requesterResponse.data])
+        })
       } catch (error) {
         console.error('Erro ao buscar bookings aceitos', error)
       }
@@ -141,57 +163,47 @@ function SitterHomeScreen() {
 
   const handleAcceptBooking = useCallback(
     async (bookingId: number) => {
-      // const response = await axios.patch(
-      //   `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-booking`,
-      //   {
-      //     bookingId: bookingId,
-      //     answerBooking: 'ACCEPTED'
-      //   },
-      //   {
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       Authorization: `Bearer ${getAuthTokenFromStorage()}`
-      //     }
-      //   }
-      // )
+      const response = await axios.patch(
+        `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-booking`,
+        {
+          bookingId: bookingId,
+          answerBooking: 'ACCEPTED'
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthTokenFromStorage()}`
+          }
+        }
+      )
 
-      // if (response.status < 200 || response.status >= 300) {
-      //   toast.error('Não foi possível aceitar o booking.')
-      //   return
-      // }
-
-      const bookingToAccept = pendingBookings.find((booking) => booking.id === bookingId)
-      setAcceptedBookings((prev) => [...prev, bookingToAccept])
-      setPendingBookings((prev) => prev.filter((booking) => booking.id !== bookingId))
-      // const mockedBookingToAccept = mockedUserBookings.find((booking) => booking.id === bookingId)
-      // mockedBookingToAccept && (mockedBookingToAccept.status = BookingStatus.ACCEPTED)
+      if (response.status < 200 || response.status >= 300) {
+        toast.error('Não foi possível aceitar o booking.')
+        return
+      }
     },
     [pendingBookings]
   )
 
   const handleRejectBooking = useCallback(async (bookingId: number) => {
-    // const response = await axios.patch(
-    //   `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-booking`,
-    //   {
-    //     bookingId: bookingId,
-    //     answerBooking: 'REJECTED'
-    //   },
-    //   {
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       Authorization: `Bearer ${getAuthTokenFromStorage()}`
-    //     }
-    //   }
-    // )
+    const response = await axios.patch(
+      `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-booking`,
+      {
+        bookingId: bookingId,
+        answerBooking: 'REJECTED'
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthTokenFromStorage()}`
+        }
+      }
+    )
 
-    // if (response.status < 200 || response.status >= 300) {
-    //   toast.error('Não foi possível rejeitar o booking.')
-    //   return
-    // }
-
-    setPendingBookings((prev) => prev.filter((booking) => booking.id !== bookingId))
-    // const mockedBookingToReject = mockedUserBookings.find((booking) => booking.id === bookingId)
-    // mockedBookingToReject && (mockedBookingToReject.status = BookingStatus.REJECTED)
+    if (response.status < 200 || response.status >= 300) {
+      toast.error('Não foi possível rejeitar o booking.')
+      return
+    }
   }, [])
 
   return (

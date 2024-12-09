@@ -1,18 +1,20 @@
 import { CalendarEvent } from '@/components/CalendarPopup'
 import { Booking } from './Booking'
+import { Address } from './Address'
 
 export interface CatSitter {
   id: number
   name: string
   jobDesc: string
   price: number
-  address: string
+  overallRating: number
+  address: Address
   bookings: Booking[]
   events?: CalendarEvent[]
 }
 
 export interface CatSitterResponse {
-  address: string
+  address: Address
   email: string
   id: number
   jobDesc: string

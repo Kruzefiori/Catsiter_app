@@ -69,8 +69,10 @@ function BookingsList(props: BookingsListProps) {
       if (response.status < 200 || response.status >= 300) {
         toast.error('Erro ao responder visita')
         throw new Error('Erro ao responder visita')
-        return
       }
+
+      console.log('response', response.data)
+      toast.success('Visita respondida com sucesso')
     } catch (error) {
       console.error('Erro ao responder visita', error)
     }
