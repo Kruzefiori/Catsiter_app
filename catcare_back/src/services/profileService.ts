@@ -2,19 +2,25 @@ import prisma from "../client";
 
 interface Address {
 	street: string;
-  	city: string;
-  	state: string;
-  	zipCode: string;
-  	country: string;
-  	complement?: string;
-  	number?: number;
+	city: string;
+	state: string;
+	zipCode: string;
+	country: string;
+	complement?: string;
+	number?: number;
 }
 
-interface onboardingProfile {
+interface SitterOnboardingProfile {
 	userId: number;
 	jobDesc: string;
 	price: number;
+	address: Address;
 	attendancePlaces: Address[];
+}
+
+interface OwnerOnboardingProfile {
+	userId: number;
+	address: Address;
 }
 
 class ProfileService {
@@ -38,7 +44,7 @@ class ProfileService {
 		return user;
 	}
 
-	async onboardingProfileCatsitter(body: onboardingProfile) {
+	async onboardingProfileCatsitter(body: SitterOnboardingProfile) {
 		const { userId, jobDesc, price, attendancePlaces } = body;
 
 		const userType = await this.prisma.user.findFirst({
@@ -48,7 +54,7 @@ class ProfileService {
 			await this.prisma.user.update({
 				where: { id: userId },
 				data: {
-				  onboardingDone: true,
+					onboardingDone: true,
 				},
 			});
 			throw new Error("User already onboarded");
@@ -87,22 +93,58 @@ class ProfileService {
 		return onboarding && userUpdate;
 	}
 
+	async onboardingProfileOwner(body: OwnerOnboardingProfile) {
+		const { userId, address } = body;
+
+		const userType = await this.prisma.user.findFirst({
+			where: { id: body.userId, type: "OWNER" },
+		});
+		if (userType) {
+			await this.prisma.user.update({
+				where: { id: userId },
+				data: {
+					onboardingDone: true,
+				},
+			});
+			throw new Error("User already onboarded");
+		}
+		const userUpdate = await this.prisma.user.update({
+			where: { id: userId },
+			data: {
+				type: "OWNER",
+				address: {
+					create: {
+						street: address.street,
+						city: address.city,
+						state: address.state,
+						zipCode: address.zipCode,
+						country: address.country,
+						complement: address.complement,
+						number: address.number,
+					},
+				},
+				onboardingDone: true,
+			},
+		});
+
+		return userUpdate;
+	}
+
 	async getAllCatSitters() {
 		const catSitters = await this.prisma.catSitter.findMany({
 			include: {
 				user: {
-				  select: {
-					name: true,
-					email: true,
-					address: true,
-					overallRating: true,
-				  },
+					select: {
+						name: true,
+						email: true,
+						address: true,
+						overallRating: true,
+					},
 				},
 			},
 		});
-		
-		
-		return catSitters.map(catSitter => ({
+
+		return catSitters.map((catSitter) => ({
 			name: catSitter.user.name,
 			email: catSitter.user.email,
 			address: catSitter.user.address,
