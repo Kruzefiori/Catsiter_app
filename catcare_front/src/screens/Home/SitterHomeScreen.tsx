@@ -159,15 +159,45 @@ function SitterHomeScreen() {
 
     // const myAcceptedBookings: Booking[] = mockedUserBookings.filter((booking) => booking.status === 'ACCEPTED')
     // setAcceptedBookings(myAcceptedBookings)
-  }, [])
+  }, [authState.user.catSitterId, getAuthTokenFromStorage])
 
   const handleAcceptBooking = useCallback(
     async (bookingId: number) => {
+      try {
+        const response = await axios.patch(
+          `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-booking`,
+          {
+            bookingId: bookingId,
+            answerBooking: 'ACCEPTED'
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${getAuthTokenFromStorage()}`
+            }
+          }
+        )
+
+        if (response.status < 200 || response.status >= 300) {
+          toast.error('Não foi possível aceitar o booking.')
+          return
+        }
+
+        toast.success('Booking aceito com sucesso!')
+      } catch (error) {
+        console.error('Erro ao aceitar booking', error)
+      }
+    },
+    [pendingBookings]
+  )
+
+  const handleRejectBooking = useCallback(async (bookingId: number) => {
+    try {
       const response = await axios.patch(
         `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-booking`,
         {
           bookingId: bookingId,
-          answerBooking: 'ACCEPTED'
+          answerBooking: 'REJECTED'
         },
         {
           headers: {
@@ -178,31 +208,13 @@ function SitterHomeScreen() {
       )
 
       if (response.status < 200 || response.status >= 300) {
-        toast.error('Não foi possível aceitar o booking.')
+        toast.error('Não foi possível rejeitar o booking.')
         return
       }
-    },
-    [pendingBookings]
-  )
 
-  const handleRejectBooking = useCallback(async (bookingId: number) => {
-    const response = await axios.patch(
-      `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/answer-booking`,
-      {
-        bookingId: bookingId,
-        answerBooking: 'REJECTED'
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${getAuthTokenFromStorage()}`
-        }
-      }
-    )
-
-    if (response.status < 200 || response.status >= 300) {
-      toast.error('Não foi possível rejeitar o booking.')
-      return
+      toast.success('Booking rejeitado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao rejeitar booking', error)
     }
   }, [])
 
