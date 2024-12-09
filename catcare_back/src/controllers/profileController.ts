@@ -24,6 +24,15 @@ class ProfileController {
 			jobDesc: z.string(),
 			price: z.number(),
 			attendancePlaces: array(z.string()),
+			address: z.object({
+				street: z.string(),
+				city: z.string(),
+				state: z.string(),
+				zipCode: z.string(),
+				country: z.string(),
+				complement: z.string().optional(),
+				number: z.number().optional(),
+			}),
 		});
 
 		const ownerSchema = z.object({

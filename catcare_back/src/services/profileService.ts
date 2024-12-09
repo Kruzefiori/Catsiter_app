@@ -46,6 +46,11 @@ class ProfileService {
 				},
 				type: true,
 				onboardingDone: true,
+				catSitter: {
+					select: {
+						id: true,
+					},
+				},
 			},
 		});
 
@@ -53,11 +58,29 @@ class ProfileService {
 			throw new Error("user not found");
 		}
 
-		return user;
+		const parsedUser = {
+			id: user.id,
+			email: user.email,
+			name: user.name,
+			address: {
+				street: user.address?.street,
+				city: user.address?.city,
+				state: user.address?.state,
+				zipCode: user.address?.zipCode,
+				country: user.address?.country,
+				complement: user.address?.complement,
+				number: user.address?.number,
+			},
+			type: user.type,
+			onboardingDone: user.onboardingDone,
+			catSitterId: user.catSitter?.[0]?.id || null,
+		};
+
+		return parsedUser;
 	}
 
 	async onboardingProfileCatsitter(body: SitterOnboardingProfile) {
-		const { userId, jobDesc, price, attendancePlaces } = body;
+		const { userId, jobDesc, price, attendancePlaces, address } = body;
 
 		const userType = await this.prisma.user.findFirst({
 			where: { id: body.userId, type: "SITTER" },
@@ -67,6 +90,17 @@ class ProfileService {
 				where: { id: userId },
 				data: {
 					onboardingDone: true,
+					address: {
+						create: {
+							street: address.street,
+							city: address.city,
+							state: address.state,
+							zipCode: address.zipCode,
+							country: address.country,
+							complement: address.complement,
+							number: address.number,
+						},
+					},
 				},
 			});
 			throw new Error("User already onboarded");
@@ -133,22 +167,26 @@ class ProfileService {
 			include: {
 				user: {
 					select: {
+						id: true,
 						name: true,
 						email: true,
 						address: true,
 						overallRating: true,
 					},
 				},
+				requestsReceived: true,
 			},
 		});
 
 		return catSitters.map((catSitter) => ({
+			id: catSitter.id,
 			name: catSitter.user.name,
 			email: catSitter.user.email,
 			address: catSitter.user.address,
 			overallRating: catSitter.user.overallRating,
 			jobDesc: catSitter.jobDesc,
 			price: catSitter.price,
+			requestsReceived: catSitter.requestsReceived,
 		}));
 	}
 }
