@@ -29,20 +29,21 @@ import { CalendarColor, CalendarEvent, CalendarPopup } from '@/components/Calend
 import { SlotInfo } from 'react-big-calendar'
 import { mockedCatSitters } from '../Home/utils'
 
-type VisitWithIdOptional = Omit<Visits, 'id'> & { id?: number }
+type VisitWithoutIds = Omit<Visits, 'id' | 'bookingId'> & { id?: number; bookingId?: number }
 
 function BookingScreen() {
   const { catsitterId } = useParams()
   const navigate = useNavigate()
 
   useEffect(() => {
+    console.log('catsitterId', catsitterId)
     if (!catsitterId) {
       navigate(-1)
     }
   }, [catsitterId])
 
   const { authState, getAuthTokenFromStorage } = useContext(AuthContext)
-  const [visits, setVisits] = useState<VisitWithIdOptional[]>([])
+  const [visits, setVisits] = useState<VisitWithoutIds[]>([])
   const [currentEvents, setCurrentEvents] = useState<CalendarEvent[]>([])
   const [eventToShow, setEventToShow] = useState<CalendarEvent | null>(null)
   const [generalNotes, setGeneralNotes] = useState('')
@@ -96,7 +97,7 @@ function BookingScreen() {
     const body = {
       visits: visits,
       requesterId: authState.user.id,
-      requestedId: catsitterId,
+      requestedId: Number(catsitterId),
       startDate: getFirstVisitDate(visits),
       endDate: getLastVisitDate(visits),
       generalNotes: generalNotes
@@ -104,20 +105,25 @@ function BookingScreen() {
     // verificando os dados antes de enviar
     console.log('body', body)
 
-    const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/add-booking`, body, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getAuthTokenFromStorage()}`
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/add-booking`, body, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthTokenFromStorage()}`
+        }
+      })
+
+      if (response.status < 200 || response.status >= 300) {
+        toast.error('Não foi possível solicitar a reserva. ')
+        throw new Error('Não foi possível solicitar a reserva. ')
       }
-    })
 
-    if (response.status < 200 || response.status >= 300) {
-      toast.error('Não foi possível solicitar a reserva. ')
-      return
+      toast.success('Sua reserva foi solicitada com sucesso!')
+      console.log('response', response.data)
+      navigate(-1)
+    } catch (error) {
+      console.error(error)
     }
-
-    toast.success('Sua reserva foi solicitada com sucesso!')
-    console.log('response', response.data)
   }, [authState.user.id, catsitterId, generalNotes, getAuthTokenFromStorage, visits])
 
   const handleSlotClick = useCallback(
@@ -161,7 +167,7 @@ function BookingScreen() {
         start: visit.visitDate,
         end: new Date(new Date(visit.visitDate).getTime() + visit.durationInMinutes * 60000),
         title: `Visita ${index + 1}`,
-        notes: visit.notes,
+        notes: visit.visitNotes,
         color: CalendarColor.LIGHT_BLUE
       }))
     setCurrentEvents(events)
@@ -174,10 +180,10 @@ function BookingScreen() {
       toast.warning('As visitas foram salvas!')
       return
     }
-    const newVisits = currentEvents.map((event) => ({
+    const newVisits: VisitWithoutIds[] = currentEvents.map((event) => ({
       visitDate: event.start,
       durationInMinutes: getDifferenceInHours(event.end, event.start) * 60,
-      notes: '',
+      visitNotes: event.notes,
       status: VisitStatus.PENDING
     }))
 
@@ -271,7 +277,7 @@ function BookingScreen() {
           {[...visits]
             .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())
             .map((visit, index) => (
-              <VisitWrapper key={visit.visitDate?.toISOString() ?? index} onChange={() => console.log('visit')}>
+              <VisitWrapper key={visit.visitDate?.toISOString() ?? index}>
                 <VisitSummary expandIcon={<ArrowDropDown />}>
                   <IconButton
                     onClick={(e) => {
@@ -297,7 +303,7 @@ function BookingScreen() {
                     <textarea
                       minLength={1}
                       maxLength={2000}
-                      value={visit.notes}
+                      value={visit.visitNotes}
                       onChange={(e) => handleUpdateVisit(index, 'notes', e.target.value)}
                     />
                   </Label>

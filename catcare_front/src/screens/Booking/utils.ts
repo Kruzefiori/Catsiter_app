@@ -1,17 +1,19 @@
 import { Visits } from '@/domain/models/Visits'
 
-const sortVisits = (visits: Omit<Visits, 'id'>[]) => {
+type VisitWithoutIds = Omit<Visits, 'id' | 'bookingId'> & { id?: number; bookingId?: number }
+
+const sortVisits = (visits: VisitWithoutIds[]) => {
   return [...visits]
     .filter((visit) => visit.visitDate !== null)
     .sort((a, b) => new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime())
 }
 
-const getFirstVisitDate = (visits: Omit<Visits, 'id'>[]) => {
+const getFirstVisitDate = (visits: VisitWithoutIds[]) => {
   const sortedVisits = sortVisits(visits)
   return sortedVisits.length > 0 ? new Date(sortedVisits[0].visitDate) : null
 }
 
-const getLastVisitDate = (visits: Omit<Visits, 'id'>[]) => {
+const getLastVisitDate = (visits: VisitWithoutIds[]) => {
   const sortedVisits = sortVisits(visits)
   return new Date(sortedVisits[sortedVisits.length - 1]?.visitDate) || null
 }

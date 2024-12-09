@@ -117,7 +117,7 @@ function BookingsList(props: BookingsListProps) {
                         : ' Cancelada'}
                     </Info>
                     <strong>Observações:</strong>
-                    <Details>{visit.notes || <i>Sem observações.</i>}</Details>
+                    <Details>{visit.visitNotes || <i>Sem observações.</i>}</Details>
                     {visit.status === VisitStatus.PENDING && booking.status === 'ACCEPTED' && (
                       <>
                         {visitResponse && (

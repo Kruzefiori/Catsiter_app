@@ -3,7 +3,6 @@ import { useContext, useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import { AuthContext } from '@/context'
 import { toast } from 'react-toastify'
-import { mockedUserBookings } from './utils'
 import { SitterHomeContainer, ButtonsWrapper } from './SitterStyles'
 import { Booking, BookingStatus } from '@/domain/models/Booking'
 import { BookingsList } from '../BookingsList'
@@ -20,7 +19,7 @@ function SitterHomeScreen() {
       try {
         const pendingBookingsResponse = await axios.get<Booking[]>(
           `${import.meta.env.VITE_CATCARE_SERVER_URL}/booking/get-bookings-requested?userId=${
-            authState.user.id
+            authState.user.catSitterId
           }&status=PENDING`,
           {
             headers: {
@@ -34,7 +33,27 @@ function SitterHomeScreen() {
           toast.error('Erro ao buscar bookings pendentes')
           return
         }
-        setPendingBookings(pendingBookingsResponse.data)
+        console.log('pending bookings', pendingBookingsResponse.data)
+        const parsedPendingBookings = pendingBookingsResponse.data.map((booking) => {
+          const startDate = new Date(booking.startDate)
+          const endDate = new Date(booking.endDate)
+
+          const parsedVisits = booking.visits.map((visit) => {
+            const visitDate = new Date(visit.visitDate)
+            return {
+              ...visit,
+              visitDate
+            }
+          })
+
+          return {
+            ...booking,
+            startDate,
+            endDate,
+            visits: parsedVisits
+          }
+        })
+        setPendingBookings(parsedPendingBookings)
       } catch (error) {
         console.error('Erro ao buscar bookings pendentes', error)
       }
@@ -59,7 +78,28 @@ function SitterHomeScreen() {
           return
         }
 
-        setAcceptedBookings(acceptedBookingsResponse.data)
+        console.log('accepted bookings', acceptedBookingsResponse.data)
+        // parse dates
+        const parsedAcceptedBookings = acceptedBookingsResponse.data.map((booking) => {
+          const startDate = new Date(booking.startDate)
+          const endDate = new Date(booking.endDate)
+
+          const parsedVisits = booking.visits.map((visit) => {
+            const visitDate = new Date(visit.visitDate)
+            return {
+              ...visit,
+              visitDate
+            }
+          })
+
+          return {
+            ...booking,
+            startDate,
+            endDate,
+            visits: parsedVisits
+          }
+        })
+        setAcceptedBookings(parsedAcceptedBookings)
       } catch (error) {
         console.error('Erro ao buscar bookings aceitos', error)
       }
@@ -100,8 +140,8 @@ function SitterHomeScreen() {
       const bookingToAccept = pendingBookings.find((booking) => booking.id === bookingId)
       setAcceptedBookings((prev) => [...prev, bookingToAccept])
       setPendingBookings((prev) => prev.filter((booking) => booking.id !== bookingId))
-      const mockedBookingToAccept = mockedUserBookings.find((booking) => booking.id === bookingId)
-      mockedBookingToAccept && (mockedBookingToAccept.status = BookingStatus.ACCEPTED)
+      // const mockedBookingToAccept = mockedUserBookings.find((booking) => booking.id === bookingId)
+      // mockedBookingToAccept && (mockedBookingToAccept.status = BookingStatus.ACCEPTED)
     },
     [pendingBookings]
   )
@@ -127,8 +167,8 @@ function SitterHomeScreen() {
     // }
 
     setPendingBookings((prev) => prev.filter((booking) => booking.id !== bookingId))
-    const mockedBookingToReject = mockedUserBookings.find((booking) => booking.id === bookingId)
-    mockedBookingToReject && (mockedBookingToReject.status = BookingStatus.REJECTED)
+    // const mockedBookingToReject = mockedUserBookings.find((booking) => booking.id === bookingId)
+    // mockedBookingToReject && (mockedBookingToReject.status = BookingStatus.REJECTED)
   }, [])
 
   return (
